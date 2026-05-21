@@ -1,0 +1,58 @@
+{
+  "name": "Psyched Luxuries",
+  "short_name": "Psyched",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0908",
+  "theme_color": "#0a0908",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Codex",
+      "short_name": "Codex",
+      "url": "./codex.html"
+    },
+    {
+      "name": "Drops",
+      "short_name": "Drops",
+      "url": "./drops.html"
+    },
+    {
+      "name": "Outreach",
+      "short_name": "Outreach",
+      "url": "./outreach.html"
+    },
+    {
+      "name": "Seeds",
+      "short_name": "Seeds",
+      "url": "./seeds.html"
+    }
+  ]
+}

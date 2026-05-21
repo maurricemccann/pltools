@@ -1,0 +1,1883 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0d0c0a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Seeds"/>
+<link rel="manifest" href="manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png"/>
+<link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152.png"/>
+<link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"/>
+
+<title>Seeds</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{--bg:#0d0c0a;--bg-2:#15130f;--line:#2a2722;--fg:#f3eee2;--mute:#8a8378;--accent:#e23b3b;--display:'Bricolage Grotesque',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--display);overscroll-behavior:none}
+body{min-height:100svh}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+input,select,textarea{font:inherit;color:inherit;background:none}
+.app{display:flex;flex-direction:column;min-height:100svh;padding-top:env(safe-area-inset-top);padding-bottom:calc(56px + env(safe-area-inset-bottom));max-width:720px;margin:0 auto}
+.head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 8px}
+.brand{display:flex;align-items:baseline;gap:10px}
+.mark{font-size:20px;color:var(--accent)}
+.title{font-weight:800;letter-spacing:.04em;font-size:24px}
+.count{font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.1em;padding:4px 8px;border:1px solid var(--line);border-radius:99px}
+.menu-btn{width:40px;height:40px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px}
+.menu-btn span{width:18px;height:2px;background:var(--fg);display:block}
+.menu-btn span:nth-child(2){width:12px}
+.glyph-rail{display:flex;gap:8px;padding:10px 18px 16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.glyph-rail::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 10px 10px;border:1px solid var(--line);border-radius:14px;color:var(--mute);min-width:78px;scroll-snap-align:start;transition:.18s ease;background:transparent}
+.chip.active{color:var(--fg);background:var(--bg-2);border-color:var(--fg)}
+.chip-name{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;text-align:center;line-height:1.15;max-width:74px}
+.chip.add{justify-content:center;color:var(--mute);border-style:dashed}
+.chip.add .plus{font-size:22px;font-weight:300;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+.stage{flex:1;display:flex;flex-direction:column;padding:0 22px 8px;gap:18px}
+.glyph-display{display:flex;align-items:center;gap:18px;padding:6px 0 4px}
+.meta{display:flex;flex-direction:column;gap:4px;min-width:0}
+.meta-name{font-weight:800;font-size:28px;line-height:1;letter-spacing:-.01em}
+.meta-meaning{font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.08em;text-transform:uppercase}
+.meta-stat{font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.1em;margin-top:4px}
+.card{flex:1;border:1px solid var(--line);border-radius:22px;background:radial-gradient(circle at 20% 0%,#1b1812,var(--bg-2));padding:32px 26px;display:flex;align-items:center;justify-content:center;min-height:240px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:14px;border:1px dashed var(--line);border-radius:14px;pointer-events:none}
+.seed-text{font-family:var(--display);font-size:clamp(26px,7vw,42px);font-weight:700;line-height:1.1;letter-spacing:-.015em;text-align:center;margin:0;animation:rise .4s ease}
+.seed-empty{font-family:var(--mono);color:var(--mute);text-align:center;font-size:13px}
+.seed-empty em{color:var(--fg);font-style:normal}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.actions{display:flex;gap:10px;padding:6px 0 8px}
+.actions.sub{padding:0 0 18px}
+.pull{flex:1;background:var(--accent);color:#fff;border-radius:16px;padding:22px;font-size:22px;font-weight:800;letter-spacing:.06em;display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 8px 0 #8a1f1f,0 22px 40px -10px rgba(226,59,59,.4);transition:transform .08s,box-shadow .08s}
+.pull:active{transform:translateY(4px);box-shadow:0 4px 0 #8a1f1f}
+.pull:disabled{background:#2a2722;color:var(--mute);box-shadow:none}
+.dice{flex:0 0 auto;width:72px;min-height:70px;background:var(--bg-2);border:1px solid var(--line);color:var(--fg);border-radius:16px;display:flex;align-items:center;justify-content:center}
+.ghost{border:1px solid var(--line);border-radius:16px;padding:18px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg);transition:.15s}
+.ghost.block{display:block;width:100%;text-align:center;margin:8px 0}
+.ghost.danger{color:var(--accent);border-color:var(--accent)}
+.foot{display:flex;justify-content:space-between;align-items:center;padding:10px 22px 18px;font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.1em;text-transform:uppercase}
+.link{color:var(--fg);text-decoration:underline;text-underline-offset:3px;background:none;border:0;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.modal{background:var(--bg-2);border-top:1px solid var(--line);border-radius:24px 24px 0 0;width:100%;max-width:720px;max-height:88svh;overflow-y:auto;padding:18px 22px;padding-bottom:calc(56px + env(safe-area-inset-bottom))}
+@media(min-width:720px){.modal-backdrop{align-items:center}.modal{border-radius:24px;border:1px solid var(--line);max-height:80vh}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg-2);z-index:2}
+.modal-head h2{margin:0;font-size:20px;font-weight:800;letter-spacing:-.01em}
+.x{width:36px;height:36px;border:1px solid var(--line);border-radius:99px;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--mute);cursor:pointer}
+.x.sm{width:28px;height:28px;font-size:11px}
+.lbl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin:14px 0 6px}
+.lbl:first-child{margin-top:0}
+.ipt{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;color:var(--fg);font-size:16px;line-height:1.4;outline:none;transition:.15s}
+.ipt:focus{border-color:var(--fg)}
+.ipt.mono-ipt{font-family:var(--mono);font-size:12px}
+textarea.ipt{resize:vertical}
+.primary{margin-top:16px;width:100%;background:var(--fg);color:var(--bg);border-radius:14px;padding:18px;font-weight:800;font-size:16px;border:0;cursor:pointer;font-family:var(--display)}
+.preview{margin-top:14px;display:flex;align-items:center;gap:14px;padding:14px;border:1px dashed var(--line);border-radius:12px;display:none}
+.small{font-size:10px;color:var(--mute)}
+.glyph-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.glyph-list li{display:flex;gap:6px;align-items:stretch}
+.glyph-row{flex:1;display:flex;align-items:center;gap:14px;padding:12px;border:1px solid var(--line);border-radius:14px;text-align:left;color:var(--fg);cursor:pointer}
+.glyph-row:hover{border-color:var(--fg)}
+.grow{flex:1;display:flex;flex-direction:column;min-width:0}
+.row-name{font-weight:700;font-size:16px}
+.row-sub{font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.08em;text-transform:uppercase}
+.arrow{color:var(--mute);font-size:20px}
+.data-actions{display:flex;flex-direction:column;gap:8px;margin-top:18px}
+.data-actions .ghost{padding:14px;display:block;width:100%;text-align:left}
+.hint{margin-top:18px;font-size:11px;color:var(--mute);line-height:1.5;font-family:var(--mono)}
+.seed-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.seed-list li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;line-height:1.35}
+.seed-list li.empty{color:var(--mute);justify-content:center;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.__pl-notch{
+  position:fixed;top:0;left:0;right:0;
+  height:env(safe-area-inset-top);
+  background:#0a0908;
+  border-bottom:1px solid rgba(201,168,76,.18);
+  z-index:99998;
+}
+.__pl-back{
+  position:fixed;bottom:0;left:0;right:0;z-index:99999;
+  height:calc(44px + env(safe-area-inset-bottom));
+  display:flex;align-items:flex-start;justify-content:center;
+  padding-top:10px;
+  background:rgba(10,9,8,.95);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(201,168,76,.18);
+  color:#f4ecd8;text-decoration:none;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-style:italic;font-size:14px;letter-spacing:.04em;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;
+  gap:8px;
+}
+.__pl-back:active{background:rgba(20,18,14,.98)}
+.__pl-back .__pl-arrow{font-family:system-ui;font-style:normal;color:#c9a84c;font-size:15px;line-height:1}
+.__pl-back .__pl-dot{width:5px;height:5px;border-radius:99px;background:#c9a84c;margin-left:1px;display:inline-block;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="__pl-notch"></div>
+<style>
+
+</style>
+<a href="./index.html" class="__pl-back" aria-label="Back to Psyched Luxuries">
+  <span class="__pl-arrow">←</span><span>Psyched</span><span class="__pl-dot"></span>
+</a>
+
+<div id="app"></div>
+<script>
+// Default glyph SVGs — hand-drawn-ish placeholders matching the descriptions.
+// Each is a single `path/text` group inside a 200x200 viewBox.
+// Users can replace these by uploading their own SVG markup via "Add Glyph".
+
+window.DEFAULT_GLYPH_SVGS = {
+  "money-grin": `
+    <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="100" cy="100" r="70"/>
+      <circle cx="75" cy="85" r="5" fill="currentColor"/>
+      <circle cx="125" cy="85" r="5" fill="currentColor"/>
+    </g>
+    <path d="M65 120 Q100 150 135 120" fill="#e23b3b" stroke="#e23b3b" stroke-width="2"/>
+    <g font-family="Georgia,serif" font-weight="900" font-size="34" text-anchor="middle" fill="currentColor">
+      <text x="80" y="135">$</text>
+      <text x="100" y="138">$</text>
+      <text x="120" y="135">$</text>
+    </g>`,
+
+  "money-goes-up": `
+    <g font-family="Georgia,serif" font-weight="900" font-size="150" text-anchor="middle" fill="currentColor">
+      <text x="100" y="150">$</text>
+    </g>
+    <g fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M140 130 L170 60"/>
+      <path d="M170 60 L150 65 M170 60 L165 80"/>
+    </g>`,
+
+  "around-comes-around": `
+    <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="100" cy="100" r="40"/>
+      <circle cx="88" cy="92" r="3" fill="currentColor"/>
+      <circle cx="112" cy="92" r="3" fill="currentColor"/>
+      <path d="M85 110 Q100 122 115 110"/>
+      <path d="M100 30 A70 70 0 1 1 30 100" />
+      <path d="M30 100 L20 90 M30 100 L40 90"/>
+    </g>`,
+
+  "money-glyphguy": `
+    <g font-family="Helvetica,Arial,sans-serif" font-weight="900" font-size="22" fill="currentColor" text-anchor="middle">
+      <text x="100" y="55">M</text>
+      <text x="100" y="78">O</text>
+      <text x="65" y="100" transform="rotate(-90 65 100)">N</text>
+      <text x="135" y="100" transform="rotate(90 135 100)">E</text>
+      <text x="100" y="125">Y</text>
+      <text x="75" y="160" transform="rotate(-30 75 160)">$</text>
+      <text x="125" y="160" transform="rotate(30 125 160)">$</text>
+    </g>`,
+
+  "glyphguy-work": `
+    <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="80" cy="55" r="14"/>
+      <path d="M80 69 L80 110"/>
+      <path d="M80 110 L65 145 M80 110 L95 145"/>
+      <path d="M80 85 L110 95 L110 130"/>
+      <rect x="100" y="130" width="60" height="20"/>
+      <circle cx="115" cy="160" r="8"/>
+      <circle cx="150" cy="160" r="8"/>
+    </g>`,
+
+  "glyphs-with-box": `
+    <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="100" cy="45" r="14"/>
+      <path d="M100 59 L100 105"/>
+      <path d="M100 105 L80 150 M100 105 L120 150"/>
+      <rect x="60" y="75" width="80" height="50"/>
+      <path d="M60 90 L140 90 M75 75 L75 125 M125 75 L125 125"/>
+      <path d="M100 78 L70 75 M100 78 L130 75"/>
+    </g>`,
+
+  "love-yourself": `
+    <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M100 160 C 40 120, 40 65, 75 65 C 90 65, 100 80, 100 90 C 100 80, 110 65, 125 65 C 160 65, 160 120, 100 160 Z"/>
+      <circle cx="100" cy="110" r="5" fill="currentColor"/>
+      <path d="M70 105 Q85 100 95 108"/>
+      <path d="M95 108 L88 103 M95 108 L91 113"/>
+    </g>`,
+
+  "psyched-luxuries": `
+    <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="100,30 130,75 185,85 145,125 155,180 100,150 45,180 55,125 15,85 70,75"/>
+      <circle cx="100" cy="105" r="22"/>
+      <circle cx="100" cy="105" r="6" fill="currentColor"/>
+      <path d="M100 60 L100 75 M100 135 L100 150 M65 105 L80 105 M120 105 L135 105"/>
+    </g>`,
+
+  "fucked-cycle": `
+    <g fill="none" stroke="currentColor" stroke-width="4">
+      <path d="M40 100 A60 60 0 0 1 160 100" stroke-dasharray="4 6"/>
+      <path d="M160 100 A60 60 0 0 1 100 160" stroke-dasharray="4 6"/>
+      <path d="M40 100 A60 60 0 0 0 80 158" stroke-dasharray="2 10"/>
+    </g>
+    <g font-family="Helvetica,Arial,sans-serif" font-weight="900" font-size="20" fill="currentColor" text-anchor="middle">
+      <text x="100" y="55">F</text>
+      <text x="135" y="68" transform="rotate(45 135 68)">U</text>
+      <text x="155" y="105" transform="rotate(90 155 105)">C</text>
+      <text x="140" y="148" transform="rotate(135 140 148)">K</text>
+      <text x="95" y="160" transform="rotate(180 95 160)">E</text>
+      <text x="55" y="140" transform="rotate(220 55 140)">D</text>
+    </g>`
+};
+
+// Psyched Luxuries — bank of taglines / hooks / manifestation lines.
+// Format: each line is "Lead Phrase — body of the tagline."
+// Grows in batches. Used as the seed list for the "Psyched Luxuries" glyph.
+
+window.PSYCHED_LUXURIES = [
+  // ----- Chapter 1: Manifestation as a Luxury Technology (user-supplied) -----
+  "Luxury Frequency — Tune your mind to the wavelength where desire becomes protocol.",
+  "Psyched Precision — Manifestation is just luxury with instructions.",
+  "Quantum Readiness — Prepare for the version of you that already arrived.",
+  "Opulent Alignment — When your energy matches your taste, reality upgrades.",
+  "Manifest Mode — Switch on the part of you that bends outcomes.",
+  "Wealth Signal — Broadcast the frequency that money recognizes.",
+  "Reality Override — Replace the default settings with your own.",
+  "Infinite Access — Luxury is simply permission to expand.",
+  "Prepared Abundance — The universe delivers to those who are ready to receive.",
+  "Manifest Authority — Command your timeline like it's already yours.",
+  "Luxury Calibration — Adjust your inner world until the outer one obeys.",
+  "Psyched Magnetism — Attraction is a side effect of alignment.",
+  "Timeline Sculpting — Shape your future like wet clay.",
+  "Abundance Protocol — Wealth is a system; learn its language.",
+  "Energetic Opulence — Luxury begins as a feeling before it becomes a fact.",
+  "Manifested Identity — Become the person your dreams report to.",
+  "Quantum Luxury — Collapse the timeline where you're waiting.",
+  "Psyched Alignment — Your desires are coordinates; follow them.",
+  "Wealth Embodiment — Wear abundance like a second skin.",
+  "Reality Tuning — Adjust your mindset until the world harmonizes.",
+  "Luxury Mindset — Think in gold; act in inevitability.",
+  "Manifest Momentum — Once you start, reality accelerates.",
+  "Infinite Permission — Allow yourself to want more.",
+  "Psyched Expansion — Growth is the most luxurious act.",
+  "Abundance Identity — You're not chasing wealth; you're remembering it.",
+  "Quantum Confidence — Act like the universe already said yes.",
+  "Luxury Awareness — Notice how much you already deserve.",
+  "Manifest Clarity — Precision creates miracles.",
+  "Reality Sculptor — Mold your world with intention.",
+  "Psyched Sovereignty — You are the monarch of your timeline.",
+  "Wealth Consciousness — Think like someone who never doubts abundance.",
+  "Luxury Embodiment — Become the aesthetic of your future.",
+  "Manifestation Mastery — Reality bends for the prepared.",
+  "Quantum Receiving — Open the channel; let it flow.",
+  "Psyched Prosperity — Wealth is a psychedelic state of mind.",
+  "Abundance Flow — Let luxury move through you.",
+  "Reality Rewriting — Edit your life like a draft.",
+  "Luxury Expansion — Grow into the version of you that glows.",
+  "Manifestation Flow — Let your desires guide your direction.",
+  "Quantum Opulence — Wealth is a vibration; tune in.",
+  "Psyched Identity — Become the luxury you seek.",
+  "Abundance Magnet — Pull prosperity into your orbit.",
+  "Reality Shift — Step into the timeline that feels like home.",
+  "Luxury Vision — See your future in high resolution.",
+  "Manifestation Pulse — Feel the rhythm of your becoming.",
+  "Quantum Becoming — Transform at the speed of belief.",
+  "Psyched Wealth — Money responds to your energy.",
+  "Abundance State — Live like everything is already yours.",
+  "Reality Upgrade — Install the mindset that matches your destiny.",
+  "Luxury Flow — Move like someone who expects miracles.",
+  "Manifestation Aura — Let your energy announce your arrival.",
+  "Quantum Attraction — Pull the improbable into the inevitable.",
+  "Psyched Receiving — Accept abundance without apology.",
+  "Abundance Rhythm — Dance with the universe.",
+  "Reality Command — Speak your desires into structure.",
+  "Luxury Pulse — Feel the heartbeat of your future.",
+  "Manifestation Glow — Shine like your dreams are already real.",
+  "Quantum Identity — Become the version of you that succeeds.",
+  "Psyched Sync — Sync your energy with your ambition.",
+  "Abundance Flowstate — Enter the zone where everything works.",
+  "Reality Sculpt — Shape your world with intention.",
+  "Luxury Becoming — Grow into your highest aesthetic.",
+  "Manifestation Shift — Change your mind; change your world.",
+  "Quantum Permission — Allow yourself to expand.",
+  "Psyched Opulence — Luxury is a psychedelic experience.",
+  "Abundance Aura — Glow with the energy of more.",
+  "Reality Rewrite — Edit your timeline like a manuscript.",
+  "Luxury Identity — Become the embodiment of elegance.",
+  "Manifestation Current — Ride the wave of your becoming.",
+  "Quantum Flow — Move with the universe, not against it.",
+  "Psyched Becoming — Transform with intention.",
+  "Abundance Pulse — Feel prosperity in your bloodstream.",
+  "Reality Shifted — Step into the life that fits.",
+  "Luxury Consciousness — Think like someone who already won.",
+  "Manifestation Field — Enter the zone where everything aligns.",
+  "Quantum Wealth — Money is just energy in motion.",
+  "Psyched Flow — Move like your dreams are inevitable.",
+  "Abundance Alignment — Match your energy to your goals.",
+  "Reality Reset — Start again with intention.",
+  "Luxury Aura — Radiate elegance.",
+  "Manifestation Rhythm — Move in sync with your desires.",
+  "Quantum Shift — Jump timelines with confidence.",
+  "Psyched Persona — Become the luxury you seek.",
+  "Abundance Becoming — Grow into prosperity.",
+  "Reality Pulse — Feel the beat of your future.",
+  "Luxury Shift — Step into your next level.",
+  "Manifestation Flowstate — Enter the zone where everything works.",
+  "Quantum Glow — Shine with possibility.",
+  "Psyched Permission — Allow yourself to want more.",
+  "Abundance Self — Become the person who receives.",
+  "Reality Sculpting — Shape your world with intention.",
+  "Luxury Ascent — Grow into your highest aesthetic.",
+  "Manifestation Edit — Change your mind; change your world.",
+  "Quantum Allowance — Allow yourself to expand.",
+  "Psyched Opulence II — Luxury is a psychedelic experience.",
+  "Abundance Halo — Glow with the energy of more.",
+  "Reality Manuscript — Edit your timeline like a manuscript.",
+  "Luxury Embodied — Become the embodiment of elegance.",
+  "Manifestation Tide — Ride the wave of your becoming.",
+  "Quantum Drift — Move with the universe, not against it.",
+
+  // ----- Chapter 2: 1000 additional lines (auto-generated, same voice) -----
+  "Anointed Voice — Whisper to your future and watch it listen.",
+  "Inner Sync — Practice the silence between gains.",
+  "Anchored Mantle — Be the receipt.",
+  "Loud Flow — Make scarcity a personal style.",
+  "Untouchable Drift — Charge in alignment, never in apology.",
+  "Inevitable Signal — The map is in the morning.",
+  "Velvet Door — Slow growth. Loud bloom.",
+  "Opulent Bloom — The next version of you is the rent.",
+  "Sacred Glow — Receive the day like room service.",
+  "Encrypted Clarity — Walk into Tuesday like it's a launch.",
+  "Polished Embodiment — Make boring the new wealth.",
+  "Lunar Surface — Tax your distractions. Tip your discipline.",
+  "Abundance Sync — Treat your morning like a vault.",
+  "Tactile Order — Want it loud. Receive it louder.",
+  "Liquid Flow — Don't survive the timeline — sign it.",
+  "Manifest Hour — Don't dim the brand to fit the room — change the room.",
+  "Iridescent Manuscript — Receive without explaining.",
+  "Lucid Surface — Live below your taste, never below your worth.",
+  "Crystalline Math — Don't water doubt.",
+  "Lucid Architecture — Hand the universe the dress code.",
+  "Sovereign Ascent — Walk like the future tips well.",
+  "Infinite Mode — Build a room nobody can interrupt.",
+  "Sacred Stance — Choose the version of today that ages well.",
+  "Astral Container — Build the man, the money builds itself.",
+  "Magnetic Momentum — Discipline tastes like cashmere.",
+  "Refined Loop — Lower the volume on every smaller voice.",
+  "Loud Loop — The wait time is just preparation, dressed differently.",
+  "Hard Stream — Whisper to your future and watch it listen.",
+  "Infinite Texture — Don't trade your taste for traffic.",
+  "Polished Lens — Faith is just data you haven't seen yet.",
+  "Anchored Identity — Stop negotiating with smaller timelines.",
+  "Liquid Magnetism — Stretch comfort, never integrity.",
+  "Radiant Momentum — The wait time is just preparation, dressed differently.",
+  "Tuned Alignment — Train the eye, the wallet follows.",
+  "Initiated Wattage — Live in the answer, not the ask.",
+  "Tactile Wattage — Tax the doubt. Tip the future.",
+  "Aligned Atmosphere — Operate as if the offer's already in the inbox.",
+  "Effortless Voice — Trust the algorithm under the algorithm.",
+  "Activated Atmosphere — Press play on the timeline that fits.",
+  "Sourced Alignment — Become illegal to ignore.",
+  "Gilded Surface — Build a body the bag wants to live in.",
+  "Saturated Halo — Be the wire transfer of presence.",
+  "Final Mode — Treat your calendar like couture fittings.",
+  "Magnetic Tide — Receive with both hands and no apology.",
+  "Quiet Manuscript — Your standards are the algorithm.",
+  "Quantum Loop — Practice the version of you that doesn't flinch.",
+  "Untouchable Cadence — Be specific. The universe is literal.",
+  "Velvet Wattage — Pour into the future like it tipped you first.",
+  "Quantum Sovereignty — Press into the version of you the bag respects.",
+  "Liquid Architecture — Whisper to your future and watch it listen.",
+  "Unbothered Signal — Edit yourself like a print run.",
+  "Astral Code — Make your standards say it for you.",
+  "Magnetic Bloom — Speak in evidence, not affirmations.",
+  "Manifest Routine — Hold the room. Then own it.",
+  "Wealth Hour — Calibrate the desire. Don't dilute it.",
+  "Future Stream — Trust the algorithm under the algorithm.",
+  "Liquid Reset — Run on principle, not panic.",
+  "Sealed Code — Make your standards say it for you.",
+  "Hypnotic Sync — Walk in unannounced. Stay long.",
+  "Coded Loop — Decide who you'd be tipped to be, then be them.",
+  "Soft Override — Build a body the bag wants to live in.",
+  "Gilded Threshold — Glow harder. The market is watching.",
+  "Wealth Pulse — Get tactical with your tenderness.",
+  "Charged Lens — Train the energy. Hire the talent.",
+  "Initiated Machine — Decide the standard, the standard decides you.",
+  "Anointed Engine — The bag is geometry, not luck.",
+  "Iridescent Pulse — Pay attention with discipline.",
+  "Manifest Glow — Walk like the closing call is already booked.",
+  "Inner Mode — Train your taste like cardio.",
+  "Lunar Stream — Decide once. Live twenty times.",
+  "Wealth Flowstate — Operate as if the offer's already in the inbox.",
+  "Unbothered Field — Tax the doubt. Tip the future.",
+  "Initiated Receiving — The room you walked in last is not the room you walk in next.",
+  "Solar Momentum — Routine is the runway.",
+  "Mirrored Ascent — Choose the version of today that ages well.",
+  "Outer Loop — The timeline you want is one decision away.",
+  "Manifest Bloom — Decline the small life politely.",
+  "Sealed Momentum — Don't water doubt.",
+  "Wealth Calibration — The body is the wallet.",
+  "Quantum Order — Become illegal to ignore.",
+  "Open Alignment — Standards are the safer drug.",
+  "Whole Glow — Curate the inputs, the outputs curate themselves.",
+  "Encrypted Authority — Become someone the offer recognizes from across the room.",
+  "Saturated Sync — Become uninterrupted.",
+  "Present Field — Routine is the runway.",
+  "Encrypted Manuscript — Live like the deal already redeemed.",
+  "Polished Field — Edit yourself like a print run.",
+  "Luxury Breath — Your standards are the algorithm.",
+  "Abundance Stream — Hold the standard. Hold the standard. Hold the standard.",
+  "Infinite Mirror — Send the universe an itemized invoice.",
+  "Reality Threshold — Wear the upgrade before the upgrade clears.",
+  "Ascended Stance — Make beauty the K.P.I.",
+  "Future Capture — Receive without flinching, that's the whole curriculum.",
+  "Lunar Lens — Decide once. Live twenty times.",
+  "Sacred Logic — Read less news. Write more receipts.",
+  "Anointed Hour — Hand the universe the dress code.",
+  "Sourced Aesthetic — Walk slow. The timeline is fast.",
+  "Encrypted Field — Be too late to scarcity, too early to the bag.",
+  "Inner Field — Decide once. Live twenty times.",
+  "Ascended Pattern — Press into the version of you the bag respects.",
+  "Vivid Texture — Stop negotiating with smaller timelines.",
+  "Plush Stance — Be the room the room rises to.",
+  "Iridescent Threshold — Become a closed loop with leverage.",
+  "Unhurried Frequency — Be too late to scarcity, too early to the bag.",
+  "Hard Mirror — Pour into the future like it tipped you first.",
+  "Hypnotic Stream — Be expensive on purpose.",
+  "Wealth Momentum — Hand the universe the dress code.",
+  "Velvet Stream — Quiet money has its own grammar. Learn it.",
+  "Magnetic Ritual — Stop refreshing the page. Live in the next one.",
+  "Open Body — Run on quiet conviction.",
+  "Tuned Stance — Slow eyes. Fast checks.",
+  "Elevated Spell — Walk in like you signed for it.",
+  "Tuned Glow — Your nervous system is the price tag.",
+  "Solar Posture — Practice the silence between gains.",
+  "Luxury Texture — The opulence is in the order.",
+  "Ascended Body — Be impossible to outrun.",
+  "Magnetic Posture — Stop watering rooms that don't bloom.",
+  "Threshold Step — Become someone the offer can't outrun.",
+  "Lucid Texture — You don't manifest from doubt. You manifest from done.",
+  "Wealth Capture — The map is in the morning.",
+  "Untouchable Atmosphere — Save your softness for the right rooms.",
+  "Polished Architecture — Build the man, the money builds itself.",
+  "Elevated Magnetism — Trade noise for nuance.",
+  "Diamond Code — Charge in alignment, never in apology.",
+  "Unlocked Identity — Luxury starts the second you stop apologizing.",
+  "Threshold Order — Quiet flex. Loud life.",
+  "Encrypted Move — Stretch comfort, never integrity.",
+  "Wealth Container — Treat the day like couture, not fast fashion.",
+  "Psyched Posture — Build a room nobody can interrupt.",
+  "Lunar Engine — You are not lowballing the universe today.",
+  "Future Hand — Receive without explaining.",
+  "Gilded Mode — Move from the cleared timeline.",
+  "Anointed Sculpt — Run on quiet conviction.",
+  "Whole Field — Identity is the only asset that compounds.",
+  "Velvet Receiving — The wait time is just preparation, dressed differently.",
+  "Hard Ledger — Train the eye, the wallet follows.",
+  "Astral Drift — Stop negotiating with smaller timelines.",
+  "Closed Momentum — The next version of you is the rent.",
+  "Luxury Aesthetic — You don't manifest from doubt. You manifest from done.",
+  "Vivid Loop — Outdress the doubt.",
+  "Inevitable Drift — Calibrate the desire. Don't dilute it.",
+  "Final Stream — Be the wire transfer of presence.",
+  "Iridescent Momentum — Make your standards say it for you.",
+  "Radiant Routine — Standards turn into addresses.",
+  "Activated Mind — Treat your day like a private commission.",
+  "First Drift — Stay in the version of you the money respects.",
+  "Saturated Move — Routine is a love letter to the next quarter.",
+  "Cosmic Halo — Standards are the safer drug.",
+  "Mirrored Permission — Get specific. Reality is a literalist.",
+  "Sacred Architecture — Make the next room earn you.",
+  "Initiated Protocol — Speak in collected funds.",
+  "Sourced Architecture — Luxury starts the second you stop apologizing.",
+  "Saturated Stance — Operate from the timeline that's already on payroll.",
+  "Threshold Stream — Walk slow. The timeline is fast.",
+  "Astral Body — Speak in evidence, not affirmations.",
+  "Anchored Ledger — Standards are sermons.",
+  "Ascended Calibration — Make the next room earn you.",
+  "Slow Embodiment — Build a room nobody can interrupt.",
+  "Quiet Pulse — Make the next room earn you.",
+  "Reality Hand — Hold the standard. Hold the standard. Hold the standard.",
+  "Whole Posture — Treat your day like a private commission.",
+  "Unbothered Clarity — Make scarcity a personal style.",
+  "Psyched Door — Be impossible to outrun.",
+  "Sacred Halo — Curate your seven friends.",
+  "Infinite Mantle — Stop watering rooms that don't bloom.",
+  "Tactile Step — Make the next room earn you.",
+  "Engineered Becoming — Whisper to your future and watch it listen.",
+  "Decoded Protocol — Become someone the offer can't outrun.",
+  "Inner Posture — Receive in full sentences.",
+  "Cosmic Geometry — Trust the algorithm under the algorithm.",
+  "Initiated Threshold — Practice the silence between gains.",
+  "Radiant Ascent — Send the universe a clean invoice.",
+  "Manifest Recipe — Receive without explaining.",
+  "Psyched Mind — The universe matches your standard, not your hope.",
+  "Sealed Alignment — Run your day like a private bank.",
+  "Unlocked Identity — Be expensive on purpose.",
+  "Elevated Address — Pull rank on the smaller timeline.",
+  "Mirrored Hour — Pay yourself in posture first.",
+  "Anointed Mirror — Your nervous system is the price tag.",
+  "Unlocked Ascent — Refuse the discount on your day.",
+  "Luxury Breath — Become harder to schedule.",
+  "Wealth Calibration — Be a soft room with a hard lock.",
+  "Inner Command — Print quietly. Bind tight.",
+  "Activated Sculpt — Run on faith with receipts attached.",
+  "Embodied Crown — Receive without flinching, that's the whole curriculum.",
+  "Crowned Code — Abundance arrives by RSVP only.",
+  "Charged Permission — The luxury is in the no.",
+  "Final Flow — Train the energy. Hire the talent.",
+  "Activated Permission — Print money in your private routine first.",
+  "Mirrored Atmosphere — Lower the volume on every smaller voice.",
+  "Velvet Mantle — Move money before money moves you.",
+  "Loud Flow — Print quietly. Bind tight.",
+  "Liquid Engine — Move money before money moves you.",
+  "Mirrored Field — Soft outside. Sovereign inside.",
+  "Vivid Architecture — Choose the energetically expensive option.",
+  "Inevitable Spell — Receive without flinching, that's the whole curriculum.",
+  "Sealed Flow — Build the man, the money builds itself.",
+  "Unhurried Routine — Pay attention with discipline.",
+  "Sourced Sculpt — Routine is a love letter to the next quarter.",
+  "Closed Protocol — Posture is portfolio.",
+  "Fast Field — Be specific. The universe is literal.",
+  "Hard Recipe — Be a soft room with a hard lock.",
+  "Final Atmosphere — Decline the small life politely.",
+  "Sealed Mantle — Choose the energetically expensive option.",
+  "Activated Signal — Discipline tastes like cashmere.",
+  "Abundance Body — Calibrate the desire. Don't dilute it.",
+  "Sealed Body — Walk like the closing call is already booked.",
+  "Aligned Currency — Edit the inner monologue like a screenplay.",
+  "Sealed Recipe — Speak in collected funds.",
+  "Quiet Pattern — Practice the silence between gains.",
+  "Quiet Mantle — Glow harder. The market is watching.",
+  "Wealth Signal — Whisper to your future and watch it listen.",
+  "Crystalline Field — The aesthetic is sealed; the income leaks in.",
+  "Untouchable Voltage — Pay attention with discipline.",
+  "Embodied Identity — Decide the standard, the standard decides you.",
+  "Embodied Becoming — Edit the inner monologue like a screenplay.",
+  "Unbothered Bandwidth — Be the receipt.",
+  "Tempered Glow — Read less news. Write more receipts.",
+  "Velvet Ascent — The pace is the prayer.",
+  "Unhurried Logic — Live in the answer, not the ask.",
+  "Astral Receiving — The wait time is just preparation, dressed differently.",
+  "Abundance Receiving — Run your day like a private bank.",
+  "Luxury Flow — Abundance arrives by RSVP only.",
+  "Tactile Logic — Build the man, the money builds itself.",
+  "Unbothered Geometry — The wait time is just preparation, dressed differently.",
+  "Reality Stance — Decline the small life politely.",
+  "Final Routine — Wealth answers to whoever speaks in receipts.",
+  "Mirrored Capture — The pace is the prayer.",
+  "Infinite Sculpt — Hold the line. The line holds you.",
+  "Reality Capture — Curate your seven friends.",
+  "Loud Architecture — Hold the room. Then own it.",
+  "Polished Aesthetic — Standards are sermons.",
+  "Tuned Texture — Walk in like you signed for it.",
+  "Sourced Aesthetic — Print quietly. Bind tight.",
+  "Liquid Crown — Walk slow. The timeline is fast.",
+  "Astral Reset — Whisper to your future and watch it listen.",
+  "Sealed Capture — Make the future jealous of the present.",
+  "Saturated Geometry — Outwait every rushed version of you.",
+  "Wealth Frequency — Behave like the wire already cleared.",
+  "Untouchable Identity — Run on faith with receipts attached.",
+  "First Bandwidth — Walk like the future tips well.",
+  "Present Tide — Soft hands. Hard line.",
+  "Manifest Threshold — Be in the building before they call your name.",
+  "Psyched Voltage — Get rich on purpose, not by accident.",
+  "Lunar Flowstate — Repeat the truth until reality rearranges.",
+  "Infinite Texture — Receive without flinching, that's the whole curriculum.",
+  "Refined Override — The frequency holds the frequency.",
+  "Radiant Engine — Be uninterruptible.",
+  "Unbothered Mode — Train the eye, the wallet follows.",
+  "Reality Code — Practice receiving in private.",
+  "Unlocked Bloom — Be the wire transfer of presence.",
+  "Inevitable Becoming — Quiet money has its own grammar. Learn it.",
+  "Anointed Sovereignty — The wait time is just preparation, dressed differently.",
+  "Manifest Wattage — Walk in like you signed for it.",
+  "Vast Architecture — Practice the silence between gains.",
+  "Present Mantle — Slow growth. Loud bloom.",
+  "Abundance Flowstate — Make the next room earn you.",
+  "Vivid Aura — Send the universe a clean invoice.",
+  "Anchored Pattern — Decline the small life with grace.",
+  "Saturated Voice — Decline beautifully. Accept rarely.",
+  "Initiated Container — Quiet flex. Loud life.",
+  "Embodied Threshold — Decide who you'd be tipped to be, then be them.",
+  "Crowned Mind — Calibrate the desire. Don't dilute it.",
+  "Final Signal — Practice the silence between gains.",
+  "Engineered Capture — Slow growth. Loud bloom.",
+  "Reality Protocol — Speak in evidence, not affirmations.",
+  "Inner Vision — Treat your day like a private commission.",
+  "Vast Geometry — Glow harder. The market is watching.",
+  "Decoded Ledger — Walk into Tuesday like it's a launch.",
+  "Sealed Command — Abundance arrives by RSVP only.",
+  "Ascended Halo — Standards do the convincing for you.",
+  "Saturated Receiving — The next version of you is the rent.",
+  "Tempered Ledger — Want it loud. Receive it louder.",
+  "Solar Cadence — Send the universe a clean invoice.",
+  "Saturated Tide — Walk like the closing call is already booked.",
+  "Whole Pattern — The pace is the prayer.",
+  "Unlocked Sculpt — Print money in your private routine first.",
+  "Ascended Permission — You don't manifest from doubt. You manifest from done.",
+  "Reality Clarity — Treat clarity like cash.",
+  "Reality Aesthetic — Discipline tastes like cashmere.",
+  "Unhurried Magnetism — Luxury starts the second you stop apologizing.",
+  "Sacred Momentum — Build a room nobody can interrupt.",
+  "Astral Stream — Treat your morning like a vault.",
+  "Manifest Signal — Hand the universe the dress code.",
+  "Higher Identity — Slow money. Steady throne.",
+  "Quiet Surface — Run your day like a private bank.",
+  "Polished Spell — Choose the version of today that ages well.",
+  "Soft Container — Be expensive in the rooms that need it.",
+  "Initiated Currency — Posture is portfolio.",
+  "Radiant Embodiment — Receive the morning. Receive the offer. Same skill.",
+  "Quantum Manuscript — Set the table for the larger version of you.",
+  "Open Step — Don't survive the timeline — sign it.",
+  "Slow Posture — Speak in collected funds.",
+  "Final Resonance — Bet on quiet, win loud.",
+  "Outer Posture — Make beauty the K.P.I.",
+  "Tactile Permission — Slow scroll. Fast life.",
+  "Coded Machine — Stop refreshing the page. Live in the next one.",
+  "Crowned Mirror — Be the room the room rises to.",
+  "Initiated Vision — Press play on the timeline that fits.",
+  "Charged Permission — Wealth answers to whoever speaks in receipts.",
+  "Decoded Alignment — Quiet money has its own grammar. Learn it.",
+  "Mirrored Field — Lower the volume on every smaller voice.",
+  "Lucid Calibration — Walk the standard into the room.",
+  "Unbothered Clarity — Speak in collected, not expected.",
+  "Future Address — Make scarcity a personal style.",
+  "Unhurried Machine — Your standards are the algorithm.",
+  "Magnetic Lens — Slow money. Steady throne.",
+  "Decoded Wattage — Talk less, transact more.",
+  "Sealed Frequency — The map is in the morning.",
+  "Whole Ascent — Be the room the room rises to.",
+  "Closed Flow — Hold the room. Then own it.",
+  "Effortless Step — Run a private economy.",
+  "Manifest Hand — Build a body the bag wants to live in.",
+  "Slow Embodiment — Walk the standard into the room.",
+  "Iridescent Lens — Soft outside. Sovereign inside.",
+  "Initiated Flow — Move like the version of you that already arrived.",
+  "Gilded Manuscript — Edit the inner monologue like a screenplay.",
+  "Final Channel — Charge for the access you already are.",
+  "Outer Aura — Quiet flex. Loud life.",
+  "Loud Magnetism — The room you walked in last is not the room you walk in next.",
+  "Saturated Ledger — Discipline tastes like cashmere.",
+  "Plush Loop — Stop watering rooms that don't bloom.",
+  "Gilded Voltage — Become someone the offer recognizes from across the room.",
+  "Crystalline Door — Stop refreshing the page. Live in the next one.",
+  "Vast Lens — Walk in unannounced. Stay long.",
+  "Surreal Aura — Identity is the only asset that compounds.",
+  "Loud Voice — Soft outside. Sovereign inside.",
+  "Lucid Crown — Trust the algorithm under the algorithm.",
+  "Plush Becoming — Run on faith with receipts attached.",
+  "Lucid Spell — The universe doesn't haggle with the prepared.",
+  "Final Aura — Your taste is the audition. Show up sharp.",
+  "Abundance Frequency — Receive the morning. Receive the offer. Same skill.",
+  "Cosmic Pulse — Receive with both hands and no apology.",
+  "Crowned Identity — Walk slow. The timeline is fast.",
+  "Decoded Geometry — Hold the standard. Hold the standard. Hold the standard.",
+  "Activated Step — Slow eyes. Fast checks.",
+  "Radiant Mind — Move in cleared frequencies only.",
+  "Saturated Cadence — Become someone the offer recognizes from across the room.",
+  "Aligned Magnetism — Money loves a clean room.",
+  "Decoded Crown — Slow money. Steady throne.",
+  "Tempered Flow — Stop performing scarcity for an audience of one.",
+  "Magnetic Architecture — Be specific. The universe is literal.",
+  "Final Tide — The frequency does the heavy lifting.",
+  "Cosmic Frequency — Quiet posture, loud outcomes.",
+  "Manifest Aesthetic — Hold the room. Then own it.",
+  "Opulent Voltage — Money is a frequency. Stay on the channel.",
+  "Aligned Drift — Move like you sealed it last week.",
+  "Sacred Door — Walk slow. The timeline is fast.",
+  "First Mantle — Don't water doubt.",
+  "Closed Ascent — Run a tight loop.",
+  "Solar Calibration — The body is the wallet.",
+  "Solar Flowstate — Refuse the discount on your day.",
+  "Crystalline Vision — Routine is the runway.",
+  "Quantum Mind — Your taste is the audition. Show up sharp.",
+  "Diamond Hand — You don't manifest from doubt. You manifest from done.",
+  "Opulent Architecture — Practice receiving in private.",
+  "Whole Sculpt — Send the universe a clean invoice.",
+  "Future Routine — Walk the standard into the room.",
+  "Quiet Magnetism — Slow morning is high yield.",
+  "Unlocked Pattern — Stretch comfort, never integrity.",
+  "Coded Embodiment — Train the eye, the wallet follows.",
+  "Inevitable Capture — Audit the room you keep building.",
+  "Surreal Address — Want it loud. Receive it louder.",
+  "Unlocked Posture — You are the source. Stop sourcing.",
+  "Unhurried Hour — Energy is the unlisted asset.",
+  "Inner Geometry — Behave like the wire already cleared.",
+  "Luxury Loop — Stay in the version of you the money respects.",
+  "Tuned Texture — Posture is portfolio.",
+  "Quantum Hand — The timeline you want is one decision away.",
+  "Sacred Pattern — Decline the small life with grace.",
+  "Reality Authority — Don't dilute the brand by being available.",
+  "Crystalline Command — Pour into the future like it tipped you first.",
+  "Infinite Sovereignty — The next version of you is the rent.",
+  "Effortless Permission — Make the future jealous of the present.",
+  "Hypnotic Mind — The frequency does the heavy lifting.",
+  "Plush Recipe — Your taste is the audition. Show up sharp.",
+  "Sourced Channel — Become someone the offer can't outrun.",
+  "Charged Aura — Soft outside. Sovereign inside.",
+  "Infinite Logic — Slow money. Steady throne.",
+  "Closed Glow — Soft hands. Hard line.",
+  "Refined Becoming — Slow money. Steady throne.",
+  "Vivid Voice — Send the universe a clean invoice.",
+  "Loud Spell — Slow scroll. Fast life.",
+  "Vast Pulse — Read less news. Write more receipts.",
+  "Encrypted Protocol — Quiet posture, loud outcomes.",
+  "Engineered Lens — Run on faith with receipts attached.",
+  "Present Container — Be the room the room rises to.",
+  "Higher Loop — Walk the standard into the room.",
+  "Whole Vision — Make the next decade unrecognizable.",
+  "Solar Surface — Wealth answers to whoever speaks in receipts.",
+  "Present Code — Wealth answers to whoever speaks in receipts.",
+  "Charged Magnetism — Live like the deal already redeemed.",
+  "Velvet Currency — Be expensive in the rooms that need it.",
+  "Gilded Bandwidth — The day is a draft. Edit it before noon.",
+  "Future Loop — Luxury starts the second you stop apologizing.",
+  "Iridescent Flow — Your nervous system is the price tag.",
+  "Threshold Pattern — Money is a frequency. Stay on the channel.",
+  "Anointed Hand — Don't lower the standard. Lengthen the timeline.",
+  "Aligned Drift — Trade noise for nuance.",
+  "Hard Voice — Don't survive the timeline — sign it.",
+  "Activated Math — Get tactical with your tenderness.",
+  "Sovereign Command — Money is a frequency. Stay on the channel.",
+  "Vivid Becoming — Pay attention with discipline.",
+  "Refined Mind — The opulence is in the order.",
+  "Surreal Step — Treat the day like couture, not fast fashion.",
+  "Quiet Tide — Make beauty the K.P.I.",
+  "Cosmic Atmosphere — Stay in the version of you the money respects.",
+  "Present Currency — Send the universe a clean invoice.",
+  "Plush Logic — Send the universe an itemized invoice.",
+  "Decoded Address — Make the next decade unrecognizable.",
+  "Wealth Ascent — Edit the inner monologue like a screenplay.",
+  "Anointed Reset — Stop subletting your timeline.",
+  "Velvet Glow — Be too late to scarcity, too early to the bag.",
+  "Hard Embodiment — The aesthetic is the asset.",
+  "Lunar Momentum — Compounding loves consistency, not noise.",
+  "Magnetic Voltage — Walk slow. The timeline is fast.",
+  "Whole Field — Pour into the future like it tipped you first.",
+  "Threshold Hand — Make the next decade unrecognizable.",
+  "Polished Ascent — Be expensive in the rooms that need it.",
+  "Sacred Breath — Print quietly. Bind tight.",
+  "Whole Mirror — Pay attention with discipline.",
+  "Fast Math — Identity is the only asset that compounds.",
+  "Crowned Calibration — The timeline you want is one decision away.",
+  "Hard Channel — Wear your wins early.",
+  "Engineered Logic — Live in the answer, not the ask.",
+  "Quiet Currency — Pay attention with discipline.",
+  "Abundance Sovereignty — You are the source. Stop sourcing.",
+  "Ascended Voltage — Stop watering rooms that don't bloom.",
+  "Outer Tide — Speak in collected funds.",
+  "Unlocked Voltage — Press into the version of you the bag respects.",
+  "Quantum Clarity — Move in cleared frequencies only.",
+  "Astral Loop — Trust the algorithm under the algorithm.",
+  "Vast Bandwidth — Make scarcity a personal style.",
+  "Gilded Flow — Wealth wants witnesses, not noise.",
+  "Threshold Pulse — Posture is portfolio.",
+  "Tuned Step — Send the universe an itemized invoice.",
+  "Abundance Clarity — Treat clarity like cash.",
+  "Luxury Mirror — Make beauty the K.P.I.",
+  "Effortless Recipe — Pour into the future like it tipped you first.",
+  "Sourced Sovereignty — Don't survive the timeline — sign it.",
+  "Surreal Field — Decline the small life with grace.",
+  "Sacred Mantle — Be specific. The universe is literal.",
+  "Present Stream — Hold the standard. Hold the standard. Hold the standard.",
+  "Coded Vision — Be too late to scarcity, too early to the bag.",
+  "Tuned Sync — Treat the day like couture, not fast fashion.",
+  "Unlocked Wattage — Practice receiving in private.",
+  "Hard Frequency — Become a closed system that prints.",
+  "Final Halo — Pay attention with discipline.",
+  "First Aesthetic — Slow morning is high yield.",
+  "Present Architecture — Bet on quiet, win loud.",
+  "Tempered Vision — Receive in full sentences.",
+  "Slow Becoming — Train the energy. Hire the talent.",
+  "Tempered Permission — Treat boredom like a teacher in linen.",
+  "Sealed Address — Behave like the wire already cleared.",
+  "Lunar Mantle — Be uninterruptible.",
+  "Plush Move — Receive in full sentences.",
+  "Surreal Manuscript — Buy time with discipline.",
+  "Encrypted Code — Pour into the future like it tipped you first.",
+  "Present Hand — Speak in collected, not expected.",
+  "Ascended Body — Make scarcity a personal style.",
+  "Manifest Ritual — Make the desire boring. Make the action thrilling.",
+  "Soft Mirror — Slow morning is high yield.",
+  "Inner Becoming — Speak in collected, not expected.",
+  "Threshold Aesthetic — Soft hands. Hard line.",
+  "Hypnotic Posture — Send the universe an itemized invoice.",
+  "Charged Sovereignty — Slow scroll. Fast life.",
+  "Opulent Crown — Choose the energetically expensive option.",
+  "Present Crown — Glow comes from order, not optics.",
+  "Gilded Vision — Run on principle, not panic.",
+  "Threshold Voice — Be expensive in the rooms that need it.",
+  "Present Clarity — Don't dilute the brand by being available.",
+  "Crowned Spell — Pour into the future like it tipped you first.",
+  "Vast Threshold — Stretch comfort, never integrity.",
+  "Anointed Authority — Faith is just data you haven't seen yet.",
+  "Loud Identity — Move like the version of you that already arrived.",
+  "Closed Wattage — Send the universe an itemized invoice.",
+  "Loud Flow — Train the eye, the wallet follows.",
+  "Effortless Breath — Lower the volume on every smaller voice.",
+  "Outer Drift — The receipt is in the routine.",
+  "Higher Hand — Receive without flinching, that's the whole curriculum.",
+  "Mirrored Embodiment — Aesthetic precedes income. Always.",
+  "Velvet Mantle — Walk into Tuesday like it's a launch.",
+  "Saturated Reset — You don't manifest from doubt. You manifest from done.",
+  "Sealed Body — Run on faith with receipts attached.",
+  "Saturated Capture — Treat the day like couture, not fast fashion.",
+  "Crowned Ritual — Decide once. Live twenty times.",
+  "Lucid Currency — The luxury is in the no.",
+  "Quiet Sovereignty — Be in the building before they call your name.",
+  "Gilded Mode — Become illegal to ignore.",
+  "Vast Cadence — Become someone the offer recognizes from across the room.",
+  "Threshold Voice — Outwait every rushed version of you.",
+  "Whole Engine — Trade noise for nuance.",
+  "Solar Mantle — Send the universe a clean invoice.",
+  "Inner Bloom — Don't shrink the offer. Stretch the body that receives it.",
+  "Saturated Becoming — Aesthetic precedes income. Always.",
+  "Aligned Currency — Audit your altars.",
+  "Effortless Currency — Read less news. Write more receipts.",
+  "Engineered Step — Trade noise for nuance.",
+  "Unlocked Address — Treat the day like couture, not fast fashion.",
+  "Future Magnetism — Standards do the convincing for you.",
+  "Present Embodiment — Abundance arrives by RSVP only.",
+  "Iridescent Move — Discipline tastes like cashmere.",
+  "Vivid Ascent — Talk less, transact more.",
+  "Lunar Sculpt — Treat your morning like a vault.",
+  "Sovereign Alignment — Discipline tastes like cashmere.",
+  "Anchored Lens — Slow growth. Loud bloom.",
+  "Quiet Logic — You don't manifest from doubt. You manifest from done.",
+  "Tactile Tide — Don't trade your taste for traffic.",
+  "Ascended Lens — Don't dilute the brand by being available.",
+  "Abundance Clarity — Stop negotiating with smaller timelines.",
+  "Luxury Loop — Discipline tastes like cashmere.",
+  "Activated Spell — Bet on quiet, win loud.",
+  "Activated Breath — Be uninterruptible.",
+  "Elevated Mode — Slow walk. Big wire.",
+  "Slow Machine — Decline the small life politely.",
+  "Sacred Aesthetic — Be expensive in the rooms that need it.",
+  "Decoded Geometry — Decide once. Live twenty times.",
+  "Luxury Geometry — The bag is geometry, not luck.",
+  "Vivid Reset — Treat clarity like cash.",
+  "Final Identity — Hold the room. Then own it.",
+  "Diamond Authority — Stand in the answer.",
+  "Sovereign Flow — Become someone the offer can't outrun.",
+  "Opulent Protocol — Get specific. Reality is a literalist.",
+  "Manifest Mind — Routine is a love letter to the next quarter.",
+  "Reality Channel — Receive without explaining.",
+  "Initiated Mirror — Live like the deal already redeemed.",
+  "Tactile Body — Be too late to scarcity, too early to the bag.",
+  "Tempered Atmosphere — Outwait every rushed version of you.",
+  "Whole Hand — Become harder to schedule.",
+  "Iridescent Voice — Become someone the offer recognizes from across the room.",
+  "Outer Permission — The pace is the prayer.",
+  "Future Field — Practice receiving in private.",
+  "Quantum Surface — Edit the inner monologue like a screenplay.",
+  "First Bandwidth — Your nervous system is the price tag.",
+  "Velvet Engine — Walk into Tuesday like it's a launch.",
+  "Outer Sovereignty — Decide the standard, the standard decides you.",
+  "Open Vision — Be too late to scarcity, too early to the bag.",
+  "Engineered Step — Run on quiet conviction.",
+  "First Code — Stand in the answer.",
+  "Reality Flowstate — Glow comes from order, not optics.",
+  "Fast Threshold — Receive with both hands and no apology.",
+  "Manifest Wattage — Wealth answers to whoever speaks in receipts.",
+  "Solar Loop — Build a body the bag wants to live in.",
+  "Coded Container — Choose the version of today that ages well.",
+  "Quiet Stream — Money loves a clean room.",
+  "Encrypted Command — Press into the version of you the bag respects.",
+  "Coded Glow — Hold the standard. Hold the standard. Hold the standard.",
+  "Initiated Tide — Spend your attention like an heir.",
+  "Present Receiving — Slow growth. Loud bloom.",
+  "Opulent Engine — Stop watering rooms that don't bloom.",
+  "Solar Protocol — Hand the universe the dress code.",
+  "Ascended Posture — Hand the universe the dress code.",
+  "Vast Authority — The universe matches your standard, not your hope.",
+  "Coded Voice — You are not lowballing the universe today.",
+  "Closed Recipe — Move from the cleared timeline.",
+  "Embodied Spell — The universe doesn't haggle with the prepared.",
+  "Refined Receiving — Be a soft room with a hard lock.",
+  "Quiet Recipe — The universe matches your standard, not your hope.",
+  "Sealed Reset — Hold the line. The line holds you.",
+  "Initiated Ritual — Refuse the discount on your day.",
+  "Abundance Atmosphere — Standards are sermons.",
+  "Threshold Calibration — Audit the room you keep building.",
+  "Saturated Halo — Be a soft room with a hard lock.",
+  "Untouchable Move — Get tactical with your tenderness.",
+  "Astral Hour — You are the source. Stop sourcing.",
+  "Tempered Field — Audit your altars.",
+  "Cosmic Identity — Wealth wants witnesses, not noise.",
+  "Polished Sync — Choose the version of today that ages well.",
+  "Elevated Becoming — Don't dim the brand to fit the room — change the room.",
+  "Slow Drift — Decide once. Live twenty times.",
+  "Crystalline Aura — The wait time is just preparation, dressed differently.",
+  "Anointed Signal — Become someone the offer recognizes from across the room.",
+  "Psyched Atmosphere — Slow morning is high yield.",
+  "Outer Lens — Be too late to scarcity, too early to the bag.",
+  "Embodied Logic — Hold the line. The line holds you.",
+  "Lucid Mantle — Speak in collected, not expected.",
+  "Engineered Signal — Hold the standard. Hold the standard. Hold the standard.",
+  "Untouchable Engine — Receive the morning. Receive the offer. Same skill.",
+  "Astral Flow — Glow harder. The market is watching.",
+  "Coded Mirror — The day is a draft. Edit it before noon.",
+  "Slow Architecture — Become uninterrupted.",
+  "Anchored Alignment — Receive the day like room service.",
+  "Loud Door — Print money in your private routine first.",
+  "Engineered Alignment — Be specific. The universe is literal.",
+  "Lucid Magnetism — Stop refreshing the page. Live in the next one.",
+  "Tuned Threshold — Routine is the runway.",
+  "Activated Flowstate — Become a closed loop with leverage.",
+  "Mirrored Aesthetic — Glow comes from order, not optics.",
+  "Untouchable Architecture — Live below your taste, never below your worth.",
+  "Luxury Mode — Aesthetic precedes income. Always.",
+  "Radiant Flowstate — Slow growth. Loud bloom.",
+  "Initiated Hand — Decide who you'd be tipped to be, then be them.",
+  "Initiated Drift — Be expensive in the rooms that need it.",
+  "Crystalline Posture — Receive with both hands and no apology.",
+  "Ascended Stance — Receive with both hands and no apology.",
+  "Quiet Routine — The aesthetic is the asset.",
+  "Future Mirror — Stop chasing what's already chasing you.",
+  "Charged Magnetism — Charge in alignment, never in apology.",
+  "Unhurried Body — Pull rank on the smaller timeline.",
+  "Ascended Calibration — Standards do the convincing for you.",
+  "Future Currency — Hold the room. Then own it.",
+  "Untouchable Threshold — Be in the building before they call your name.",
+  "Threshold Frequency — Run a tight loop.",
+  "Anchored Manuscript — Receive without flinching, that's the whole curriculum.",
+  "Inevitable Protocol — Operate from the timeline that's already on payroll.",
+  "Quantum Atmosphere — Run a tight loop.",
+  "Ascended Move — Abundance arrives by RSVP only.",
+  "Embodied Voice — You are the source. Stop sourcing.",
+  "Abundance Identity — Press play on the timeline that fits.",
+  "Astral Flowstate — Operate from the timeline that's already on payroll.",
+  "Lunar Spell — Glow comes from order, not optics.",
+  "Inevitable Magnetism — Move in cleared frequencies only.",
+  "Threshold Clarity — Charge for the access you already are.",
+  "Initiated Receiving — Receive with both hands and no apology.",
+  "Untouchable Momentum — Train the energy. Hire the talent.",
+  "Astral Protocol — Decline beautifully. Accept rarely.",
+  "Luxury Resonance — The wait time is just preparation, dressed differently.",
+  "Ascended Mirror — Make the next decade unrecognizable.",
+  "Sealed Geometry — Be the wire transfer of presence.",
+  "Cosmic Signal — The room you walked in last is not the room you walk in next.",
+  "Lunar Loop — Operate from the timeline that's already on payroll.",
+  "Loud Geometry — Stop subletting your timeline.",
+  "Vivid Flowstate — Run on faith with receipts attached.",
+  "Hard Architecture — Stop subletting your timeline.",
+  "Hypnotic Becoming — Don't dilute the brand by being available.",
+  "Unhurried Override — The frequency holds the frequency.",
+  "Inevitable Door — Glow comes from order, not optics.",
+  "Sacred Mirror — Decline beautifully. Accept rarely.",
+  "Abundance Receiving — Receive the day like room service.",
+  "Polished Clarity — Every breath is a vote for your next bracket.",
+  "Ascended Signal — Be expensive on purpose.",
+  "Hard Geometry — Want it loud. Receive it louder.",
+  "Cosmic Stance — Run a private economy.",
+  "Higher Tide — Run your day like a private bank.",
+  "Sourced Capture — The aesthetic is sealed; the income leaks in.",
+  "Sacred Field — Walk the standard into the room.",
+  "Unbothered Ritual — Be the room the room rises to.",
+  "Vivid Code — Slow morning is high yield.",
+  "Threshold Stance — Run a private economy.",
+  "Slow Permission — Posture is portfolio.",
+  "Velvet Cadence — Bet on quiet, win loud.",
+  "Lunar Crown — Stay in the version of you the money respects.",
+  "Inevitable Mirror — Discipline tastes like cashmere.",
+  "Refined Drift — The bag is geometry, not luck.",
+  "Plush Command — Treat your morning like a vault.",
+  "Lucid Resonance — Every breath is a vote for your next bracket.",
+  "Velvet Ledger — Pull rank on the smaller timeline.",
+  "Crowned Sovereignty — Be too late to scarcity, too early to the bag.",
+  "Wealth Sync — Quiet flex. Loud life.",
+  "Hypnotic Flowstate — The day is a draft. Edit it before noon.",
+  "Effortless Container — Edit yourself like a print run.",
+  "Soft Mirror — Don't lower the standard. Lengthen the timeline.",
+  "Sovereign Manuscript — Hold the room. Then own it.",
+  "Solar Voice — Hold the standard. Hold the standard. Hold the standard.",
+  "Tempered Pulse — Be uninterruptible.",
+  "Solar Step — Stop subletting your timeline.",
+  "Anointed Breath — Be the wire transfer of presence.",
+  "Unhurried Flowstate — Take up the available luxury.",
+  "Reality Stream — Become a closed loop with leverage.",
+  "Anointed Door — The map is in the morning.",
+  "Radiant Command — The aesthetic is sealed; the income leaks in.",
+  "Inner Voltage — Walk like the future tips well.",
+  "Inner Sculpt — Audit your altars.",
+  "Closed Move — The aesthetic is sealed; the income leaks in.",
+  "Future Stream — Decide once. Live twenty times.",
+  "Unlocked Sync — Be in the building before they call your name.",
+  "Luxury Protocol — Treat your morning like a vault.",
+  "Mirrored Capture — Pull rank on the smaller timeline.",
+  "Effortless Currency — Get tactical with your tenderness.",
+  "Tuned Geometry — Carry yourself like an heirloom.",
+  "Tempered Atmosphere — Don't lower the standard. Lengthen the timeline.",
+  "Vivid Mirror — Speak in evidence, not affirmations.",
+  "Lunar Voice — Every breath is a vote for your next bracket.",
+  "Engineered Receiving — Quiet posture, loud outcomes.",
+  "Radiant Authority — Be expensive in the rooms that need it.",
+  "Effortless Identity — Become a closed system that prints.",
+  "Elevated Tide — Aesthetic precedes income. Always.",
+  "Inner Channel — Decline beautifully. Accept rarely.",
+  "Untouchable Sculpt — Make your standards say it for you.",
+  "Unhurried Identity — Be a soft room with a hard lock.",
+  "Fast Wattage — Choose the energetically expensive option.",
+  "Higher Authority — The next version of you is the rent.",
+  "Outer Machine — Soft hands. Hard line.",
+  "Radiant Signal — Wealth wants witnesses, not noise.",
+  "Infinite Routine — The timeline you want is one decision away.",
+  "Magnetic Move — Pull rank on the smaller timeline.",
+  "Initiated Threshold — Walk the standard into the room.",
+  "Higher Permission — Posture is portfolio.",
+  "Present Glow — Run on principle, not panic.",
+  "Astral Recipe — Become a closed system that prints.",
+  "Sealed Container — Hold the room. Then own it.",
+  "Vivid Bloom — Don't dilute the brand by being available.",
+  "Hypnotic Manuscript — Don't trade your taste for traffic.",
+  "Outer Order — Quiet posture, loud outcomes.",
+  "Tactile Wattage — Become a closed loop with leverage.",
+  "Sovereign Pattern — Be impossible to outrun.",
+  "Manifest Texture — Be the room the room rises to.",
+  "Loud Glow — Move in cleared frequencies only.",
+  "Future Lens — The luxury is in the no.",
+  "Abundance Command — Decide once. Live twenty times.",
+  "Reality Currency — Slow growth. Loud bloom.",
+  "Encrypted Ritual — Audit the room you keep building.",
+  "Elevated Flowstate — Don't dilute the brand by being available.",
+  "Fast Manuscript — Be specific. The universe is literal.",
+  "Hypnotic Receiving — The pace is the prayer.",
+  "Polished Drift — Tax your distractions. Tip your discipline.",
+  "Open Clarity — Move from the cleared timeline.",
+  "Decoded Tide — Stop chasing what's already chasing you.",
+  "Decoded Alignment — Run on faith with receipts attached.",
+  "Sovereign Clarity — Don't water doubt.",
+  "Tempered Protocol — Build the man, the money builds itself.",
+  "Unhurried Recipe — Edit the inner monologue like a screenplay.",
+  "Refined Door — Decline the small life politely.",
+  "Quantum Alignment — Press play on the timeline that fits.",
+  "Opulent Signal — Hold the standard. Hold the standard. Hold the standard.",
+  "Decoded Bandwidth — The pace is the prayer.",
+  "Coded Resonance — Practice receiving in private.",
+  "Hypnotic Permission — The aesthetic is sealed; the income leaks in.",
+  "Soft Routine — Energy is the unlisted asset.",
+  "Sacred Engine — Money loves a clean room.",
+  "Luxury Bloom — Speak in evidence, not affirmations.",
+  "Lucid Override — Speak in collected, not expected.",
+  "Anointed Signal — Hold court with your own future.",
+  "Hypnotic Drift — Be impossible to outrun.",
+  "Soft Capture — Wear the upgrade before the upgrade clears.",
+  "Threshold Recipe — Pour into the future like it tipped you first.",
+  "Surreal Drift — Treat the day like couture, not fast fashion.",
+  "Unlocked Receiving — Pull rank on the smaller timeline.",
+  "Higher Pulse — The map is in the morning.",
+  "Opulent Identity — Glow comes from order, not optics.",
+  "Surreal Mind — Don't dim the brand to fit the room — change the room.",
+  "Embodied Alignment — Standards do the convincing for you.",
+  "Opulent Math — Receive the day like room service.",
+  "Astral Posture — Live below your taste, never below your worth.",
+  "Opulent Posture — Be in the building before they call your name.",
+  "Polished Vision — Be impossible to outrun.",
+  "Soft Momentum — Press into the version of you the bag respects.",
+  "Sourced Surface — Spend your attention like an heir.",
+  "Engineered Surface — Pull rank on the smaller timeline.",
+  "Crystalline Currency — Build a room nobody can interrupt.",
+  "Crowned Sculpt — Run a tight loop.",
+  "Radiant Voltage — Slow morning is high yield.",
+  "Anchored Pattern — Stop chasing what's already chasing you.",
+  "Opulent Address — Slow morning is high yield.",
+  "Iridescent Vision — Hold the standard. Hold the standard. Hold the standard.",
+  "Slow Command — Move like the version of you that already arrived.",
+  "Velvet Surface — Glow comes from order, not optics.",
+  "Plush Sovereignty — Quiet flex. Loud life.",
+  "Final Currency — Discipline tastes like cashmere.",
+  "Lucid Authority — Slow eyes. Fast checks.",
+  "Closed Surface — Be the wire transfer of presence.",
+  "Tempered Currency — Don't water doubt.",
+  "Infinite Body — Identity is the only asset that compounds.",
+  "Refined Frequency — Slow walk. Big wire.",
+  "Fast Stream — Be uninterruptible.",
+  "Plush Machine — Stretch comfort, never integrity.",
+  "Vivid Step — Walk in like you signed for it.",
+  "Engineered Ledger — Build the man, the money builds itself.",
+  "Final Command — Routine is the runway.",
+  "Vivid Authority — Carry yourself like an heirloom.",
+  "Tuned Bloom — Receive without explaining.",
+  "Closed Sync — Walk like the future tips well.",
+  "Closed Voltage — Be the receipt.",
+  "Surreal Breath — Walk in like you signed for it.",
+  "Mirrored Address — Be too late to scarcity, too early to the bag.",
+  "Vivid Pattern — Slow scroll. Fast life.",
+  "Lucid Mode — Become someone the offer can't outrun.",
+  "Present Ledger — Carry yourself like an heirloom.",
+  "Infinite Flowstate — Treat your calendar like couture fittings.",
+  "Crystalline Field — Your standards are the algorithm.",
+  "Reality Protocol — Train the energy. Hire the talent.",
+  "Sovereign Breath — Stop chasing what's already chasing you.",
+  "Abundance Becoming — The body is the wallet.",
+  "Untouchable Channel — Outgrow the room without making a sound.",
+  "Iridescent Bandwidth — Get rich on purpose, not by accident.",
+  "Unlocked Spell — Practice the silence between gains.",
+  "Refined Posture — Build a body the future agrees with.",
+  "Wealth Cadence — Be the room the room rises to.",
+  "Crowned Texture — Your standards are the algorithm.",
+  "Charged Receiving — Make the desire boring. Make the action thrilling.",
+  "Infinite Flow — Glow harder. The market is watching.",
+  "Crowned Drift — Slow walk. Big wire.",
+  "Reality Step — The luxury is in the no.",
+  "Polished Protocol — Don't dim the brand to fit the room — change the room.",
+  "Vivid Threshold — Stop negotiating with smaller timelines.",
+  "Coded Flowstate — The universe matches your standard, not your hope.",
+  "Magnetic Signal — Your nervous system is the price tag.",
+  "Fast Machine — Stop negotiating with smaller timelines.",
+  "Solar Pattern — Choose the energetically expensive option.",
+  "Refined Pulse — Don't lower the standard. Lengthen the timeline.",
+  "Elevated Atmosphere — Stop watering rooms that don't bloom.",
+  "Saturated Atmosphere — Practice receiving in private.",
+  "Inevitable Step — The timeline you want is one decision away.",
+  "Open Sync — Train your taste like cardio.",
+  "Fast Math — Aesthetic precedes income. Always.",
+  "Activated Manuscript — Curate your seven friends.",
+  "Outer Voice — Receive with both hands and no apology.",
+  "Velvet Drift — Slow scroll. Fast life.",
+  "Closed Receiving — The frequency holds the frequency.",
+  "Decoded Mode — Walk into Tuesday like it's a launch.",
+  "Hypnotic Receiving — Be the room the room rises to.",
+  "Saturated Stance — Get rich on purpose, not by accident.",
+  "Anointed Lens — Outgrow the room without making a sound.",
+  "Engineered Stream — Pay attention with discipline.",
+  "Quantum Signal — Decline the small life politely.",
+  "Lunar Breath — Curate the inputs, the outputs curate themselves.",
+  "Sacred Override — Money loves a clean room.",
+  "Manifest Math — Be too late to scarcity, too early to the bag.",
+  "Slow Currency — Money loves a clean room.",
+  "Cosmic Order — Decline beautifully. Accept rarely.",
+  "Present Aesthetic — Bet on quiet, win loud.",
+  "Soft Voice — The wait time is just preparation, dressed differently.",
+  "Unbothered Halo — Talk less, transact more.",
+  "Tuned Threshold — Slow money. Steady throne.",
+  "Abundance Reset — Choose the energetically expensive option.",
+  "Gilded Hand — Hold the standard. Hold the standard. Hold the standard.",
+  "Inner Architecture — Treat clarity like cash.",
+  "Vast Glow — Trade noise for nuance.",
+  "Gilded Sync — Aesthetic precedes income. Always.",
+  "Astral Authority — The frequency holds the frequency.",
+  "Surreal Logic — Speak in collected funds.",
+  "Closed Engine — Stand in the answer.",
+  "Plush Alignment — Curate the inputs, the outputs curate themselves.",
+  "Unhurried Identity — Stop performing scarcity for an audience of one.",
+  "Whole Stream — Live below your taste, never below your worth.",
+  "Mirrored Capture — Walk slow. The timeline is fast.",
+  "Wealth Becoming — Money loves a clean room.",
+  "Crowned Momentum — Practice the version of you that doesn't flinch.",
+  "Open Sync — Speak in collected, not expected.",
+  "Final Flowstate — Receive the morning. Receive the offer. Same skill.",
+  "Radiant Crown — Spend your attention like an heir.",
+  "Coded Clarity — Standards turn into addresses.",
+  "Closed Stance — Slow money. Steady throne.",
+  "Psyched Override — The map is in the morning.",
+  "Quantum Pattern — The universe doesn't haggle with the prepared.",
+  "Elevated Ritual — Receive the morning. Receive the offer. Same skill.",
+  "Inevitable Receiving — Stop watering rooms that don't bloom.",
+  "Higher Lens — Run a tight loop.",
+  "Quiet Mantle — Faith is just data you haven't seen yet.",
+  "Anchored Surface — Become a closed system that prints.",
+  "Anointed Mantle — Spend your attention like an heir.",
+  "Gilded Tide — Abundance arrives by RSVP only.",
+  "Ascended Ledger — Run your day like a private bank.",
+  "Anointed Routine — The next version of you is the rent.",
+  "Embodied Authority — The wait time is just preparation, dressed differently.",
+  "Decoded Step — Run a private economy.",
+  "Inner Mode — The universe doesn't haggle with the prepared.",
+  "Soft Door — Make the next room earn you.",
+  "Velvet Receiving — Walk in unannounced. Stay long.",
+  "Soft Geometry — The day is a draft. Edit it before noon.",
+  "Hard Sync — Standards are sermons.",
+  "Sacred Identity — The body is the wallet.",
+  "Lucid Mirror — Make scarcity a personal style.",
+  "Astral Ledger — Identity is the only asset that compounds.",
+  "Fast Field — Stay in the version of you the money respects.",
+  "Sacred Ritual — Treat your morning like a vault.",
+  "Polished Signal — Be specific. The universe is literal.",
+  "Crowned Wattage — Be impossible to outrun.",
+  "Ascended Alignment — Slow morning is high yield.",
+  "Iridescent Stream — Charge for the access you already are.",
+  "Fast Override — Your nervous system is the price tag.",
+  "Luxury Permission — Outdress the doubt.",
+  "Soft Mode — Standards do the convincing for you.",
+  "Unhurried Frequency — Pay attention with discipline.",
+  "Surreal Flow — Run on principle, not panic.",
+  "Loud Machine — Money is a frequency. Stay on the channel.",
+  "Polished Stance — Be the wire transfer of presence.",
+  "Infinite Reset — Bet on quiet, win loud.",
+  "Present Threshold — Practice the version of you that doesn't flinch.",
+  "Unhurried Override — Buy time with discipline.",
+  "Tempered Texture — Tax the doubt. Tip the future.",
+  "Cosmic Hand — Your taste is the audition. Show up sharp.",
+  "Liquid Halo — Audit your altars.",
+  "Magnetic Cadence — Abundance arrives by RSVP only.",
+  "Infinite Drift — Make scarcity a personal style.",
+  "Outer Field — Press play on the timeline that fits.",
+  "Psyched Protocol — Hold the line. The line holds you.",
+  "Crystalline Manuscript — Get tactical with your tenderness.",
+  "Mirrored Authority — Be the wire transfer of presence.",
+  "Loud Address — Receive the call you've already rehearsed.",
+  "Liquid Machine — Run your day like a private bank.",
+  "Fast Order — Treat clarity like cash.",
+  "Charged Container — Hold the room. Then own it.",
+  "Crowned Permission — Become illegal to ignore.",
+  "Fast Mantle — Faith is just data you haven't seen yet.",
+  "Diamond Hand — Receive without flinching, that's the whole curriculum.",
+  "Liquid Drift — Make the next room earn you.",
+  "Abundance Code — Posture is portfolio.",
+  "Untouchable Stance — Outwait every rushed version of you.",
+  "Final Pulse — Slow growth. Loud bloom.",
+  "Anointed Texture — Decline beautifully. Accept rarely.",
+  "Radiant Posture — Treat your day like a private commission.",
+  "Refined Flow — You don't manifest from doubt. You manifest from done.",
+  "Reality Sovereignty — Decline beautifully. Accept rarely.",
+  "Outer Posture — Print quietly. Bind tight.",
+  "Coded Surface — Slow walk. Big wire.",
+  "Tactile Machine — Print quietly. Bind tight.",
+  "Quiet Bloom — Become a closed system that prints.",
+  "Activated Calibration — Live below your taste, never below your worth.",
+  "Aligned Protocol — Become uninterrupted.",
+  "Crowned Step — Pay yourself in posture first.",
+  "Wealth Loop — Decline beautifully. Accept rarely.",
+  "Magnetic Texture — Tax your distractions. Tip your discipline.",
+  "Crystalline Mode — Live below your taste, never below your worth.",
+  "Saturated Permission — Get rich on purpose, not by accident.",
+  "Untouchable Capture — Stay in the version of you the money respects.",
+  "Unbothered Bandwidth — Stand in the answer.",
+  "Unbothered Recipe — The receipt is in the routine.",
+  "Final Capture — Your taste is the audition. Show up sharp.",
+  "Threshold Wattage — Don't shrink the offer. Stretch the body that receives it.",
+  "Hypnotic Voltage — Wealth answers to whoever speaks in receipts.",
+  "Unhurried Glow — Audit the room you keep building.",
+  "Encrypted Geometry — Speak in collected, not expected.",
+  "Fast Sovereignty — You are not lowballing the universe today.",
+  "Fast Manuscript — Move money before money moves you.",
+  "Infinite Sync — Walk like the future tips well.",
+  "Reality Bandwidth — Pay yourself in posture first.",
+  "Charged Channel — Move like you sealed it last week.",
+  "Unhurried Magnetism — Practice the silence between gains.",
+  "Psyched Door — Tax your distractions. Tip your discipline.",
+  "Lunar Manuscript — Walk slow. The timeline is fast.",
+  "Saturated Surface — Decide the standard, the standard decides you.",
+  "Whole Protocol — Read less news. Write more receipts.",
+  "Embodied Routine — Stay in the version of you the money respects.",
+  "Sourced Cadence — Stop refreshing the page. Live in the next one.",
+  "Tempered Aesthetic — Slow eyes. Fast checks.",
+  "Sovereign Code — Receive in full sentences.",
+  "Crowned Mode — Stop refreshing the page. Live in the next one.",
+  "Aligned Calibration — Tax your distractions. Tip your discipline.",
+  "Closed Posture — Standards do the convincing for you.",
+  "Diamond Ritual — The aesthetic is the asset.",
+  "Activated Drift — Walk in unannounced. Stay long.",
+  "Magnetic Manuscript — The universe doesn't haggle with the prepared.",
+  "Sovereign Becoming — Stop chasing what's already chasing you.",
+  "Hypnotic Manuscript — Become someone the offer can't outrun.",
+  "Luxury Sync — Move like you sealed it last week.",
+  "Fast Pulse — Audit the room you keep building.",
+  "Opulent Geometry — Walk the standard into the room.",
+  "Elevated Clarity — Trust the algorithm under the algorithm.",
+  "Lunar Authority — The timeline you want is one decision away.",
+  "Elevated Voice — Press into the version of you the bag respects.",
+  "Sovereign Ascent — Quiet posture, loud outcomes.",
+  "Lucid Recipe — Quiet money has its own grammar. Learn it.",
+  "Ascended Code — Standards do the convincing for you.",
+  "Slow Magnetism — Run your day like a private bank.",
+  "Magnetic Aura — The aesthetic is the asset.",
+  "Ascended Command — Soft hands. Hard line.",
+  "Sourced Geometry — Receive the day like room service.",
+  "Unbothered Alignment — Become harder to schedule.",
+  "Astral Halo — Pour into the future like it tipped you first.",
+  "Sealed Aura — Wear your wins early.",
+  "Loud Vision — The bag is geometry, not luck.",
+  "Cosmic Stream — Trade noise for nuance.",
+  "Vivid Field — Be the wire transfer of presence.",
+  "Liquid Receiving — Be too late to scarcity, too early to the bag.",
+  "Final Pattern — Tax your distractions. Tip your discipline.",
+  "Effortless Atmosphere — Treat your day like a private commission.",
+  "Sovereign Becoming — Your taste is the audition. Show up sharp.",
+  "Untouchable Voltage — Repeat the truth until reality rearranges.",
+  "Unlocked Door — The room you walked in last is not the room you walk in next.",
+  "Saturated Stream — Save your softness for the right rooms.",
+  "Mirrored Vision — Decline the small life with grace.",
+  "Cosmic Magnetism — Stretch comfort, never integrity.",
+  "Liquid Step — Become uninterrupted.",
+  "Crowned Routine — Make the next decade unrecognizable.",
+  "Coded Flow — Make boring the new wealth.",
+  "Aligned Mode — Wear your wins early.",
+  "Charged Spell — Receive the call you've already rehearsed.",
+  "Surreal Authority — Train your taste like cardio.",
+  "Sovereign Capture — Don't shrink the offer. Stretch the body that receives it.",
+  "Unbothered Pattern — You don't manifest from doubt. You manifest from done.",
+  "Unlocked Sculpt — Send the universe a clean invoice.",
+  "Anointed Aesthetic — Make beauty the K.P.I.",
+  "Anointed Capture — Energy is the unlisted asset.",
+  "Sourced Glow — Become harder to schedule.",
+  "Surreal Receiving — Operate as if the offer's already in the inbox.",
+  "Refined Crown — Curate your seven friends.",
+  "Initiated Hour — The map is in the morning.",
+  "Diamond Ledger — Trade noise for nuance.",
+  "Elevated Sovereignty — Wealth answers to whoever speaks in receipts.",
+  "Fast Frequency — Faith is just data you haven't seen yet.",
+  "Mirrored Posture — Become harder to schedule.",
+  "Future Posture — The luxury is in the no.",
+  "Gilded Loop — Receive in full sentences.",
+  "Effortless Command — Make the future jealous of the present.",
+  "Mirrored Container — Become someone the offer recognizes from across the room.",
+  "Threshold Sovereignty — Be specific. The universe is literal.",
+  "Velvet Step — Stop chasing what's already chasing you.",
+  "Refined Channel — Receive the call you've already rehearsed.",
+  "Sovereign Sculpt — Tax the doubt. Tip the future.",
+  "Infinite Address — Quiet money has its own grammar. Learn it.",
+  "Anchored Momentum — Edit the inner monologue like a screenplay.",
+  "Embodied Ritual — The day is a draft. Edit it before noon.",
+  "Inevitable Crown — Be impossible to outrun.",
+  "Activated Flow — Stand in the answer.",
+  "Iridescent Drift — Become illegal to ignore.",
+  "Initiated Embodiment — Don't trade your taste for traffic.",
+  "Velvet Momentum — Faith is just data you haven't seen yet.",
+  "Hard Stream — Print money in your private routine first.",
+  "Sealed Channel — Don't dilute the brand by being available.",
+];
+
+// Default seed library. 25 per glyph x 8 glyphs = 200.
+// Each glyph is keyed by id (slug). Add more via Upload / Add Glyph in-app.
+
+window.DEFAULT_GLYPHS = [
+  {
+    id: "psyched-luxuries",
+    name: "Psyched Luxuries",
+    meaning: "Manifestation as luxury technology",
+    seeds: (window.PSYCHED_LUXURIES || [])
+  },
+  {
+    id: "money-grin",
+    name: "Money Grin",
+    meaning: "The way they shut you up",
+    seeds: [
+      "They throw money at you when they don't have answers.",
+      "The check came with a clause: never speak about this again.",
+      "Hush money is just a receipt for what they're hiding.",
+      "Silence has a market rate.",
+      "They paid me to forget. I cashed it and remembered louder.",
+      "Every NDA is a confession written by lawyers.",
+      "The smile gets wider when your wallet gets thinner.",
+      "They don't pay you what you're worth. They pay you what you'll shut up for.",
+      "Severance is just the cost of your story.",
+      "A grin with teeth made of receipts.",
+      "They handed me silence wrapped in green.",
+      "The settlement was a muzzle with my signature on it.",
+      "Money talks until it tells you to stop.",
+      "They smile when they sign. Worry when they smile.",
+      "Bribe is a word for poor people. Rich people call it incentive.",
+      "The richer the offer, the louder the truth they're burying.",
+      "Some grins cost six figures.",
+      "Hush is the most expensive sound in the building.",
+      "The money was generous. The contract wasn't.",
+      "They overpay for your silence and underpay for your work.",
+      "A check can close a mouth faster than a fist.",
+      "The grin IS the receipt.",
+      "They funded your silence and called it a bonus.",
+      "You can't spend integrity, but they'll try to buy it anyway.",
+      "Smile wide. They paid for it."
+    ]
+  },
+  {
+    id: "money-goes-up",
+    name: "Money Goes Up",
+    meaning: "Money always goes up",
+    seeds: [
+      "Up is the only direction it knows.",
+      "Print, inflate, repeat. The asset wins.",
+      "Cash is melting. Hold something that grows.",
+      "Patience compounds. Panic doesn't.",
+      "The chart you fear is the one you should've bought.",
+      "Dollars die slow. Assets die never.",
+      "Time IN beats timing it.",
+      "Down is a sale. Up is a receipt.",
+      "They're not making more land. Or bitcoin. Or hours.",
+      "The market doesn't care about your feelings.",
+      "Inflation is the tax you don't vote on.",
+      "Every dip is somebody's exit and somebody's entry.",
+      "Money goes up because they keep making more of it.",
+      "Hold long enough and the chart forgets you ever doubted.",
+      "Cheap now is expensive later.",
+      "Volatility is the price of admission.",
+      "Voting machine short-term. Weighing machine long-term.",
+      "Stay green by staying boring.",
+      "Don't sell the asset to pay for the lifestyle.",
+      "Compound interest is the only magic still legal.",
+      "Get rich slow. Stay rich slower.",
+      "Bear markets make millionaires. Bull markets make liars.",
+      "You don't time the market. You serve it.",
+      "The arrow only points up if you stay in the game.",
+      "Money goes up. Make sure you're attached to it."
+    ]
+  },
+  {
+    id: "around-comes-around",
+    name: "What Goes Around",
+    meaning: "What goes around comes around",
+    seeds: [
+      "The receipts always arrive. Postage is karma.",
+      "The energy you spend is the energy you spend.",
+      "Whatever you fed, you'll meet again hungry.",
+      "Karma is a slow shipping service. It still delivers.",
+      "The favor you skipped is the call you'll need.",
+      "What you do in the dark walks home in the daylight.",
+      "Every door you slammed remembers your name.",
+      "Be careful who you step on. The elevator goes both ways.",
+      "The universe takes notes. Tip well.",
+      "You can't outrun a circle.",
+      "Karma doesn't punish. It returns.",
+      "Plant garbage, harvest garbage.",
+      "The bridge you burned is the one you needed.",
+      "People remember how you made them feel. So does the universe.",
+      "Cycles don't forget. They just wait.",
+      "Hurt people heal or hurt. Either way, you'll meet them again.",
+      "Whatever you put out is the weather you'll walk in.",
+      "Energy is a boomerang. Throw kind.",
+      "Every kindness is a deposit. Every cruelty is a withdrawal.",
+      "You become the room you keep building.",
+      "Karma works on its own schedule and ignores yours.",
+      "The thing you said behind backs is now in front of yours.",
+      "Time is a circle and you're in it.",
+      "Sow loud, reap loud.",
+      "The loop closes. It always closes."
+    ]
+  },
+  {
+    id: "money-glyphguy",
+    name: "Money Glyphguy",
+    meaning: "Money manifestation",
+    seeds: [
+      "Speak it like the bag already landed.",
+      "Build the man. The money builds itself.",
+      "Visualize the wire transfer. Then earn it.",
+      "Manifestation without execution is a daydream.",
+      "Money shows up where it's expected.",
+      "You don't get what you want. You get what you act like.",
+      "Become the version of you the money is looking for.",
+      "Wealth is a frequency. Tune up.",
+      "Write the number. Walk the number.",
+      "The bag is already yours. Go pick it up.",
+      "Behave like the deal closed and watch it close.",
+      "Money moves toward conviction.",
+      "You can't manifest from a couch. Get up.",
+      "Stack the small wins. Money keeps a tab.",
+      "Affirm. Then act. The order matters.",
+      "Speak in checks already cleared.",
+      "Money is paying attention. So should you.",
+      "The wallet follows the worldview.",
+      "You're not waiting on money. Money is waiting on you.",
+      "Build the ritual. The reward follows.",
+      "Make peace with money and money makes peace with you.",
+      "Treat your bank account like a plant. Water it daily.",
+      "Your balance is feedback, not a verdict.",
+      "Stand like a rich man. The math notices.",
+      "Money goes where money is welcomed."
+    ]
+  },
+  {
+    id: "glyphguy-work",
+    name: "Glyphguy at Work",
+    meaning: "Working through it",
+    seeds: [
+      "The only way out is through the shift.",
+      "Show up tired. Show up anyway.",
+      "Discipline is just doing it again.",
+      "Reps don't care about your mood.",
+      "You can't think your way out. Only work your way out.",
+      "The hard thing is the only thing.",
+      "Boring is the price of better.",
+      "Pallet jack philosophy: heavy now, lighter tomorrow.",
+      "Work cures things therapy can't reach.",
+      "Move the load. The load moves you.",
+      "Tired is data, not a stop sign.",
+      "The man who finishes is the man who started twice.",
+      "Calluses are receipts.",
+      "Don't pray for an easy job. Pray for stronger hands.",
+      "You don't rise to goals. You fall to habits.",
+      "The shift is the teacher.",
+      "Sweat is the cheapest therapy.",
+      "Pain is the tax on people who finish.",
+      "Don't quit on a Monday. Or any day.",
+      "Work hard in silence. Let the receipts make the noise.",
+      "Some days the win is just clocking in.",
+      "Effort is the only currency that never inflates.",
+      "Trust the grind. It's the only thing that's never lied.",
+      "The job is small. The man becomes big.",
+      "You're not stuck. You're just early in the shift."
+    ]
+  },
+  {
+    id: "glyphs-with-box",
+    name: "Glyphguy w/ Box",
+    meaning: "A gift",
+    seeds: [
+      "Receive like you've been waiting for it.",
+      "Gifts are practice for receiving the bigger ones.",
+      "Open your hands. The blessing needs room.",
+      "Gratitude is the receipt the universe wants.",
+      "Don't haggle with a gift.",
+      "Some boxes you don't open. You become them.",
+      "The gift is in the carrying.",
+      "A no is a redirect to a better yes.",
+      "The right gift always finds the right hands.",
+      "Don't shrink for what's meant for you.",
+      "Free things aren't cheap. They're tested.",
+      "The universe gives in increments you can hold.",
+      "Receive without flinching.",
+      "Some gifts arrive disguised as work.",
+      "Today's package was packed a long time ago.",
+      "You can't catch what your hands are closed to.",
+      "The box is heavy because it's worth carrying.",
+      "Some gifts come with rooms attached. Build the room.",
+      "Let yourself have it.",
+      "The blessing has your address. Be home.",
+      "Gratitude unlocks the next box.",
+      "You're not lucky. You're delivered to.",
+      "Carry it like you earned it. Because you did.",
+      "A gift refused is a door closed.",
+      "Open. Receive. Repeat."
+    ]
+  },
+  {
+    id: "love-yourself",
+    name: "Love Yourself",
+    meaning: "Love yourself",
+    seeds: [
+      "The arrow only points one place at a time. Aim home.",
+      "You can't pour from a cracked cup. Patch it first.",
+      "Stop dating your own bully.",
+      "Be the parent you needed.",
+      "Love yourself loud enough to hear it.",
+      "The standard you set is the love you receive.",
+      "Talk to yourself like someone you'd defend.",
+      "Self-respect is a daily transaction.",
+      "Don't accept a love smaller than your own.",
+      "You are the one you've been waiting on.",
+      "The love you give yourself is the floor, not the ceiling.",
+      "Heal in the same body that broke.",
+      "You are not too much. You are too rare.",
+      "Stop apologizing for your shape.",
+      "Be soft with yourself. The world's loud enough.",
+      "You can't out-love someone who hates themselves. Start with you.",
+      "Your peace is a non-negotiable.",
+      "Forgive the version of you that didn't know yet.",
+      "Compliment yourself out loud. Watch it stick.",
+      "You're allowed to take up the whole room.",
+      "Loneliness is a teacher. Self-love is the graduation.",
+      "The mirror is a witness, not a judge.",
+      "Treat your name like a prayer, not an apology.",
+      "You don't need permission to be home in your body.",
+      "Love yourself first. Then choose who deserves the overflow."
+    ]
+  },
+  {
+    id: "fucked-cycle",
+    name: "Fucked Cycle",
+    meaning: "Break the fucked cycle",
+    seeds: [
+      "The pattern dies the day you do something different.",
+      "Your trauma is not your blueprint.",
+      "Break the chain. Be the link that snapped.",
+      "You don't have to inherit what they handed you.",
+      "Some cycles end with you. Make sure yours does.",
+      "Repeat is a choice you keep making.",
+      "Be the first to refuse the family curse.",
+      "The pattern is loud because you keep feeding it.",
+      "End the cycle. Even if you have to limp out.",
+      "Your kids don't need your trauma. They need your healing.",
+      "You're not your parents. Unless you don't try.",
+      "Same script with different actors is still the same script.",
+      "Break it now or pass it down.",
+      "The cycle eats people who don't see it.",
+      "Therapy isn't weakness. It's exit strategy.",
+      "Notice the loop. Then leave it.",
+      "The pattern keeps coming back because you keep opening the door.",
+      "You can't outrun what you won't name.",
+      "Break the cycle and the cycle breaks you free.",
+      "Your healing is the gift you give the next generation.",
+      "The first one out has the hardest door to open.",
+      "You're not crazy. You're caught.",
+      "The cycle ends when one person decides it does.",
+      "Refuse the inheritance. Build your own.",
+      "Break it loud. Make it count."
+    ]
+  }
+];
+
+
+// ── helpers ──
+function h(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(props||{})) {
+    if (k==='cls') e.className=v;
+    else if (k==='html') e.innerHTML=v;
+    else if (typeof v==='function') e.addEventListener(k,v);
+    else e.setAttribute(k,v);
+  }
+  for (const k of kids) {
+    if (k==null) continue;
+    e.append(typeof k==='string'?document.createTextNode(k):k);
+  }
+  return e;
+}
+function svgMark(inner,w,ht){
+  const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  s.setAttribute('viewBox','0 0 200 200');
+  s.setAttribute('width',w||64); s.setAttribute('height',ht||64);
+  s.innerHTML=inner||''; return s;
+}
+
+// ── state ──
+const SK='seeds-library-v1';
+function buildDefaults(){
+  return window.DEFAULT_GLYPHS.map(g=>({...g,svg:window.DEFAULT_GLYPH_SVGS[g.id]||''}));
+}
+function load(){
+  const defs=buildDefaults();
+  try{
+    const raw=localStorage.getItem(SK);
+    if(raw){
+      const s=JSON.parse(raw);
+      const have=new Set(s.glyphs.map(g=>g.id));
+      const add=defs.filter(g=>!have.has(g.id));
+      if(add.length) s.glyphs=[...add,...s.glyphs];
+      s.glyphs=s.glyphs.map(g=>({...g,svg:g.svg||window.DEFAULT_GLYPH_SVGS[g.id]||''}));
+      return s;
+    }
+  }catch(e){}
+  return {glyphs:defs,activeId:defs[0].id};
+}
+function save(s){try{localStorage.setItem(SK,JSON.stringify(s));}catch(e){}}
+function slugify(s){return s.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'g-'+Date.now();}
+function pick(arr,avoid){
+  if(!arr.length)return null;
+  if(arr.length===1)return arr[0];
+  let p,t=0; do{p=arr[Math.floor(Math.random()*arr.length)];t++;}while(p===avoid&&t<20); return p;
+}
+
+let ST=load(), seed=null, modal=null, browseId=null;
+function active(){return ST.glyphs.find(g=>g.id===ST.activeId)||ST.glyphs[0];}
+function totalSeeds(){return ST.glyphs.reduce((a,g)=>a+g.seeds.length,0);}
+
+// ── render ──
+function render(){
+  const root=document.getElementById('app');
+  root.innerHTML='';
+  root.appendChild(mainView());
+  if(modal) root.appendChild(modalView());
+}
+
+function mainView(){
+  const g=active();
+  if(!seed&&g.seeds.length) seed=pick(g.seeds,null);
+
+  const wrap=h('div',{cls:'app'});
+  // header
+  const menuBtn=h('button',{cls:'menu-btn','aria-label':'Menu',click:()=>{modal='data';render();}},
+    h('span',{}),h('span',{}),h('span',{}));
+  wrap.appendChild(h('div',{cls:'head'},
+    h('div',{cls:'brand'},h('span',{cls:'mark'},'✶'),h('span',{cls:'title'},'SEEDS'),h('span',{cls:'count'},String(totalSeeds()))),
+    menuBtn));
+
+  // rail
+  const rail=h('div',{cls:'glyph-rail'});
+  ST.glyphs.forEach(glyph=>{
+    const chip=h('button',{cls:'chip'+(glyph.id===ST.activeId?' active':''),
+      click:()=>{ST.activeId=glyph.id;seed=pick(glyph.seeds,null);save(ST);render();}});
+    chip.appendChild(svgMark(glyph.svg,36,36));
+    chip.appendChild(h('span',{cls:'chip-name'},glyph.name));
+    rail.appendChild(chip);
+  });
+  const addChip=h('button',{cls:'chip add',click:()=>{modal='glyph';render();}},
+    h('span',{cls:'plus'},'+'),h('span',{cls:'chip-name'},'Add glyph'));
+  rail.appendChild(addChip);
+  wrap.appendChild(rail);
+
+  // stage
+  const stage=h('div',{cls:'stage'});
+  const disp=h('div',{cls:'glyph-display'});
+  disp.appendChild(svgMark(g.svg,140,140));
+  disp.appendChild(h('div',{cls:'meta'},
+    h('div',{cls:'meta-name'},g.name),
+    h('div',{cls:'meta-meaning'},g.meaning),
+    h('div',{cls:'meta-stat'},g.seeds.length+' seeds')));
+  stage.appendChild(disp);
+
+  const card=h('div',{cls:'card'});
+  if(seed){card.appendChild(h('p',{cls:'seed-text'},seed));}
+  else{const p=h('p',{cls:'seed-empty'});p.innerHTML='No seeds yet. Tap <em>+ Add seeds</em> below.';card.appendChild(p);}
+  stage.appendChild(card);
+
+  // buttons
+  const acts=h('div',{cls:'actions'});
+  const pullBtn=h('button',{cls:'pull',click:doPull});
+  if(!g.seeds.length) pullBtn.disabled=true;
+  pullBtn.innerHTML='<span>PULL</span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 3-6.7" stroke-linecap="round"/><path d="M3 4v5h5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  acts.appendChild(pullBtn);
+  const diceBtn=h('button',{cls:'dice',click:doPullAny});
+  diceBtn.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.3" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.3" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.3" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/></svg>';
+  acts.appendChild(diceBtn);
+  stage.appendChild(acts);
+
+  const sub=h('div',{cls:'actions sub'},h('button',{cls:'ghost',click:()=>{modal='upload';render();}},'+ Add seeds'));
+  stage.appendChild(sub);
+  wrap.appendChild(stage);
+  wrap.appendChild(h('div',{cls:'foot'},h('span',{cls:'mono'},'localStorage · works offline'),h('button',{cls:'link',click:()=>{modal='data';render();}},'data')));
+  return wrap;
+}
+
+function doPull(){
+  const g=active(); if(!g.seeds.length)return;
+  document.querySelector('.card')?.classList.add('pulling');
+  setTimeout(()=>{seed=pick(g.seeds,seed);render();},160);
+}
+function doPullAny(){
+  const pool=[];
+  ST.glyphs.forEach(g=>g.seeds.forEach(s=>pool.push({s,gid:g.id})));
+  if(!pool.length)return;
+  document.querySelector('.card')?.classList.add('pulling');
+  setTimeout(()=>{const p=pool[Math.floor(Math.random()*pool.length)];seed=p.s;ST.activeId=p.gid;render();},160);
+}
+
+// ── modals ──
+function modalShell(title){
+  const backdrop=h('div',{cls:'modal-backdrop'});
+  backdrop.addEventListener('click',e=>{if(e.target===backdrop){modal=null;browseId=null;render();}});
+  const m=h('div',{cls:'modal'});
+  m.appendChild(h('div',{cls:'modal-head'},
+    h('h2',{},title),
+    h('button',{cls:'x',click:()=>{modal=null;browseId=null;render();}},'✕')));
+  backdrop.appendChild(m);
+  return {backdrop,m};
+}
+
+function modalView(){
+  if(modal==='upload') return uploadModal();
+  if(modal==='glyph') return addGlyphModal();
+  if(modal==='data') return dataModal();
+}
+
+function uploadModal(){
+  const {backdrop,m}=modalShell('Add seeds');
+  const sel=h('select',{cls:'ipt'});
+  ST.glyphs.forEach(g=>{const o=h('option',{value:g.id},g.name);if(g.id===ST.activeId)o.selected=true;sel.appendChild(o);});
+  const ta=h('textarea',{cls:'ipt',rows:'8',placeholder:'Stack the small wins.\nBreak the cycle.\nThe bag is already yours.'});
+  const fi=h('input',{type:'file',accept:'.txt,.md,.csv',style:'display:none'});
+  fi.addEventListener('change',()=>{const f=fi.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{ta.value=(ta.value?ta.value+'\n':'')+r.result;};r.readAsText(f);});
+  const fileLbl=h('label',{cls:'lbl'},fi,h('span',{cls:'ghost block'},'↑ Upload .txt file'));
+  const btn=h('button',{cls:'primary',click:()=>{
+    const lines=ta.value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    if(!lines.length){alert('Paste at least one line.');return;}
+    const gid=sel.value;
+    ST.glyphs=ST.glyphs.map(g=>g.id===gid?{...g,seeds:[...g.seeds,...lines]}:g);
+    save(ST);modal=null;render();
+  }},'Add seeds');
+  m.append(h('label',{cls:'lbl'},'Glyph'),sel,h('label',{cls:'lbl'},'Paste — one per line'),ta,fileLbl,btn);
+  return backdrop;
+}
+
+function addGlyphModal(){
+  const {backdrop,m}=modalShell('New glyph');
+  let svgC='';
+  const ni=h('input',{cls:'ipt',placeholder:'e.g. Stay Solid'});
+  const mi=h('input',{cls:'ipt',placeholder:"e.g. Don't fold under pressure"});
+  const svgTa=h('textarea',{cls:'ipt mono-ipt',rows:'5',placeholder:'<circle cx="100" cy="100" r="60" .../>'});
+  const prev=h('div',{cls:'preview'});
+  const psvg=svgMark('',120,120);
+  prev.append(psvg,h('div',{cls:'small'},'preview'));
+  svgTa.addEventListener('input',()=>{
+    svgC=svgTa.value;
+    if(svgC.trim()){psvg.innerHTML=svgC;prev.style.display='flex';}
+    else prev.style.display='none';
+  });
+  const fi=h('input',{type:'file',accept:'.svg,image/svg+xml',style:'display:none'});
+  fi.addEventListener('change',()=>{const f=fi.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{let s=r.result;const mm=s.match(/<svg[^>]*>([\s\S]*?)<\/svg>/i);if(mm)s=mm[1];svgC=s;svgTa.value=s;psvg.innerHTML=s;prev.style.display='flex';};r.readAsText(f);});
+  const fileLbl=h('label',{cls:'lbl'},fi,h('span',{cls:'ghost block'},'↑ Upload .svg file'));
+  const btn=h('button',{cls:'primary',click:()=>{
+    const name=ni.value.trim();if(!name){alert('Name the glyph.');return;}
+    const base=slugify(name);let id=base,n=1;
+    while(ST.glyphs.find(g=>g.id===id))id=base+'-'+(++n);
+    const fs=svgC.trim()||`<text x="100" y="115" text-anchor="middle" font-family="Helvetica,sans-serif" font-weight="900" font-size="72" fill="currentColor">${(name[0]||'?').toUpperCase()}</text>`;
+    ST.glyphs=[...ST.glyphs,{id,name,meaning:mi.value.trim(),svg:fs,seeds:[]}];
+    ST.activeId=id;seed=null;save(ST);modal=null;render();
+  }},'Create glyph');
+  m.append(h('label',{cls:'lbl'},'Name'),ni,h('label',{cls:'lbl'},'Meaning'),mi,h('label',{cls:'lbl'},'Glyph SVG'),svgTa,fileLbl,prev,btn);
+  return backdrop;
+}
+
+function dataModal(){
+  if(browseId){
+    const g=ST.glyphs.find(x=>x.id===browseId);
+    const {backdrop,m}=modalShell(g.name+' · '+g.seeds.length);
+    const back=h('button',{cls:'ghost block',click:()=>{browseId=null;render();}},'← back');
+    const list=h('ul',{cls:'seed-list'});
+    if(!g.seeds.length){list.appendChild(h('li',{cls:'empty'},'No seeds yet.'));}
+    else g.seeds.forEach(s=>{
+      const li=h('li',{},h('span',{},s));
+      const db=h('button',{cls:'x sm',click:()=>{
+        if(!confirm('Delete this seed?'))return;
+        ST.glyphs=ST.glyphs.map(gg=>gg.id===g.id?{...gg,seeds:gg.seeds.filter(x=>x!==s)}:gg);
+        save(ST);browseId=g.id;render();
+      }},'✕');
+      li.appendChild(db);list.appendChild(li);
+    });
+    m.append(back,list);
+    return backdrop;
+  }
+
+  const {backdrop,m}=modalShell('Library');
+  const ul=h('ul',{cls:'glyph-list'});
+  ST.glyphs.forEach(g=>{
+    const li=h('li');
+    const row=h('button',{cls:'glyph-row',click:()=>{browseId=g.id;render();}});
+    row.appendChild(svgMark(g.svg,32,32));
+    row.appendChild(h('span',{cls:'grow'},h('span',{cls:'row-name'},g.name),h('span',{cls:'row-sub'},g.seeds.length+' seeds')));
+    row.appendChild(h('span',{cls:'arrow'},'›'));
+    const db=h('button',{cls:'x sm',click:()=>{
+      if(ST.glyphs.length<=1){alert('Keep at least one glyph.');return;}
+      if(!confirm('Delete this glyph and all its seeds?'))return;
+      ST.glyphs=ST.glyphs.filter(x=>x.id!==g.id);
+      ST.activeId=ST.glyphs[0].id;seed=null;save(ST);render();
+    }},'🗑');
+    li.append(row,db);ul.appendChild(li);
+  });
+
+  const fi=h('input',{type:'file',accept:'.json,application/json',style:'display:none'});
+  fi.addEventListener('change',()=>{
+    const f=fi.files[0];if(!f)return;
+    const r=new FileReader();r.onload=()=>{
+      try{const d=JSON.parse(r.result);if(!d.glyphs||!Array.isArray(d.glyphs))throw 0;
+        ST={glyphs:d.glyphs,activeId:d.activeId||d.glyphs[0].id};seed=null;save(ST);modal=null;render();alert('Imported '+d.glyphs.length+' glyphs.');}
+      catch(e){alert('Could not read file.');}
+    };r.readAsText(f);
+  });
+
+  const da=h('div',{cls:'data-actions'});
+  da.appendChild(h('button',{cls:'ghost',click:()=>{
+    const blob=new Blob([JSON.stringify(ST,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');
+    a.href=url;a.download='seeds-library.json';a.click();URL.revokeObjectURL(url);
+  }},'↓ Export JSON'));
+  da.appendChild(h('button',{cls:'ghost',click:()=>fi.click()},'↑ Import JSON'));
+  da.appendChild(fi);
+  da.appendChild(h('button',{cls:'ghost danger',click:()=>{
+    if(!confirm('Reset to defaults? All custom seeds erased.'))return;
+    localStorage.removeItem(SK);ST=load();seed=null;modal=null;render();
+  }},'Reset to defaults'));
+  m.append(ul,da,h('p',{cls:'hint'},'Library lives on this device. Export to back up or share.'));
+  return backdrop;
+}
+
+render();
+
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>

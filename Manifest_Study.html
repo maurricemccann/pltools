@@ -1,0 +1,1066 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0908"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Manifest"/>
+<title>Psyched Luxuries · Manifest</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,300..600;9..144,1,300..600&family=Inter:wght@300;400;500&display=swap');
+:root{
+  --bg:#0a0908;--bg-2:#13110d;--bg-3:#1c1814;
+  --line:#2d2820;--line-2:#3d3528;
+  --fg:#f4ecd8;--mute:#8a8170;
+  --gold:#d4b87a;--gold-dim:#7a6040;
+  --purple:#9b72cf;--purple-dim:#4a3060;
+  --red:#c9564a;--green:#7a9558;
+  --display:'Fraunces',Georgia,serif;
+  --mono:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--display);overscroll-behavior:none}
+body{min-height:100svh}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+input,select,textarea{font:inherit;color:inherit;background:none;border:none;outline:none;width:100%}
+textarea{resize:none}
+a{color:inherit;text-decoration:none}
+
+/* ── LAYOUT ── */
+.app{display:flex;flex-direction:column;min-height:100svh;max-width:720px;margin:0 auto;
+  padding-top:0;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+
+/* ── HEADER ── */
+.head{padding:18px 22px 10px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:baseline;gap:8px}
+.mark{font-size:17px;color:var(--gold);font-style:italic}
+.h-title{font-style:italic;font-weight:500;font-size:22px;letter-spacing:.01em}
+.h-sub{font-family:var(--mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);margin-left:4px}
+.head-actions{display:flex;gap:10px;align-items:center}
+.icon-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:99px;font-family:var(--mono);font-size:13px;color:var(--mute);transition:.14s}
+.icon-btn:active{background:var(--bg-2);color:var(--fg)}
+.icon-btn.gold{border-color:var(--gold-dim);color:var(--gold)}
+
+/* ── BOTTOM TABS ── */
+.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:720px;
+  background:var(--bg-2);border-top:1px solid var(--line);display:flex;
+  padding-bottom:env(safe-area-inset-bottom);z-index:20}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0 8px;
+  font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);transition:.14s}
+.tab.active{color:var(--gold)}
+.tab-ico{font-size:17px;line-height:1}
+
+/* ── SCROLL BODY ── */
+.body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+
+/* ── FILTER RAIL ── */
+.rail{display:flex;gap:7px;padding:4px 22px 14px;overflow-x:auto;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  padding:7px 14px;border:1px solid var(--line);border-radius:99px;color:var(--mute);transition:.14s;white-space:nowrap}
+.chip.active{color:var(--fg);border-color:var(--fg);background:var(--bg-2)}
+.chip.classical.active{color:var(--gold);border-color:var(--gold)}
+.chip.modern.active{color:#e8a87c;border-color:#e8a87c}
+.chip.science.active{color:var(--purple);border-color:var(--purple)}
+
+/* ── SEARCH ── */
+.search-wrap{padding:0 22px 14px}
+.s-inner{display:flex;align-items:center;gap:10px;background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+.s-inner input{font-family:var(--mono);font-size:12px;letter-spacing:.04em}
+.s-inner input::placeholder{color:var(--mute)}
+.s-ico{color:var(--mute);font-size:13px;flex-shrink:0}
+
+/* ── TEACHER CARDS ── */
+.grid{display:flex;flex-direction:column;gap:8px;padding:0 22px 16px}
+.t-card{background:var(--bg-2);border:1px solid var(--line);border-radius:16px;padding:16px;cursor:pointer;transition:.14s}
+.t-card:active{background:var(--bg-3)}
+.t-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
+.t-name{font-style:italic;font-weight:500;font-size:17px;line-height:1.1}
+.t-era{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+  padding:3px 8px;border-radius:99px;border:1px solid;flex-shrink:0;margin-top:2px}
+.t-era.classical{color:var(--gold);border-color:var(--gold-dim)}
+.t-era.modern{color:#e8a87c;border-color:#8a5028}
+.t-era.science{color:var(--purple);border-color:var(--purple-dim)}
+.t-tagline{font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.02em;line-height:1.5}
+.t-quote{font-style:italic;font-size:13px;color:var(--gold);line-height:1.55;margin-top:8px;
+  padding-top:8px;border-top:1px solid var(--line)}
+
+/* ── DETAIL VIEW ── */
+.detail{position:fixed;inset:0;background:var(--bg);z-index:30;overflow-y:auto;display:flex;flex-direction:column}
+.d-head{display:flex;align-items:center;justify-content:space-between;padding:14px 22px 12px;
+  position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);z-index:2}
+.back-btn{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.back-arr{font-size:17px;color:var(--gold)}
+.d-body{padding:24px 22px 60px;display:flex;flex-direction:column;gap:24px}
+.d-title{font-style:italic;font-weight:500;font-size:clamp(26px,7vw,36px);letter-spacing:-.01em;line-height:1.05}
+.d-dates{font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.08em}
+.d-section{display:flex;flex-direction:column;gap:8px}
+.d-label{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:500}
+.d-label.purple{color:var(--purple)}
+.d-text{font-size:14px;line-height:1.7;color:var(--fg)}
+.d-divider{height:1px;background:var(--line)}
+.quote-block{background:var(--bg-2);border-left:3px solid var(--gold);border-radius:0 12px 12px 0;padding:14px 16px;font-style:italic;font-size:14px;line-height:1.65;color:var(--gold)}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px}
+.pill{font-family:var(--mono);font-size:10px;letter-spacing:.08em;padding:5px 12px;border:1px solid var(--line);border-radius:99px;color:var(--mute)}
+.convergence-item{background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.03em;line-height:1.6}
+.convergence-item strong{color:var(--fg);font-weight:500}
+
+/* ── MANIFEST TAB ── */
+.manifest-body{padding:0 22px 16px;display:flex;flex-direction:column;gap:10px}
+.add-form{background:var(--bg-2);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.add-row{display:flex;gap:8px}
+.add-input{background:var(--bg-3);border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-size:14px;flex:1}
+.add-input::placeholder{color:var(--mute);font-style:italic}
+.add-cat{background:var(--bg-3);border:1px solid var(--line);border-radius:11px;padding:12px 10px;font-family:var(--mono);font-size:11px;color:var(--mute);appearance:none;flex:0 0 auto;width:110px}
+.add-cat option{background:var(--bg-2)}
+.submit-btn{background:var(--gold);color:#1a1208;border-radius:11px;padding:13px;font-weight:500;font-size:14px;font-family:var(--display);font-style:italic;letter-spacing:.02em;text-align:center;transition:.1s}
+.submit-btn:active{opacity:.85}
+.m-card{background:var(--bg-2);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;gap:12px;align-items:flex-start}
+.m-check{width:22px;height:22px;border-radius:99px;border:2px solid var(--line);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:.14s;margin-top:2px}
+.m-check.planting{border-color:var(--mute);color:var(--mute)}
+.m-check.growing{border-color:var(--gold);background:rgba(212,184,122,.12);color:var(--gold)}
+.m-check.received{border-color:var(--green);background:rgba(122,149,88,.18);color:var(--green)}
+.m-content{flex:1;min-width:0}
+.m-text{font-size:15px;line-height:1.4;font-style:italic}
+.m-text.received{text-decoration:line-through;opacity:.5}
+.m-meta{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.m-status{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+.m-status.planting{color:var(--mute)}
+.m-status.growing{color:var(--gold)}
+.m-status.received{color:var(--green)}
+.m-date{font-family:var(--mono);font-size:10px;color:var(--mute)}
+.m-del{font-family:var(--mono);font-size:10px;color:var(--mute);padding:4px 0;margin-left:auto}
+.m-del:active{color:var(--red)}
+.status-cycle{display:flex;gap:6px;margin-top:8px}
+.s-btn{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border:1px solid var(--line);border-radius:99px;color:var(--mute);transition:.12s}
+.s-btn.active.planting{color:var(--mute);border-color:var(--mute)}
+.s-btn.active.growing{color:var(--gold);border-color:var(--gold)}
+.s-btn.active.received{color:var(--green);border-color:var(--green)}
+.section-title{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);padding:14px 22px 6px}
+
+/* ── EVIDENCE TAB ── */
+.ev-card{background:var(--bg-2);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.ev-title{font-style:italic;font-weight:500;font-size:16px}
+.ev-body{font-family:var(--mono);font-size:12px;color:var(--mute);line-height:1.6}
+.ev-footer{display:flex;align-items:center;justify-content:space-between}
+.ev-date{font-family:var(--mono);font-size:10px;color:var(--mute)}
+.ev-del{font-family:var(--mono);font-size:10px;color:var(--mute)}
+.ev-del:active{color:var(--red)}
+.ev-mark{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--green);padding:3px 9px;border:1px solid rgba(122,149,88,.4);border-radius:99px}
+
+/* ── DOCTRINE TAB ── */
+.doctrine-body{padding:0 22px 32px;display:flex;flex-direction:column;gap:20px}
+.law-card{background:var(--bg-2);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:8px}
+.law-num{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.law-text{font-style:italic;font-weight:500;font-size:20px;line-height:1.15;letter-spacing:-.01em}
+.law-exp{font-family:var(--mono);font-size:11px;color:var(--mute);line-height:1.65;margin-top:4px}
+.mechanism-card{background:var(--bg-2);border-left:3px solid var(--gold);border-radius:0 16px 16px 0;padding:16px 18px}
+.mech-num{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:4px}
+.mech-title{font-style:italic;font-weight:500;font-size:16px;margin-bottom:6px}
+.mech-text{font-family:var(--mono);font-size:11px;color:var(--mute);line-height:1.65}
+.declaration-card{background:var(--bg-2);border:1px solid var(--gold-dim);border-radius:16px;padding:22px;text-align:center}
+.declaration-main{font-style:italic;font-weight:500;font-size:28px;color:var(--gold);letter-spacing:-.01em}
+.declaration-sub{font-family:var(--mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);margin-top:8px}
+
+/* ── QUOTE MODAL ── */
+.modal-back{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:50;display:flex;align-items:center;justify-content:center;padding:24px}
+.q-modal{background:var(--bg-2);border:1px solid var(--line);border-radius:24px;padding:32px 28px;max-width:480px;width:100%;display:flex;flex-direction:column;gap:18px}
+.q-text{font-style:italic;font-size:18px;line-height:1.6;color:var(--gold);text-align:center}
+.q-attr{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);text-align:center}
+.q-actions{display:flex;gap:10px}
+.q-btn{flex:1;border:1px solid var(--line);border-radius:12px;padding:13px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);text-align:center;transition:.12s}
+.q-btn.gold{background:var(--gold);color:#1a1208;border-color:var(--gold);font-style:italic;font-family:var(--display);font-size:14px;text-transform:none;letter-spacing:0}
+.q-btn:active{opacity:.8}
+
+/* ── TIMER MODAL ── */
+.timer-modal{background:var(--bg-2);border:1px solid var(--line);border-radius:24px;padding:32px 28px;max-width:360px;width:100%;display:flex;flex-direction:column;gap:20px;align-items:center}
+.timer-display{font-family:var(--mono);font-size:52px;font-weight:300;letter-spacing:.08em;color:var(--gold);text-align:center}
+.timer-label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+.timer-presets{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.t-preset{font-family:var(--mono);font-size:10px;letter-spacing:.1em;padding:7px 14px;border:1px solid var(--line);border-radius:99px;color:var(--mute);transition:.12s}
+.t-preset.active{color:var(--gold);border-color:var(--gold)}
+.timer-btn{background:var(--gold);color:#1a1208;border-radius:14px;padding:16px 40px;font-family:var(--display);font-style:italic;font-size:16px;font-weight:500}
+.timer-btn.running{background:var(--bg-3);color:var(--fg);border:1px solid var(--line)}
+
+/* ── IMPORT MODAL ── */
+.import-modal{background:var(--bg-2);border:1px solid var(--line);border-radius:24px;padding:28px;max-width:480px;width:100%;display:flex;flex-direction:column;gap:16px}
+.import-ta{background:var(--bg-3);border:1px solid var(--line);border-radius:12px;padding:14px;font-family:var(--mono);font-size:11px;line-height:1.6;min-height:140px;color:var(--fg)}
+.import-ta::placeholder{color:var(--mute)}
+
+/* ── CONVERGENCE ── */
+.conv-grid{display:flex;flex-direction:column;gap:8px;padding:0 22px 16px}
+.conv-card{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.conv-principle{font-style:italic;font-size:15px;font-weight:500;margin-bottom:8px}
+.conv-teachers{display:flex;flex-wrap:wrap;gap:6px}
+.conv-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;padding:3px 9px;border-radius:99px;border:1px solid}
+.conv-tag.classical{color:var(--gold);border-color:var(--gold-dim)}
+.conv-tag.modern{color:#e8a87c;border-color:#8a5028}
+.conv-tag.science{color:var(--purple);border-color:var(--purple-dim)}
+.conv-count{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--mute);margin-top:6px;text-transform:uppercase}
+
+/* ── STUDY SUB TABS ── */
+.study-nav{display:flex;gap:0;padding:0 22px 14px;overflow-x:auto;scrollbar-width:none}
+.study-nav::-webkit-scrollbar{display:none}
+.s-nav-btn{flex:0 0 auto;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:8px 16px;border:1px solid var(--line);color:var(--mute);transition:.14s;background:transparent}
+.s-nav-btn:first-child{border-radius:10px 0 0 10px}
+.s-nav-btn:last-child{border-radius:0 10px 10px 0}
+.s-nav-btn:not(:first-child){border-left:none}
+.s-nav-btn.active{background:var(--bg-2);color:var(--fg);border-color:var(--fg)}
+
+/* ── EMPTY ── */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 22px;gap:14px;text-align:center}
+.empty-ico{font-size:38px;opacity:.18}
+.empty-txt{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);line-height:1.7}
+
+</style>
+<style>
+/* ── PL TOP NAV ── */
+.__pl-top-nav{
+  position:fixed;top:0;left:0;right:0;z-index:99999;
+  display:flex;flex-direction:column;
+}
+.__pl-top-nav .__pl-notch{
+  height:env(safe-area-inset-top);
+  background:#0a0908;
+  border-bottom:none;
+}
+.__pl-top-nav .__pl-back-bar{
+  height:44px;
+  background:rgba(10,9,8,.96);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(201,168,76,.2);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  gap:8px;
+  color:#f4ecd8;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-style:italic;font-size:14px;letter-spacing:.04em;
+  text-decoration:none;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+.__pl-top-nav .__pl-back-bar:active{background:rgba(20,18,14,.98)}
+.__pl-top-nav .__pl-back-bar .__pl-arrow{
+  font-family:system-ui;font-style:normal;
+  color:#c9a84c;font-size:15px;line-height:1;
+}
+.__pl-top-nav .__pl-back-bar .__pl-dot{
+  width:5px;height:5px;border-radius:99px;
+  background:#c9a84c;margin-left:1px;
+  display:inline-block;vertical-align:middle;
+}
+/* Push app content below both bars */
+.__pl-top-spacer{
+  height:calc(env(safe-area-inset-top) + 44px);
+  flex-shrink:0;
+}
+</style>
+</head>
+<body>
+<div class="__pl-top-nav">
+  <div class="__pl-notch"></div>
+  <div class="__pl-back-bar" onclick="plGoBack()">
+    <span class="__pl-arrow">←</span>
+    <span>Psyched</span>
+    <span class="__pl-dot"></span>
+  </div>
+</div>
+<script>
+function plGoBack(){
+  // If inside a teacher detail, go back one level to the tool
+  if(typeof TEACHER_ID !== 'undefined' && TEACHER_ID !== null){
+    closeTeacher();
+  } else {
+    window.location.href = './index.html';
+  }
+}
+</script>
+
+<style>
+
+</style>
+
+
+
+
+
+<div class="__pl-top-spacer"></div><div class="app" id="app"></div>
+
+<script>
+// ════════════════════════════════════════════════════
+// DATABASE
+// ════════════════════════════════════════════════════
+const DEFAULT_TEACHERS = [
+  // ── CLASSICAL ──
+  {id:'ng',name:'Neville Goddard',era:'classical',dates:'1905–1972',
+   tagline:'Imagination is God. The Assumption hardens into fact.',
+   core:'The fundamental premise: consciousness is the only reality. Imagination creates physical experience through a simple but demanding act — you must FEEL yourself into the state of the wish fulfilled. Not hope. Not want. The felt sense of already having. He called this SATS: Sleep and Act of the Senses — the hypnagogic state before sleep where the subconscious accepts suggestion without argument. His revision technique rewrites the past in imagination to alter the present. His core law: "You are already that which you seek."',
+   mechanism:'Assumption → Feeling → Sleep (SATS) → Revision → Physical Manifestation',
+   works:['Feeling is the Secret','The Power of Awareness','Awakened Imagination','At Your Command'],
+   quotes:['"Your imagination is your preview of life\'s coming attractions."','"Assume the feeling of the wish fulfilled."','"You are already that which you seek."','"Change your conception of yourself and you will automatically change the world in which you live."'],
+   convergence:['feeling','subconscious','assumption']},
+
+  {id:'fss',name:'Florence Scovel Shinn',era:'classical',dates:'1871–1940',
+   tagline:'Your word is your wand. The Divine Design precedes all action.',
+   core:'The first major female voice in the New Thought movement. Her teaching centers on the spoken word as a creative force — not affirmation as repetition, but declaration as authority. The "Divine Design" principle: every person has a perfect pattern for their life and the work is to align with it, not manufacture it. Her concept of the "Perfect Outcome" — speaking the specific good into the specific situation without forcing the how. Intuition as the inner compass that precedes logic.',
+   mechanism:'Spoken Declaration → Divine Design Alignment → Intuitive Guidance → Perfect Outcome',
+   works:['The Game of Life and How to Play It','The Word is Your Wand','The Secret Door to Success','Your Word is Your Wand'],
+   quotes:['"The Game of Life is the Game of Boomerangs — our thoughts, deeds and words return to us sooner or later with astounding accuracy."','"Infinite Intelligence always creates the perfect outcome."','"Make an irresistible demand on the Universe."'],
+   convergence:['spoken-word','divine-design','intuition']},
+
+  {id:'jm',name:'Joseph Murphy',era:'classical',dates:'1898–1981',
+   tagline:'The subconscious mind accepts as true whatever you impress upon it.',
+   core:'Murphy\'s contribution is the most clinically precise of the classical teachers. He treated the subconscious as a literal mechanism — not metaphor, not spirit, but a functional system that processes instruction without judgment. His method: impress your desire on the subconscious immediately before sleep (when the conscious mind releases its skeptical grip) through visualization, affirmation, and emotional conviction. He was clear: the subconscious cannot distinguish between real and imagined experience. This is not poetry — it is the mechanism of neuroplasticity.',
+   mechanism:'Conscious Desire → Subconscious Impression (sleep state) → Habitual Pattern → Outer Reality',
+   works:['The Power of Your Subconscious Mind','The Miracle of Mind Dynamics','Telepsychics','Amazing Laws of Cosmic Mind Power'],
+   quotes:['"The law of your mind is this: you will get a reaction or response from your subconscious mind according to the nature of the thought or idea you hold in your conscious mind."','"Never finish a negative statement; reverse it immediately."','"Your subconscious is always listening."'],
+   convergence:['subconscious','sleep-state','feeling','repetition']},
+
+  {id:'nh',name:'Napoleon Hill',era:'classical',dates:'1883–1970',
+   tagline:'Whatever the mind can conceive and believe, it can achieve.',
+   core:'Hill spent 25 years interviewing 500+ successful people commissioned by Andrew Carnegie. His synthesis: success is a technology, not a talent. The mastermind principle — two or more minds coordinating in perfect harmony create a third, invisible mental force greater than either. His chapter on the subconscious and infinite intelligence frames desire as a signal that broadcasts to a responsive universe. The key addition: burning desire must be combined with faith and auto-suggestion (programming the subconscious). His 6-step method for goal achievement is still the most operationally clear blueprint ever written.',
+   mechanism:'Burning Desire → Faith → Auto-Suggestion → Specialized Knowledge → Mastermind → Plan → Action',
+   works:['Think and Grow Rich','The Law of Success','Outwitting the Devil','Grow Rich with Peace of Mind'],
+   quotes:['"Whatever the mind can conceive and believe, it can achieve."','"A burning desire to be and to do is the starting point from which the dreamer must take off."','"Every adversity, every failure, every heartache carries with it the seed of an equal or greater benefit."'],
+   convergence:['desire','faith','subconscious','repetition','action']},
+
+  {id:'ja',name:'James Allen',era:'classical',dates:'1864–1912',
+   tagline:'As a man thinketh in his heart, so is he.',
+   core:'The most concentrated distillation of the entire tradition in 45 pages. Allen\'s thesis is pure cause-and-effect: thought is the cause, circumstance is the effect — always, without exception. Not some thoughts. Not big thoughts. The habitual inner conversation is the blueprint the external world builds from. His insight on suffering: circumstances do not cause suffering — the thoughts we attach to circumstances cause suffering. His contribution is less about techniques and more about the relentless discipline of mental hygiene. You do not get what you want — you get what you consistently think.',
+   mechanism:'Habitual Thought → Character → Circumstance',
+   works:['As a Man Thinketh','The Mastery of Destiny','Eight Pillars of Prosperity','Morning and Evening Thoughts'],
+   quotes:['"A man is literally what he thinks, his character being the complete sum of all his thoughts."','"Circumstances do not make the man; they reveal him."','"The soul attracts that which it secretly harbors; that which it loves, and also that which it fears."'],
+   convergence:['thought-habit','character','circumstance']},
+
+  {id:'ww',name:'Wallace Wattles',era:'classical',dates:'1860–1911',
+   tagline:'There is a thinking stuff from which all things are made. Thinking in a certain way.',
+   core:'Written in 1910, The Science of Getting Rich predates The Secret by a century and is significantly more precise. Wattles\' framework: there is a formless, thinking substance that creates all forms. When you think of what you want WITH faith and gratitude, you impress your thought on this substance, which moves through the ordinary channels of industry and commerce to bring your desire into physical form. His "certain way of thinking" combines gratitude, visualization, and — crucially — immediate action on the highest opportunity available to you right now.',
+   mechanism:'Formless Substance → Gratitude + Vision → Thought Impression → Action → Form',
+   works:['The Science of Getting Rich','The Science of Being Great','The Science of Being Well'],
+   quotes:['"The whole universe is for you — do not think of it as against you."','"There is a thinking stuff from which all things are made."','"You must form a clear and definite mental image of what you want."'],
+   convergence:['thought-impression','gratitude','action','faith']},
+
+  {id:'ch',name:'Charles Haanel',era:'classical',dates:'1866–1941',
+   tagline:'The Master Key System: the power of mind over circumstances.',
+   core:'Haanel\'s 24-part correspondence course (written 1912) became the first systematic curriculum for mental science. His contribution: the distinction between conscious mind (analytical, directive) and subconscious mind (creative, unlimited). The conscious mind selects the thought; the subconscious executes it through Universal Mind. His sitting practice — 15 minutes daily of complete stillness, concentrating on a single idea — predates modern meditation research by 80 years. He argued that the Universal Mind is omnipresent, not somewhere else — it operates through you, not for you.',
+   mechanism:'Conscious Direction → Subconscious Execution → Universal Mind Response → Physical Result',
+   works:['The Master Key System','Mental Chemistry','The New Psychology'],
+   quotes:['"The world without is a reflection of the world within."','"You can make all conditions and all circumstances respond to your will."'],
+   convergence:['conscious-direction','subconscious','universal-mind']},
+
+  {id:'et2',name:'Emmet Fox',era:'classical',dates:'1886–1951',
+   tagline:'The Mental Equivalent: the inner is cause, the outer is effect.',
+   core:'Fox was the highest expression of the New Thought movement in practice — his Sunday lectures at Carnegie Hall drew 5,000+ people during the Depression. His central teaching: for every condition in your life, there is a corresponding mental equivalent in your mind. Change the mental equivalent, the condition must change — law, not luck. His "Seven Day Mental Diet" is the most demanding practice in the tradition: for seven consecutive days, refuse to dwell on any thought that is not constructive. If you fall, restart at day one.',
+   mechanism:'Mental Equivalent → Physical Manifestation (the outer mirrors the inner without exception)',
+   works:['The Mental Equivalent','Alter Your Life','Power Through Constructive Thinking','The Sermon on the Mount'],
+   quotes:['"You are not the victim of fate, but the master of your own destiny."','"Change your mind and keep it changed."','"A mental diet of positive thoughts for just one week will change your life."'],
+   convergence:['mental-equivalent','thought-habit','discipline']},
+
+  // ── MODERN ──
+  {id:'ah',name:'Abraham Hicks',era:'modern',dates:'1986–present (Esther Hicks)',
+   tagline:'You are a vibrational being. Get into the Vortex first.',
+   core:'The emotional guidance scale is the most operationally useful tool in modern manifestation teaching. Abraham\'s framework: you have an inner being that is always vibrating at full alignment with what you want. Your emotions are a GPS — positive emotion means you\'re moving toward alignment, negative emotion means you\'re moving away. The Vortex: a vibrational holding pattern where everything you\'ve ever wanted exists, waiting for you to match its frequency. You cannot think your way into the Vortex — you must feel your way in. The 17-second rule: hold a pure positive thought for 17 seconds and it ignites. 68 seconds creates a momentum that produces manifestation.',
+   mechanism:'Desire → Vibrational Escrow (Vortex) → Emotional Alignment → Physical Manifestation',
+   works:['Ask and It Is Given','The Law of Attraction','The Vortex','Money and the Law of Attraction'],
+   quotes:['"The standard of success in life isn\'t the things. It isn\'t the money or the stuff. It is absolutely the amount of joy you feel."','"Your work is to go forth into this physical environment looking for things that are a vibrational match to joy."','"It is not your work to make anything happen — it is your work to dream it and let it happen."'],
+   convergence:['feeling','vibration','alignment','desire']},
+
+  {id:'wd',name:'Wayne Dyer',era:'modern',dates:'1940–2015',
+   tagline:'You\'ll see it when you believe it. Change your thoughts, change your life.',
+   core:'Dyer bridged the gap between psychology, spirituality, and philosophy better than any other modern teacher. His evolution from "Your Erroneous Zones" (pure psychology) to "The Power of Intention" (spirituality as operating system) mirrors the full arc of conscious development. His key concept: intention is not something you do — it is a field of energy you connect to. You don\'t have intentions; you are an extension of the field of intention. His "I Am" teaching: whatever follows "I am" in your self-talk is a creative declaration. Choose the words after "I am" as carefully as you choose your actions.',
+   mechanism:'Intention (field) → "I Am" Declaration → Synchronistic Alignment → Manifestation',
+   works:['The Power of Intention','Wishes Fulfilled','Change Your Thoughts Change Your Life','Excuses Begone'],
+   quotes:['"You\'ll see it when you believe it."','"Change the way you look at things and the things you look at change."','"Everything you are against weakens you. Everything you are for empowers you."'],
+   convergence:['intention','i-am','belief','feeling']},
+
+  {id:'jd',name:'Joe Dispenza',era:'modern',dates:'1962–present',
+   tagline:'Personality creates your personal reality. Change your personality, change your reality.',
+   core:'Dispenza is the bridge between mysticism and neuroscience — rigorously scientific. His framework: your personality (how you think, act, feel) creates your personal reality. Personality = product of past experience. Change requires breaking the habit of being yourself — firing different neural circuits to build a new identity before the physical evidence arrives. Elevated emotions (gratitude, love, joy) during visualization create coherence between heart and brain. This coherence sends a different electromagnetic signal into the quantum field. His research documents spontaneous remissions, healing, and measurable brain/body changes in meditation practitioners.',
+   mechanism:'New Thought → Elevated Emotion → Heart-Brain Coherence → New Identity → Changed Biology + Reality',
+   works:['Breaking the Habit of Being Yourself','Becoming Supernatural','You Are the Placebo','Evolve Your Brain'],
+   quotes:['"Thoughts are the language of the brain, feelings are the language of the body."','"If you change your energy, you change your life."','"The best way to predict the future is to create it from the unknown."'],
+   convergence:['feeling','subconscious','identity','neuroscience','heart-coherence']},
+
+  {id:'rb',name:'Rhonda Byrne',era:'modern',dates:'1951–present',
+   tagline:'Like attracts like. The law of attraction is the law of love.',
+   core:'The Secret brought the New Thought tradition to 30 million people. Whatever one thinks of the popularization, Byrne\'s synthesis is accurate: the law of attraction is a law — it operates whether or not you believe in it. Her contribution is the Ask-Believe-Receive framework, distilled from every classical teacher. Her later work, The Power, identified love as the master frequency — the emotional state from which everything else flows most directly. The value in The Secret is not the concepts (all borrowed from Wattles, Hill, Haanel) but the aggregation and the permission it gave people to believe in the mechanism.',
+   mechanism:'Ask (desire) → Believe (feeling-as-if) → Receive (action from inspiration)',
+   works:['The Secret','The Power','The Magic','Hero'],
+   quotes:['"You are the master of the universe. You are the heir to the kingdom."','"The law of attraction is the law of love."','"Ask once, believe you have received, and all you have to do to receive is feel good."'],
+   convergence:['desire','feeling','vibration','gratitude']},
+
+  {id:'bp',name:'Bob Proctor',era:'modern',dates:'1934–2022',
+   tagline:'A paradigm is a multitude of habits. Change the paradigm, change the result.',
+   core:'Proctor spent 50 years teaching Napoleon Hill\'s work and made one original contribution that elevates everything: the paradigm. A paradigm is a program in the subconscious mind — a cluster of habits that runs automatically and determines results. You cannot consciously out-think a paradigm. You can only change a paradigm by replacing it with a new one through repetition and emotional impact. His "terror barrier" concept: every time you attempt to move beyond your current paradigm, terror arises — not because danger is present, but because the old program resists replacement. Moving through the terror barrier is the practice.',
+   mechanism:'Paradigm (subconscious program) → Behavior → Result. Change Paradigm = Change Result.',
+   works:['You Were Born Rich','The Art of Living','It\'s Not About the Money','Thoughts Are Things'],
+   quotes:['"Everything that\'s coming into your life you are attracting into your life."','"A paradigm shift — it doesn\'t take time, it takes a decision."','"See yourself where you want to be."'],
+   convergence:['paradigm','subconscious','repetition','identity']},
+
+  {id:'lh',name:'Louise Hay',era:'modern',dates:'1926–2017',
+   tagline:'Every thought we think is creating our future. Love yourself first.',
+   core:'Hay\'s contribution is the most intimate: the body is the messenger. Physical symptoms are the body\'s expression of mental/emotional patterns. Her "Probable Causes" — a dictionary mapping physical conditions to thought patterns — is either the most radical or most practical framework in the tradition depending on your starting point. Her core practice: the mirror. Look yourself in the eyes, say "I love and approve of myself." The intensity of discomfort that arises is proportional to how much work needs to be done. Self-love is not a reward for achievement — it is the precondition for all achievement.',
+   mechanism:'Thought Pattern → Emotional State → Body Response → Life Circumstances',
+   works:['You Can Heal Your Life','The Power is Within You','Heal Your Body','Mirror Work'],
+   quotes:['"Every thought we think is creating our future."','"You\'ve been criticizing yourself for years and it hasn\'t worked. Try approving of yourself and see what happens."','"In the infinity of life where I am, all is perfect, whole and complete."'],
+   convergence:['thought-habit','self-concept','feeling','affirmation']},
+
+  {id:'gb',name:'Gregg Braden',era:'modern',dates:'1954–present',
+   tagline:'Feeling is the prayer. The bridge between science and ancient wisdom.',
+   core:'Braden spent 12 years in US Air Force and defense contractors before dedicating himself to bridging modern science and ancient wisdom. His key finding: the heart generates an electromagnetic field 100 times stronger than the brain — it is the primary interface between the individual and the quantum field. "Feeling is the prayer" — not thinking about what you want, not visualizing it — but generating the bodily feeling of already having the outcome. His work on the Heart Math Institute\'s research and the Global Coherence Initiative demonstrates measurable collective field effects.',
+   mechanism:'Heart Feeling → Electromagnetic Field → Quantum Field Response → Physical Manifestation',
+   works:['The Divine Matrix','The Spontaneous Healing of Belief','The God Code','Human by Design'],
+   quotes:['"Feeling is the prayer."','"We are not separate from the field. We are the field expressing itself locally."','"The heart is where we experience the feeling of what it is we wish to create."'],
+   convergence:['feeling','heart-coherence','quantum','field']},
+
+  {id:'et',name:'Eckhart Tolle',era:'modern',dates:'1948–present',
+   tagline:'The present moment is where life is. Now is the only point of power.',
+   core:'Tolle\'s contribution to manifestation is often overlooked because he rarely uses the word. His teaching is the foundation beneath the techniques: you cannot manifest from a state of lack or fear, only from presence. The ego constructs an identity from past and future — from what was done to you and what you fear might happen. Presence dissolves this construction and creates a space where desire arises naturally from being rather than from lack. His concept of the "painbody" — accumulated emotional pain that seeks to perpetuate itself by drawing similar experiences — is the most sophisticated explanation of why unconscious limiting beliefs persist despite conscious work.',
+   mechanism:'Presence → Dissolution of Ego-Identity → Pure Desire (without lack) → Manifestation from Being',
+   works:['The Power of Now','A New Earth','Stillness Speaks','Practicing the Power of Now'],
+   quotes:['"The present moment is all you will ever have."','"You attract what you are, not what you want."','"Realize deeply that the present moment is all you will ever have."'],
+   convergence:['presence','identity','being','now']},
+
+  {id:'tr',name:'Tony Robbins',era:'modern',dates:'1960–present',
+   tagline:'State is everything. Motion creates emotion.',
+   core:'Robbins is the operational technician of the tradition. His contribution: state management. You cannot access resourceful beliefs, clear thinking, or inspired action from a disempowered emotional state. His incantations (affirmations spoken with physical intensity and movement) are not about saying words — they are about using the body to change neurochemistry in real time. Priming: a 10-minute morning ritual combining breathing, visualization, and gratitude that floods the system with a resourceful state before the day begins. His work on the Six Human Needs provides the map for what drives all human behavior.',
+   mechanism:'Physiology → State → Belief → Action → Result',
+   works:['Awaken the Giant Within','Unlimited Power','Money Master the Game','Notes from a Friend'],
+   quotes:['"It\'s not the events of our lives that shape us, but our beliefs as to what those events mean."','"Motion creates emotion."','"The only limit to your impact is your imagination and commitment."'],
+   convergence:['state','physiology','belief','action','repetition']},
+
+  // ── SCIENCE-ADJACENT ──
+  {id:'np',name:'Neuroplasticity',era:'science',dates:'Confirmed: 1960s–present',
+   tagline:'The brain rewires itself based on what you repeatedly think and feel.',
+   core:'Neuroplasticity is the brain\'s ability to reorganize itself by forming new neural connections throughout life. Donald Hebb\'s 1949 principle — "neurons that fire together, wire together" — is the mechanism beneath every manifestation practice. When you repeatedly think a thought, the neural pathway strengthens. When you stop thinking a thought, the pathway weakens (synaptic pruning). This is not metaphor. Carol Dweck\'s growth mindset research demonstrates measurable changes in brain structure and capability following belief shifts. The subconscious programming that every classical teacher describes is, in neural terms, the establishment of dominant neural pathways.',
+   mechanism:'Repeated Thought → Neural Pathway Strengthening → Automatic Behavior → Changed Outcomes',
+   convergence:['repetition','subconscious','thought-habit','identity'],
+   research:['Hebb\'s Postulate (1949)','Carol Dweck — Growth Mindset Research (2006)','Michael Merzenich — UCSF Neuroplasticity Studies','Norman Doidge — The Brain That Changes Itself'],
+   quotes:['"Neurons that fire together, wire together. Neurons that fire apart, wire apart." — Donald Hebb','"In a fixed mindset, people believe their basic qualities are carved in stone. In a growth mindset, people believe that their most basic abilities can be developed." — Carol Dweck']},
+
+  {id:'ras',name:'Reticular Activating System',era:'science',dates:'Identified: 1949',
+   tagline:'The brain filters 2 million bits of data per second. You see what you\'re primed to see.',
+   core:'The Reticular Activating System is a bundle of nerves in the brainstem that acts as the gatekeeper of conscious awareness. Of the estimated 2 million bits of data the sensory system processes per second, approximately 134 bits reach conscious awareness. The RAS determines which 134. The filter criteria: what you believe is important, what you expect to see, what you fear, and what you\'re focused on. This is not the law of attraction as mysticism — it is the law of attraction as neuroscience. When you decide you are wealthy, the RAS begins filtering for evidence of wealth. When you decide you\'re failing, it filters for evidence of failure. The external world does not change. Your perception of it does. And perception drives behavior.',
+   mechanism:'Dominant Thought → RAS Filter → Selective Perception → Confirmation Bias → Behavioral Response',
+   convergence:['selective-perception','identity','belief','thought-habit'],
+   research:['Moruzzi and Magoun (1949) — Original RAS identification','Selective Attention Research (Daniel Simons — Gorilla experiment)','Confirmation Bias Studies — Psychology literature'],
+   quotes:['"What you focus on expands." — multiple sources','"The RAS acts like a spam filter for your brain — it only lets through what you\'ve told it matters." — neuroscience literature']},
+
+  {id:'hc',name:'Heart-Brain Coherence',era:'science',dates:'HeartMath Institute: 1991–present',
+   tagline:'The heart\'s electromagnetic field extends 8 feet from the body. Coherence changes it.',
+   core:'The HeartMath Institute has produced 30 years of peer-reviewed research on heart-brain interaction. Key findings: the heart generates an electromagnetic field 100 times stronger in amplitude than the brain, measurable 8 feet from the body. Heart Rate Variability (HRV) is the measure of coherence — the smooth, sine-wave pattern of regulated heartbeat indicates a coherent state. In coherence, the heart sends signals to the brain\'s emotional and cognitive centers, facilitating clear thinking and emotional regulation. The feelings of gratitude, love, and appreciation consistently produce high coherence. The implications for manifestation practices that emphasize elevated emotion are direct and measurable.',
+   mechanism:'Elevated Emotion (gratitude/love) → Heart Coherence → Brain Entrainment → Physiological + Cognitive Coherence',
+   convergence:['heart-coherence','feeling','gratitude','coherence'],
+   research:['HeartMath Institute — Rolin McCraty\'s research body','Global Coherence Initiative','Rollin McCraty — "The Energetic Heart" (2003)','Doc Childre — "The HeartMath Solution"'],
+   quotes:['"The heart generates the largest electromagnetic field in the body. The electrical field, as measured in an electrocardiogram (ECG), is about 60 times greater in amplitude than the brain waves recorded in an electroencephalogram (EEG)." — HeartMath Institute']},
+
+  {id:'pl',name:'Placebo & Belief Biology',era:'science',dates:'Documented extensively: 1950s–present',
+   tagline:'Belief is measurably biological. The body does not distinguish real from imagined.',
+   core:'The placebo effect is the most replicated finding in medicine — and the most under-discussed. Alia Crum\'s research at Stanford demonstrates that beliefs about one\'s experience change physiological outcomes independent of the actual experience (her milkshake study: subjects drinking the same milkshake but believing it was either indulgent or diet showed different levels of ghrelin — the hunger hormone). Ellen Langer\'s "Counterclockwise" study (1979): elderly men living as if they were 20 years younger for one week showed measurable improvements in vision, hearing, strength, and posture. Ted Kaptchuk\'s open-label placebo trials: placebos work even when subjects know they\'re receiving placebos. The body responds to the story the mind tells it.',
+   mechanism:'Belief → Neurochemical Signal → Physiological Response → Measurable Biological Change',
+   convergence:['belief','feeling','subconscious','identity','i-am'],
+   research:['Alia Crum — Mindset & Health Research, Stanford','Ellen Langer — Counterclockwise Study (1979)','Ted Kaptchuk — Open-Label Placebo Trials, Harvard','Henry Beecher — "The Powerful Placebo" (1955)','Bruce Lipton — Biology of Belief'],
+   quotes:['"The placebo effect is not a trick of the mind — it\'s a demonstration of the mind\'s power to heal." — general medical consensus','"Perception controls biology." — Bruce Lipton']},
+
+  {id:'ep',name:'Epigenetics',era:'science',dates:'Coined 1942; expanded 1990s–present',
+   tagline:'Environment and belief change which genes are expressed. You are not your blueprint.',
+   core:'Bruce Lipton\'s work in epigenetics demonstrated that the membrane of the cell — not the DNA — is the intelligence of the cell. The membrane reads environmental signals and determines which genes to express. Environment includes: nutrition, toxins, stress, and — critically — the electromagnetic signals generated by perception and belief. The gene is a blueprint, not a destiny. This overturns genetic determinism entirely. The implications: the internal environment you maintain through thought, emotion, and belief is registered at the cellular level. Chronic stress hormones suppress the immune system and shut down growth. States of love, gratitude, and safety activate growth-promoting gene expression.',
+   mechanism:'Belief/Perception → Electromagnetic Signal → Membrane Reading → Gene Expression → Cell Behavior → Body Function',
+   convergence:['belief','feeling','identity','body'],
+   research:['Bruce Lipton — Biology of Belief','Candace Pert — Molecules of Emotion','Dean Ornish — Epigenetic effects of lifestyle','Psychoneuroimmunology research body'],
+   quotes:['"The moment you change your perception is the moment you rewrite the chemistry of your body." — Bruce Lipton']},
+
+  {id:'dmn',name:'Default Mode Network',era:'science',dates:'Identified: 2001',
+   tagline:'The mind at rest wanders to self-referential thought. Meditation rewires this.',
+   core:'The Default Mode Network (DMN) is the brain network most active when a person is not focused on the outside world — during daydreaming, mind-wandering, and self-referential thinking. Its activity is associated with rumination, self-criticism, replay of past events, and projection of feared futures. Meditation consistently deactivates the DMN and strengthens the prefrontal cortex\'s regulatory capacity over it. This is the neuroscience of why a daily practice of directed thought (meditation, visualization, journaling) interrupts the default negative loop. The classical teachers\' emphasis on mental discipline has direct DMN correlates.',
+   mechanism:'Undirected Mind → DMN Activation → Rumination/Negativity. Directed Practice → DMN Deactivation → Intentional State.',
+   convergence:['thought-habit','meditation','discipline','identity'],
+   research:['Marcus Raichle — Original DMN identification (2001)','Judson Brewer — Mindfulness and DMN','Ziddan et al. — Mindfulness meditation deactivates DMN','Richard Davidson — Contemplative Neuroscience'],
+   quotes:['"The wandering mind is an unhappy mind." — Killingsworth & Gilbert, Science (2010)']},
+
+  {id:'qc',name:'Quantum Field & Observer Effect',era:'science',dates:'Double-slit: 1927; Field theory: ongoing',
+   tagline:'Observation collapses possibility into actuality. The observer is not separate from the observed.',
+   core:'The double-slit experiment demonstrates that subatomic particles exist as waves of probability until observed — at which point the wave function collapses into a single actuality. The observer effect: the act of measurement changes what is measured. This is not poetic interpretation — it is the most replicated experiment in physics. The application to manifestation: consciousness participates in the creation of experience. You are not a passive observer of an objective, pre-existing reality. Quantum field theory describes reality as a field of vibrating energy. Every particle is a localized excitation of a field. If consciousness can influence field states at the quantum level — and the evidence suggests it can — then intention is literally a physical force.',
+   mechanism:'Wave of Probability → Conscious Observation/Intention → Wave Function Collapse → Particle (Physical Reality)',
+   convergence:['field','observation','consciousness','vibration'],
+   research:['Double-Slit Experiment — Thomas Young (1801); Quantum interpretation: Davisson-Germer (1927)','The Global Consciousness Project — PEAR Lab, Princeton','Dean Radin — Conscious Universe','Roger Penrose & Stuart Hameroff — Orchestrated Objective Reduction'],
+   quotes:['"Anyone who is not shocked by quantum theory has not understood it." — Niels Bohr']}
+];
+
+const CONVERGENCE_MAP = [
+  {principle:'The feeling of already having is the mechanism — not hope, not want, not belief as concept.',teachers:[{name:'Neville Goddard',era:'classical'},{name:'Joseph Murphy',era:'classical'},{name:'Abraham Hicks',era:'modern'},{name:'Joe Dispenza',era:'modern'},{name:'Gregg Braden',era:'modern'},{name:'Placebo Research',era:'science'},{name:'Heart-Brain Coherence',era:'science'}]},
+  {principle:'The subconscious mind creates physical reality and cannot distinguish real from imagined experience.',teachers:[{name:'Neville Goddard',era:'classical'},{name:'Joseph Murphy',era:'classical'},{name:'Napoleon Hill',era:'classical'},{name:'Charles Haanel',era:'classical'},{name:'Bob Proctor',era:'modern'},{name:'Neuroplasticity',era:'science'},{name:'Placebo Research',era:'science'}]},
+  {principle:'Identity precedes evidence. You must be the person first. The conditions follow.',teachers:[{name:'James Allen',era:'classical'},{name:'Emmet Fox',era:'classical'},{name:'Wayne Dyer',era:'modern'},{name:'Joe Dispenza',era:'modern'},{name:'Bob Proctor',era:'modern'},{name:'Reticular Activating System',era:'science'},{name:'Neuroplasticity',era:'science'},{name:'Epigenetics',era:'science'}]},
+  {principle:'Repetition rewires the subconscious. Consistent practice creates new default patterns.',teachers:[{name:'Joseph Murphy',era:'classical'},{name:'Napoleon Hill',era:'classical'},{name:'Charles Haanel',era:'classical'},{name:'Louise Hay',era:'modern'},{name:'Tony Robbins',era:'modern'},{name:'Bob Proctor',era:'modern'},{name:'Neuroplasticity',era:'science'},{name:'Default Mode Network',era:'science'}]},
+  {principle:'The present moment is the only point of access to the creative field. Presence precedes manifestation.',teachers:[{name:'Neville Goddard',era:'classical'},{name:'Eckhart Tolle',era:'modern'},{name:'Abraham Hicks',era:'modern'},{name:'Heart-Brain Coherence',era:'science'}]},
+  {principle:'Gratitude is not etiquette — it is a vibrational frequency that unlocks the receiving state.',teachers:[{name:'Wallace Wattles',era:'classical'},{name:'Rhonda Byrne',era:'modern'},{name:'Abraham Hicks',era:'modern'},{name:'Gregg Braden',era:'modern'},{name:'Heart-Brain Coherence',era:'science'}]},
+  {principle:'The body is the evidence of the mind. Belief is biological, not merely psychological.',teachers:[{name:'Louise Hay',era:'modern'},{name:'Joe Dispenza',era:'modern'},{name:'Gregg Braden',era:'modern'},{name:'Placebo Research',era:'science'},{name:'Epigenetics',era:'science'},{name:'Neuroplasticity',era:'science'}]},
+  {principle:'What you perceive you seek — not what you want. The filter precedes the experience.',teachers:[{name:'James Allen',era:'classical'},{name:'Emmet Fox',era:'classical'},{name:'Wayne Dyer',era:'modern'},{name:'Tony Robbins',era:'modern'},{name:'Reticular Activating System',era:'science'},{name:'Default Mode Network',era:'science'}]}
+];
+
+// ════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════
+const SK = 'pl-manifest-v1';
+
+function loadState(){
+  try{
+    const r = localStorage.getItem(SK);
+    if(r) return JSON.parse(r);
+  }catch(e){}
+  return {manifesting:[],evidence:[],declaration:'Watch this.',teachers:[],quotes:[]};
+}
+function saveState(){
+  try{ localStorage.setItem(SK, JSON.stringify(ST)); }catch(e){}
+}
+
+let ST = loadState();
+if(!ST.teachers) ST.teachers = [];
+if(!ST.quotes) ST.quotes = [];
+
+function allTeachers(){ return [...DEFAULT_TEACHERS, ...ST.teachers]; }
+
+let TAB = 'study';       // study | manifest | evidence | doctrine
+let STUDY_SUB = 'teachers'; // teachers | convergence
+let TEACHER_ID = null;
+let FILTER = 'all';
+let SEARCH = '';
+let SHOW_QUOTE = false;
+let CURRENT_QUOTE = null;
+let SHOW_TIMER = false;
+let TIMER_SECS = 300;
+let TIMER_PRESET = 300;
+let TIMER_INTERVAL = null;
+let TIMER_RUNNING = false;
+let SHOW_IMPORT = false;
+
+function uid(){ return 'u_'+Date.now()+'_'+Math.random().toString(36).slice(2,6); }
+function fmtDate(ts){ return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>'); }
+
+// ════════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════════
+function render(){
+  const app = document.getElementById('app');
+  if(TEACHER_ID){
+    const t = allTeachers().find(t=>t.id===TEACHER_ID);
+    app.innerHTML = renderTeacherDetail(t);
+    return;
+  }
+  app.innerHTML = `
+    ${renderHead()}
+    <div class="body" id="main-body">
+      ${TAB==='study'    ? renderStudy()    : ''}
+      ${TAB==='manifest' ? renderManifest() : ''}
+      ${TAB==='evidence' ? renderEvidence() : ''}
+      ${TAB==='doctrine' ? renderDoctrine() : ''}
+    </div>
+    ${renderTabs()}
+    ${SHOW_QUOTE  ? renderQuoteModal()  : ''}
+    ${SHOW_TIMER  ? renderTimerModal()  : ''}
+    ${SHOW_IMPORT ? renderImportModal() : ''}
+  `;
+  if(SHOW_TIMER && TIMER_RUNNING) startTimerUI();
+}
+
+function renderHead(){
+  const icons = TAB==='study' ? `
+    <button class="icon-btn gold" onclick="pullQuote()" title="Random quote">◆</button>
+    <button class="icon-btn" onclick="openTimer()" title="Practice timer">◷</button>
+    <button class="icon-btn" onclick="openImport()" title="Import JSON">↑</button>
+  ` : '';
+  return `
+  <header class="head">
+    <div class="brand">
+      <span class="mark">◆</span>
+      <span class="h-title">Manifest</span>
+      <span class="h-sub">Study</span>
+    </div>
+    <div class="head-actions">${icons}</div>
+  </header>`;
+}
+
+function renderTabs(){
+  const T = (id,ico,lbl) => `
+    <button class="tab ${TAB===id?'active':''}" onclick="setTab('${id}')">
+      <span class="tab-ico">${ico}</span><span>${lbl}</span>
+    </button>`;
+  return `<nav class="tabs">
+    ${T('study','◎','Study')}
+    ${T('manifest','◉','Manifest')}
+    ${T('evidence','◈','Evidence')}
+    ${T('doctrine','◇','Doctrine')}
+  </nav>`;
+}
+
+// ── STUDY ──
+function renderStudy(){
+  return `
+    <div class="study-nav">
+      ${['teachers','convergence'].map(s=>`
+        <button class="s-nav-btn ${STUDY_SUB===s?'active':''}" onclick="setStudySub('${s}')">
+          ${s==='teachers'?'Teachers':'Convergence'}
+        </button>`).join('')}
+    </div>
+    ${STUDY_SUB==='teachers' ? renderTeachersView() : renderConvergenceView()}
+  `;
+}
+
+function renderTeachersView(){
+  const all = allTeachers();
+  let list = FILTER==='all' ? all : all.filter(t=>t.era===FILTER);
+  if(SEARCH.trim()){
+    const q=SEARCH.toLowerCase();
+    list=list.filter(t=>(t.name+t.tagline+t.core).toLowerCase().includes(q));
+  }
+  return `
+    <div class="rail">
+      ${['all','classical','modern','science'].map(f=>`
+        <button class="chip ${f} ${FILTER===f?'active':''}" onclick="setFilter('${f}')">
+          ${f==='all'?'All':f.charAt(0).toUpperCase()+f.slice(1)}
+        </button>`).join('')}
+    </div>
+    <div class="search-wrap">
+      <div class="s-inner">
+        <span class="s-ico">⌕</span>
+        <input type="search" placeholder="Search teachers, concepts..." value="${esc(SEARCH)}" oninput="setSearch(this.value)" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      </div>
+    </div>
+    <div class="grid">
+      ${list.length===0?`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No results.</div></div>`
+        :list.map(t=>`
+        <div class="t-card" onclick="openTeacher('${t.id}')">
+          <div class="t-card-top">
+            <span class="t-name">${esc(t.name)}</span>
+            <span class="t-era ${t.era}">${t.era}</span>
+          </div>
+          <div class="t-tagline">${esc(t.tagline)}</div>
+          ${t.quotes?`<div class="t-quote">${esc(t.quotes[0])}</div>`:''}
+        </div>`).join('')}
+    </div>
+  `;
+}
+
+function renderConvergenceView(){
+  return `
+    <div class="conv-grid">
+      ${CONVERGENCE_MAP.map(c=>`
+        <div class="conv-card">
+          <div class="conv-principle">${esc(c.principle)}</div>
+          <div class="conv-teachers">
+            ${c.teachers.map(t=>`<span class="conv-tag ${t.era}">${esc(t.name)}</span>`).join('')}
+          </div>
+          <div class="conv-count">${c.teachers.length} sources in agreement</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderTeacherDetail(t){
+  if(!t) return `<div class="app"><button onclick="closeTeacher()">← Back</button><p>Teacher not found.</p></div>`;
+  const hasResearch = t.research && t.research.length;
+  return `
+  <div class="detail">
+    <div class="d-head">
+      <button class="back-btn" onclick="closeTeacher()">
+        <span class="back-arr">←</span><span>Study</span>
+      </button>
+      <span class="t-era ${t.era}" style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:4px 10px;border-radius:99px;border:1px solid">${t.era}</span>
+    </div>
+    <div class="d-body">
+      <div>
+        <div class="d-title">${esc(t.name)}</div>
+        <div class="d-dates" style="margin-top:6px">${esc(t.dates||'')}</div>
+        <div style="font-family:var(--mono);font-size:12px;color:var(--mute);margin-top:8px;font-style:italic">${esc(t.tagline)}</div>
+      </div>
+
+      <div class="d-divider"></div>
+
+      <div class="d-section">
+        <div class="d-label">Core Teaching</div>
+        <div class="d-text">${esc(t.core)}</div>
+      </div>
+
+      <div class="d-divider"></div>
+
+      <div class="d-section">
+        <div class="d-label">Mechanism</div>
+        <div style="background:var(--bg-2);border-left:3px solid var(--gold);border-radius:0 12px 12px 0;padding:14px 16px;font-family:var(--mono);font-size:12px;line-height:1.7;color:var(--mute)">${esc(t.mechanism||'')}</div>
+      </div>
+
+      ${t.quotes && t.quotes.length ? `
+      <div class="d-divider"></div>
+      <div class="d-section">
+        <div class="d-label">Quotes</div>
+        ${t.quotes.map(q=>`<div class="quote-block">${esc(q)}</div>`).join('')}
+      </div>` : ''}
+
+      ${t.works && t.works.length ? `
+      <div class="d-divider"></div>
+      <div class="d-section">
+        <div class="d-label">Works</div>
+        <div class="pill-row">${t.works.map(w=>`<span class="pill">${esc(w)}</span>`).join('')}</div>
+      </div>` : ''}
+
+      ${hasResearch ? `
+      <div class="d-divider"></div>
+      <div class="d-section">
+        <div class="d-label purple">Research & Sources</div>
+        ${t.research.map(r=>`<div style="font-family:var(--mono);font-size:11px;color:var(--mute);padding:8px 0;border-bottom:1px solid var(--line);line-height:1.5">${esc(r)}</div>`).join('')}
+      </div>` : ''}
+
+      <div class="d-divider"></div>
+      <div class="d-section">
+        <div class="d-label">Convergence Points</div>
+        <div class="pill-row">${(t.convergence||[]).map(c=>`<span class="pill">${esc(c)}</span>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── MANIFEST ──
+function renderManifest(){
+  const planting = ST.manifesting.filter(m=>m.status==='planting');
+  const growing  = ST.manifesting.filter(m=>m.status==='growing');
+  const received = ST.manifesting.filter(m=>m.status==='received');
+  return `
+    <div class="manifest-body">
+      <div class="add-form">
+        <input id="m-input" class="add-input" type="text" placeholder="What are you calling in..." autocomplete="off" autocorrect="off"/>
+        <div class="add-row">
+          <select id="m-cat" class="add-cat">
+            <option value="planting">🌱 Planting</option>
+            <option value="growing">🌿 Growing</option>
+          </select>
+          <button class="submit-btn" style="flex:1" onclick="addManifest()">Plant It</button>
+        </div>
+      </div>
+
+      ${planting.length>0?`<div class="section-title">Planting · ${planting.length}</div>${planting.map(renderMCard).join('')}`:''}
+      ${growing.length>0?`<div class="section-title">Growing · ${growing.length}</div>${growing.map(renderMCard).join('')}`:''}
+      ${received.length>0?`<div class="section-title">Received · ${received.length}</div>${received.map(renderMCard).join('')}`:''}
+      ${ST.manifesting.length===0?`
+        <div class="empty">
+          <div class="empty-ico">◉</div>
+          <div class="empty-txt">Nothing planted yet.<br>Name what you're calling in.</div>
+        </div>`:''}
+    </div>`;
+}
+
+function renderMCard(m){
+  const statuses = ['planting','growing','received'];
+  return `
+  <div class="m-card">
+    <div class="m-check ${m.status}" onclick="cycleStatus('${m.id}')">
+      ${m.status==='planting'?'○':m.status==='growing'?'◐':'✓'}
+    </div>
+    <div class="m-content">
+      <div class="m-text ${m.status==='received'?'received':''}">${esc(m.text)}</div>
+      <div class="m-meta">
+        <span class="m-status ${m.status}">${m.status}</span>
+        <span class="m-date">${fmtDate(m.created)}</span>
+        <button class="m-del" onclick="deleteManifest('${m.id}')">remove</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── EVIDENCE ──
+function renderEvidence(){
+  return `
+    <div class="manifest-body">
+      <div class="add-form">
+        <input id="ev-title" class="add-input" type="text" placeholder="What arrived..." autocomplete="off" autocorrect="off"/>
+        <textarea id="ev-body" class="add-input" style="min-height:72px;line-height:1.5;padding:12px 14px;margin-top:0" placeholder="Document exactly what happened and how it arrived..." autocorrect="off"></textarea>
+        <button class="submit-btn" onclick="addEvidence()">Record Evidence</button>
+      </div>
+      ${ST.evidence.length===0?`
+        <div class="empty">
+          <div class="empty-ico">◈</div>
+          <div class="empty-txt">No evidence recorded yet.<br>This is where the proof lives.</div>
+        </div>
+      `:ST.evidence.map(e=>`
+        <div class="ev-card">
+          <div class="ev-title">${esc(e.title)}</div>
+          <div class="ev-body">${esc(e.body)}</div>
+          <div class="ev-footer">
+            <span class="ev-date">${fmtDate(e.created)}</span>
+            <span class="ev-mark">Received</span>
+            <button class="ev-del" onclick="deleteEvidence('${e.id}')">remove</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+// ── DOCTRINE ──
+function renderDoctrine(){
+  const laws = [
+    {n:'I',law:'Prepared for luxury.',exp:'Preparation is not a posture — it is an identity. You do not prepare in order to become ready. You are prepared. The preparation is the evidence of the identity. The identity precedes the conditions.'},
+    {n:'II',law:'You are in control of your reality.',exp:'Not partially. Not sometimes. Not when circumstances permit. The statement is absolute. Control does not mean you arrange external events. It means the internal position determines the external response. You are the cause. Everything else is effect.'},
+    {n:'III',law:'What persists in the mind becomes your reality.',exp:'This is the mechanism laid bare. The persistence is not accidental. What you return to, rehearse, and hold as the dominant inner conversation becomes structurally real. This is neuroplasticity. This is the RAS. This is Neville. This is Murphy. This is fifteen years of personal laboratory work. What persists. Becomes.'}
+  ];
+  const mechs = [
+    {n:'01',title:'Identity Construction',text:'You decide who you are before the evidence supports it. Not who you hope to become. Who you already are. Identity precedes evidence. Evidence tracks identity.'},
+    {n:'02',title:'Selective Perception',text:'Once identity is constructed, the Reticular Activating System begins filtering for evidence consistent with that identity. The world does not change — your perception of it does. Perception drives behavior.'},
+    {n:'03',title:'Behavioral Alignment',text:'The unshakeable identity dictates real-world choices. The person who knows they are prepared for luxury makes different decisions at every fork. Different decisions compound into different outcomes.'},
+    {n:'04',title:'Declaration as Commitment Device',text:'Wearing the philosophy publicly makes regression to a lesser identity psychologically impossible. The brand is simultaneously the argument and the evidence for its own argument.'}
+  ];
+  return `
+    <div class="doctrine-body">
+      <div class="declaration-card">
+        <div class="declaration-main">Watch this.</div>
+        <div class="declaration-sub">Psyched Luxuries · The Declaration</div>
+      </div>
+
+      <div class="d-label" style="padding-left:0;margin-bottom:-8px">The Three Laws</div>
+      ${laws.map(l=>`
+        <div class="law-card">
+          <div class="law-num">Law ${l.n}</div>
+          <div class="law-text">${l.law}</div>
+          <div class="law-exp">${l.exp}</div>
+        </div>`).join('')}
+
+      <div class="d-label" style="padding-left:0;margin-bottom:-8px;margin-top:4px">The Four Mechanisms</div>
+      ${mechs.map(m=>`
+        <div class="mechanism-card">
+          <div class="mech-num">${m.n}</div>
+          <div class="mech-title">${m.title}</div>
+          <div class="mech-text">${m.text}</div>
+        </div>`).join('')}
+
+      <div class="d-label" style="padding-left:0;margin-bottom:-8px;margin-top:4px">The Origin — 2010</div>
+      <div style="background:var(--bg-2);border:1px solid var(--line);border-radius:16px;padding:20px;font-family:var(--mono);font-size:12px;line-height:1.75;color:var(--mute)">
+        In 2010 a book called <em style="color:var(--fg)">The Secret</em> introduced a framework that most people dismissed or consumed as novelty. It was neither dismissed nor consumed as novelty. It was practiced. The central argument — that consciousness participates in the construction of reality — was not evaluated intellectually. It was tested immediately against the conditions of actual life.<br><br>
+        That practice has been running continuously since 2010. Psyched Luxuries is one of the results. The brand is the proof. The proof is the brand.
+      </div>
+    </div>`;
+}
+
+// ── MODALS ──
+function renderQuoteModal(){
+  const q = CURRENT_QUOTE;
+  return `
+  <div class="modal-back" onclick="closeQuote()">
+    <div class="q-modal" onclick="event.stopPropagation()">
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);text-align:center">Quote</div>
+      <div class="q-text">${esc(q.text)}</div>
+      <div class="q-attr">— ${esc(q.author)}</div>
+      <div class="q-actions">
+        <button class="q-btn" onclick="pullQuote()">Another</button>
+        <button class="q-btn gold" onclick="closeQuote()">Close</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderTimerModal(){
+  const presets = [{l:'5m',s:300},{l:'10m',s:600},{l:'15m',s:900},{l:'20m',s:1200}];
+  const m = String(Math.floor(TIMER_SECS/60)).padStart(2,'0');
+  const s = String(TIMER_SECS%60).padStart(2,'0');
+  return `
+  <div class="modal-back" onclick="closeTimer()">
+    <div class="timer-modal" onclick="event.stopPropagation()">
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)">Practice Timer</div>
+      <div class="timer-display" id="timer-display">${m}:${s}</div>
+      <div class="timer-presets">
+        ${presets.map(p=>`<button class="t-preset ${TIMER_PRESET===p.s?'active':''}" onclick="setTimerPreset(${p.s})">${p.l}</button>`).join('')}
+      </div>
+      <button class="timer-btn ${TIMER_RUNNING?'running':''}" id="timer-btn" onclick="toggleTimer()">
+        ${TIMER_RUNNING?'Pause':'Begin'}
+      </button>
+      <button class="q-btn" onclick="closeTimer()" style="width:100%;text-align:center">Close</button>
+    </div>
+  </div>`;
+}
+
+let IMPORT_TAB = 'teachers';
+
+function renderImportModal(){
+  const cT = ST.teachers.length, cQ = ST.quotes.length;
+  const tSchema = '[\\n  {\\n    "id": "unique_id",\\n    "name": "Teacher Name",\\n    "era": "classical | modern | science",\\n    "tagline": "One-line thesis",\\n    "core": "Full teaching...",\\n    "mechanism": "A → B → C",\\n    "quotes": ["Quote text."],\\n    "works": ["Book Title"],\\n    "convergence": ["keyword"]\\n  }\\n]';
+  const qSchema = '[\\n  {\\n    "type": "quote",\\n    "id": "unique_id",\\n    "text": "The quote.",\\n    "author": "Author Name",\\n    "source": "Book or context"\\n  }\\n]';
+  return `
+  <div class="modal-back" onclick="closeImport()">
+    <div class="import-modal" style="max-width:520px;max-height:85svh;overflow-y:auto" onclick="event.stopPropagation()">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="d-label">Knowledge Import</div>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--mute);letter-spacing:.1em">${cT} teachers · ${cQ} quotes</span>
+      </div>
+      <div style="display:flex;gap:0">
+        <button onclick="IMPORT_TAB='teachers';render()" style="flex:1;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:9px;border:1px solid var(--line);border-radius:10px 0 0 10px;background:${IMPORT_TAB==='teachers'?'var(--bg-3)':'transparent'};color:${IMPORT_TAB==='teachers'?'var(--fg)':'var(--mute)'}">Teachers</button>
+        <button onclick="IMPORT_TAB='quotes';render()" style="flex:1;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:9px;border:1px solid var(--line);border-left:none;border-radius:0 10px 10px 0;background:${IMPORT_TAB==='quotes'?'var(--bg-3)':'transparent'};color:${IMPORT_TAB==='quotes'?'var(--fg)':'var(--mute)'}">Quotes</button>
+      </div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--mute);line-height:1.65">
+        ${IMPORT_TAB==='teachers'
+          ?'Array of teacher or science concept objects. era must be: classical, modern, or science. Existing IDs are updated, not duplicated.'
+          :'Array of standalone quote objects. type:"quote" required. These enter the random quote pool alongside all built-in teacher quotes.'}
+      </div>
+      <pre style="background:var(--bg-3);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-family:var(--mono);font-size:9px;color:var(--mute);line-height:1.7;overflow-x:auto;margin:0;white-space:pre-wrap">${IMPORT_TAB==='teachers'?tSchema:qSchema}</pre>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <label id="drop-zone" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:2px dashed var(--line);border-radius:14px;padding:28px 16px;cursor:pointer;transition:.14s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--line)'">
+          <span style="font-size:28px;opacity:.4">↑</span>
+          <span style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)">Tap to select a .json file</span>
+          <span id="drop-filename" style="font-family:var(--mono);font-size:10px;color:var(--gold);display:none"></span>
+          <input type="file" id="import-file" accept=".json,application/json" style="display:none" onchange="handleFileSelect(this)"/>
+        </label>
+        <div id="import-preview" style="display:none;background:var(--bg-3);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-family:var(--mono);font-size:10px;color:var(--mute);line-height:1.65"></div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="q-btn" onclick="closeImport()">Cancel</button>
+        <button class="q-btn" onclick="exportCustom()" style="color:var(--gold);border-color:var(--gold-dim)">Export</button>
+        <button class="q-btn gold" onclick="doImport()">Import</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════
+// ACTIONS
+// ════════════════════════════════════════════════════
+function setTab(t){ TAB=t; TEACHER_ID=null; render(); }
+function setStudySub(s){ STUDY_SUB=s; render(); }
+function setFilter(f){ FILTER=f; render(); }
+function setSearch(v){ SEARCH=v; render(); setTimeout(()=>{const el=document.querySelector('.s-inner input');if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length);}},0); }
+function openTeacher(id){ TEACHER_ID=id; render(); window.scrollTo(0,0); }
+function closeTeacher(){ TEACHER_ID=null; render(); }
+
+function pullQuote(){
+  const all = allTeachers();
+  const pool = [];
+  all.forEach(t=>{ if(t.quotes) t.quotes.forEach(q=>pool.push({text:q,author:t.name,source:''})); });
+  ST.quotes.forEach(q=>pool.push({text:q.text,author:q.author,source:q.source||''}));
+  if(!pool.length) return;
+  CURRENT_QUOTE = pool[Math.floor(Math.random()*pool.length)];
+  SHOW_QUOTE = true;
+  render();
+}
+function closeQuote(){ SHOW_QUOTE=false; render(); }
+
+function openTimer(){ SHOW_TIMER=true; render(); }
+function closeTimer(){ SHOW_TIMER=false; clearInterval(TIMER_INTERVAL); TIMER_RUNNING=false; TIMER_SECS=TIMER_PRESET; render(); }
+function setTimerPreset(s){ TIMER_PRESET=s; TIMER_SECS=s; TIMER_RUNNING=false; clearInterval(TIMER_INTERVAL); render(); }
+function toggleTimer(){
+  if(TIMER_RUNNING){ clearInterval(TIMER_INTERVAL); TIMER_RUNNING=false; render(); }
+  else { TIMER_RUNNING=true; render(); startTimerUI(); }
+}
+function startTimerUI(){
+  TIMER_INTERVAL = setInterval(()=>{
+    TIMER_SECS--;
+    const el = document.getElementById('timer-display');
+    if(el){ const m=String(Math.floor(TIMER_SECS/60)).padStart(2,'0'); const s=String(TIMER_SECS%60).padStart(2,'0'); el.textContent=`${m}:${s}`; }
+    if(TIMER_SECS<=0){ clearInterval(TIMER_INTERVAL); TIMER_RUNNING=false; TIMER_SECS=TIMER_PRESET; render(); }
+  },1000);
+}
+
+let PENDING_DATA = null;
+
+function openImport(){ SHOW_IMPORT=true; IMPORT_TAB='teachers'; PENDING_DATA=null; render(); }
+function closeImport(){ SHOW_IMPORT=false; PENDING_DATA=null; render(); }
+
+function handleFileSelect(input){
+  const file = input.files[0];
+  if(!file) return;
+  document.getElementById('drop-filename').textContent = file.name;
+  document.getElementById('drop-filename').style.display = 'block';
+  const reader = new FileReader();
+  reader.onload = e => {
+    try{
+      const raw = JSON.parse(e.target.result);
+      PENDING_DATA = Array.isArray(raw) ? raw : raw.teachers || raw.quotes || raw.contacts || raw.drops || Object.values(raw).flat();
+      // Classify what we found
+      const teachers = PENDING_DATA.filter(i => i.id && i.name && i.era && i.type !== 'quote');
+      const quotes = PENDING_DATA.filter(i => i.type === 'quote' && i.text && i.author);
+      const unknown = PENDING_DATA.length - teachers.length - quotes.length;
+      const prev = document.getElementById('import-preview');
+      prev.style.display = 'block';
+      prev.innerHTML = `
+        <div style="color:var(--fg);margin-bottom:6px;font-size:10.5px;letter-spacing:.06em">File read — ready to import:</div>
+        ${teachers.length ? `<div>✓ <strong style="color:var(--gold)">${teachers.length}</strong> teacher / concept entries</div>` : ''}
+        ${quotes.length ? `<div>✓ <strong style="color:var(--gold)">${quotes.length}</strong> standalone quotes</div>` : ''}
+        ${unknown ? `<div style="color:var(--mute)">◌ ${unknown} items could not be classified (will be skipped)</div>` : ''}
+        ${!teachers.length && !quotes.length ? '<div style="color:var(--red)">No recognizable content found in this file.</div>' : ''}
+      `;
+    }catch(err){
+      const prev = document.getElementById('import-preview');
+      prev.style.display='block';
+      prev.innerHTML = '<span style="color:var(--red)">Invalid JSON file — could not be parsed.</span>';
+      PENDING_DATA = null;
+    }
+  };
+  reader.readAsText(file);
+}
+
+function doImport(){
+  if(!PENDING_DATA || !PENDING_DATA.length){ alert('Select a .json file first.'); return; }
+  let teachers=0, quotes=0;
+  PENDING_DATA.forEach(item=>{
+    if(item.type==='quote' && item.text && item.author){
+      const id = item.id || ('q_'+Date.now()+'_'+Math.random().toString(36).slice(2,5));
+      item.id = id;
+      const ei = ST.quotes.findIndex(q=>q.id===id);
+      if(ei>=0) ST.quotes[ei]=item; else ST.quotes.push(item);
+      quotes++;
+    } else if(item.id && item.name && item.era){
+      const ei = ST.teachers.findIndex(t=>t.id===item.id);
+      if(ei>=0) ST.teachers[ei]=item; else ST.teachers.push(item);
+      teachers++;
+    }
+  });
+  saveState();
+  SHOW_IMPORT=false;
+  PENDING_DATA=null;
+  const parts=[];
+  if(teachers) parts.push(`${teachers} teacher(s)`);
+  if(quotes) parts.push(`${quotes} quote(s)`);
+  alert(parts.length ? `Imported: ${parts.join(', ')}.` : 'No valid items found.');
+  render();
+}
+
+function exportCustom(){
+  const out = [...ST.teachers, ...ST.quotes];
+  if(!out.length){ alert('No custom content to export yet.'); return; }
+  const blob = new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'manifest-custom-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+}
+
+function addManifest(){
+  const text = document.getElementById('m-input').value.trim();
+  const status = document.getElementById('m-cat').value;
+  if(!text) return;
+  ST.manifesting.unshift({id:uid(),text,status,created:Date.now()});
+  saveState(); render();
+}
+function cycleStatus(id){
+  const order = ['planting','growing','received'];
+  const m = ST.manifesting.find(m=>m.id===id);
+  if(!m) return;
+  const i = order.indexOf(m.status);
+  m.status = order[(i+1)%order.length];
+  if(m.status==='received'){
+    ST.evidence.unshift({id:uid(),title:m.text,body:'Moved from Manifest to Evidence.',created:Date.now()});
+  }
+  saveState(); render();
+}
+function deleteManifest(id){ ST.manifesting=ST.manifesting.filter(m=>m.id!==id); saveState(); render(); }
+
+function addEvidence(){
+  const title = document.getElementById('ev-title').value.trim();
+  const body = document.getElementById('ev-body').value.trim();
+  if(!title) return;
+  ST.evidence.unshift({id:uid(),title,body,created:Date.now()});
+  saveState(); render();
+}
+function deleteEvidence(id){ ST.evidence=ST.evidence.filter(e=>e.id!==id); saveState(); render(); }
+
+render();
+</script>
+</body>
+</html>

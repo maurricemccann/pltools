@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0908"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Psyched"/>
+<title>Psyched Luxuries</title>
+<link rel="manifest" href="manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png"/>
+<link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152.png"/>
+<link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,300..600;9..144,1,300..600&family=Inter:wght@300;400;500&display=swap');
+:root{
+  --bg:#0a0908; --bg-2:#13110d; --line:#2a2620;
+  --fg:#f4ecd8; --mute:#8a8170; --accent:#d4b87a; --accent-soft:#e8d5a3;
+  --display:'Fraunces',Georgia,serif; --mono:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--display);
+  overscroll-behavior:none;min-height:100svh}
+a{color:inherit;text-decoration:none}
+.app{display:flex;flex-direction:column;min-height:100svh;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  max-width:720px;margin:0 auto}
+.head{padding:36px 28px 8px;display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--mute);font-weight:400}
+.wordmark{font-style:italic;font-weight:400;font-size:34px;letter-spacing:-.005em;line-height:1.05}
+.wordmark .dot{color:var(--accent)}
+.subhead{font-family:var(--mono);font-size:12px;color:var(--mute);letter-spacing:.06em;margin-top:14px;max-width:38ch;line-height:1.55}
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);margin:24px 28px 18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 22px 28px}
+@media (max-width:380px){.grid{grid-template-columns:1fr}}
+.tile{position:relative;background:var(--bg-2);border:1px solid var(--line);border-radius:18px;
+  padding:22px 18px 20px;display:flex;flex-direction:column;gap:10px;min-height:110px;
+  transition:.22s ease;overflow:hidden}
+.tile:active{transform:scale(.985);border-color:var(--accent-soft)}
+
+
+.tile-name{font-family:var(--display);font-style:italic;font-weight:500;font-size:20px;letter-spacing:.01em}
+.tile-tag{font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.04em;line-height:1.5}
+.tile-rule{position:absolute;left:18px;right:18px;top:16px;height:1px;background:var(--line);opacity:.65}
+.tile-num{position:absolute;top:18px;right:18px;font-family:var(--mono);font-size:10px;
+  color:var(--mute);letter-spacing:.16em}
+.tile.seeds .tile-mono,.tile.seeds 
+.tile.seeds .tile-num{color:#9a4040}
+.foot{padding:0 28px 32px;display:flex;flex-direction:column;gap:10px;margin-top:auto}
+.laws{font-family:var(--display);font-style:italic;font-size:13px;line-height:1.75;color:var(--mute)}
+.laws span{color:var(--fg);opacity:.85}
+.declaration{font-family:var(--display);font-style:italic;font-weight:500;font-size:15px;color:var(--accent);letter-spacing:.01em}
+.sig{font-family:var(--mono);font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--mute);margin-top:14px;font-weight:400}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="head">
+    <div class="eyebrow">Operating Console</div>
+    <div class="wordmark">Psyched Luxuries<span class="dot">.</span></div>
+
+  </header>
+
+  <div class="rule"></div>
+
+  <main class="grid">
+    <a class="tile" href="./codex.html">
+      <div class="tile-name">Codex</div>
+      <div class="tile-tag">The archive made walkable.</div>
+    </a>
+    <a class="tile" href="./drops.html">
+      <div class="tile-name">Drops</div>
+      <div class="tile-tag">Sequencing what becomes real.</div>
+    </a>
+    <a class="tile" href="./outreach.html">
+      <div class="tile-name">Outreach</div>
+      <div class="tile-tag">Signal, not noise.</div>
+    </a>
+    <a class="tile" href="./Seeds_Ledger.html">
+      <div class="tile-name">Ledger</div>
+      <div class="tile-tag">Every seed, documented.</div>
+    </a>
+    <a class="tile" href="./Manifest_Study.html">
+      <div class="tile-name">Manifest</div>
+      <div class="tile-tag">20 teachers. One practice.</div>
+    </a>
+    <a class="tile seeds" href="./seeds.html">
+      <div class="tile-name">Seeds</div>
+      <div class="tile-tag">Small evidence, kept.</div>
+    </a>
+  </main>
+
+  <footer class="foot">
+    <div class="laws">
+      <span>Prepared for luxury.</span><br/>
+      <span>You are in control of your reality.</span><br/>
+      <span>What persists in the mind becomes your reality.</span>
+    </div>
+    <div class="declaration">Watch this.</div>
+    <div class="sig">Origin · April 2019</div>
+  </footer>
+</div>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>

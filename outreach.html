@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0908"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="PL Outreach"/>
+<title>Psyched Luxuries · Outreach OS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400&display=swap');
+:root{
+  --bg:#0a0908;--bg-2:#13110d;--bg-3:#1c1814;
+  --line:#2d2820;--line-2:#3d3528;
+  --fg:#f4ecd8;--mute:#8a8170;
+  --gold:#c9a84c;--gold-soft:#e8d5a3;--gold-dim:rgba(201,168,76,.1);--gold-border:rgba(201,168,76,.3);
+  --purple:#9b72cf;--purple-dim:rgba(155,114,207,.1);
+  --warn:#c9744a;--good:#7a9558;
+  --display:'Cormorant Garamond',Georgia,serif;
+  --mono:'Jost',system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--mono);font-weight:300;overscroll-behavior:none}
+body{min-height:100svh}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+input,select,textarea{font:inherit;color:inherit;background:none}
+.app{display:flex;flex-direction:column;min-height:100svh;padding-top:env(safe-area-inset-top);padding-bottom:calc(56px + env(safe-area-inset-bottom));max-width:840px;margin:0 auto}
+.head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 10px}
+.brand{display:flex;align-items:baseline;gap:8px}
+.mark{font-family:var(--display);font-style:italic;font-size:13px;color:var(--gold);letter-spacing:.2em;text-transform:uppercase}
+.count{font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.1em;padding:3px 8px;border:1px solid var(--line);border-radius:99px}
+.menu-btn{width:38px;height:38px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;border:1px solid var(--line);border-radius:99px}
+.menu-btn span{width:14px;height:1px;background:var(--fg);display:block}
+.menu-btn span:nth-child(2){width:9px}
+.tabs{display:flex;gap:3px;padding:0 20px 14px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:9px 14px;border:1px solid var(--line);border-radius:8px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);transition:.15s;font-weight:300;position:relative}
+.tab.active{background:var(--gold);color:#1a1410;border-color:var(--gold);font-weight:400}
+.tab:not(.active):hover{color:var(--fg);border-color:var(--line-2)}
+.tab .badge{position:absolute;top:-4px;right:-4px;background:var(--warn);color:#fff;font-size:8px;padding:1px 5px;border-radius:99px}
+.pane{flex:1;padding:0 20px 80px}
+.pane-head{margin-bottom:16px}
+.pane-title{font-family:var(--display);font-weight:600;font-size:26px;letter-spacing:-.01em;color:var(--gold-soft)}
+.pane-sub{font-size:10px;color:var(--mute);letter-spacing:.12em;text-transform:uppercase;margin-top:3px}
+
+/* filter chips */
+.filter-row{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
+.filter-chip{padding:6px 11px;border:1px solid var(--line);border-radius:99px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);cursor:pointer;transition:.15s;background:none}
+.filter-chip.active{color:var(--gold);border-color:var(--gold-border)}
+.filter-chip:hover{color:var(--fg)}
+
+/* contact list */
+.contact-list{display:flex;flex-direction:column;gap:7px}
+.contact-row{border:1px solid var(--line);border-radius:12px;background:var(--bg-2);padding:13px 15px;cursor:pointer;transition:.15s}
+.contact-row:hover{border-color:var(--line-2)}
+.contact-row.warn-row{border-left:2px solid var(--warn)}
+.contact-row-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:5px}
+.contact-name{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:-.005em;flex:1;line-height:1.2}
+.contact-handle{font-size:10px;color:var(--mute);letter-spacing:.06em;margin-top:2px}
+.contact-status{font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mute);flex-shrink:0;white-space:nowrap}
+.contact-status.drafted{color:var(--mute)}
+.contact-status.sent{color:var(--gold);border-color:var(--gold-border)}
+.contact-status.replied{color:var(--gold-soft);border-color:var(--gold);background:var(--gold-dim)}
+.contact-status.converted{color:var(--good);border-color:var(--good)}
+.contact-status.ghosted{color:var(--warn);border-color:var(--warn);opacity:.7}
+.contact-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:10px;color:var(--mute);letter-spacing:.06em;margin-top:5px}
+.contact-meta strong{color:var(--fg);font-weight:400}
+.value-stars{color:var(--gold);font-size:10px;letter-spacing:.06em}
+.contact-context{margin-top:7px;font-size:12px;color:var(--mute);line-height:1.45}
+.cat-pill{font-size:8px;letter-spacing:.15em;text-transform:uppercase;padding:2px 7px;border:1px solid var(--line);border-radius:3px;color:var(--mute)}
+.cat-pill.manifestation{color:var(--purple);border-color:rgba(155,114,207,.4);background:var(--purple-dim)}
+.cat-pill.spirituality{color:#7ac9f9;border-color:rgba(122,201,249,.3);background:rgba(122,201,249,.06)}
+.cat-pill.philosophy{color:var(--gold-soft);border-color:var(--gold-border);background:var(--gold-dim)}
+.cat-pill.micro_influencer{color:#7af9b8;border-color:rgba(122,249,184,.3);background:rgba(122,249,184,.06)}
+.cat-pill.collector{color:#f9d97a;border-color:rgba(249,217,122,.3);background:rgba(249,217,122,.06)}
+.cat-pill.reddit{color:#f97a7a;border-color:rgba(249,122,122,.3);background:rgba(249,122,122,.06)}
+.cat-pill.artist{color:var(--purple);border-color:rgba(155,114,207,.4)}
+.cat-pill.collab{color:var(--gold);border-color:var(--gold-border)}
+.cat-pill.press{color:#7ac9f9;border-color:rgba(122,201,249,.3)}
+.cat-pill.reconnect{color:#f97a7a;border-color:rgba(249,122,122,.3)}
+.cat-pill.witness{color:#7af9b8;border-color:rgba(122,249,184,.3)}
+
+/* compose */
+.lbl{display:block;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);margin:14px 0 5px;font-weight:400}
+.lbl:first-child{margin-top:0}
+.ipt{width:100%;background:var(--bg-2);border:1px solid var(--line);border-radius:8px;padding:11px 13px;color:var(--fg);font-size:14px;line-height:1.4;outline:none;transition:.15s;font-family:var(--mono);font-weight:300}
+.ipt:focus{border-color:var(--gold-border)}
+textarea.ipt{resize:vertical;min-height:72px;line-height:1.55}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.toggle-row{display:flex;gap:5px;margin-bottom:2px}
+.toggle-btn{flex:1;padding:9px 8px;border:1px solid var(--line);border-radius:7px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);cursor:pointer;text-align:center;transition:.15s;background:none}
+.toggle-btn.active{color:var(--gold);border-color:var(--gold-border);background:var(--gold-dim)}
+.toggle-btn:hover:not(.active){color:var(--fg);border-color:var(--line-2)}
+
+/* primary buttons */
+.primary{margin-top:16px;width:100%;background:var(--gold);color:#1a1410;border-radius:10px;padding:16px;font-weight:400;font-size:11px;border:0;cursor:pointer;font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;transition:.15s}
+.primary:hover{background:var(--gold-soft)}
+.primary:disabled{opacity:.4;cursor:not-allowed}
+.primary.secondary{background:none;color:var(--fg);border:1px solid var(--line)}
+.primary.secondary:hover{border-color:var(--gold-border);color:var(--gold)}
+.primary.danger{background:none;color:var(--warn);border:1px solid var(--warn)}
+.btn-row{display:flex;gap:7px;margin-top:12px}
+.btn-row .primary{margin-top:0;flex:1}
+
+/* output */
+.output-section{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.output-block{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:12px}
+.output-head{display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:var(--bg-2);border-bottom:1px solid var(--line)}
+.output-label{font-size:9px;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;font-weight:400}
+.copy-btn{font-size:9px;color:var(--mute);letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border:1px solid var(--line);border-radius:7px;cursor:pointer;transition:.15s;background:none}
+.copy-btn:hover{color:var(--gold);border-color:var(--gold-border)}
+.copy-btn.copied{color:var(--gold);border-color:var(--gold-border)}
+.output-body{padding:14px;font-size:13px;line-height:1.7;color:var(--fg);white-space:pre-wrap;word-break:break-word}
+.variant-tabs{display:flex;gap:3px;padding:7px;background:var(--bg-2);border-bottom:1px solid var(--line)}
+.variant-tab{flex:1;padding:6px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);border-radius:5px;cursor:pointer;text-align:center;border:1px solid transparent;transition:.15s}
+.variant-tab.active{color:var(--gold);border-color:var(--gold-border);background:var(--bg)}
+
+/* AI loading */
+.ai-loading{padding:24px 14px;text-align:center;border:1px solid var(--line);border-radius:10px;background:var(--bg-2)}
+.ai-loading-bar{height:1px;background:var(--line);border-radius:99px;overflow:hidden;margin:12px 0 8px}
+.ai-loading-fill{height:100%;background:linear-gradient(90deg,transparent,var(--gold),transparent);width:60%;animation:shimmer 1.4s ease-in-out infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(250%)} }
+.ai-loading-text{font-size:10px;color:var(--mute);letter-spacing:.1em;text-transform:uppercase}
+
+/* detail / modal */
+.detail-meta{display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:11px;margin-bottom:14px}
+.detail-meta>div{padding:9px 11px;border:1px solid var(--line);border-radius:7px}
+.detail-meta>div span{display:block;font-size:9px;color:var(--mute);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px}
+.detail-meta>div strong{font-weight:400;color:var(--fg);font-size:12px;word-break:break-all}
+.detail-section{margin-bottom:16px}
+.detail-section h3{margin:0 0 7px;font-size:9px;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;font-weight:400}
+.detail-section p{margin:0;font-size:13px;line-height:1.55;color:var(--fg);white-space:pre-wrap;word-break:break-word}
+.action-row{display:flex;gap:7px;margin-top:14px;flex-wrap:wrap}
+.action-row button{flex:1;min-width:100px}
+.log-entry{padding:9px 11px;border:1px solid var(--line);border-radius:7px;margin-bottom:5px;font-size:12px}
+.log-entry-head{display:flex;justify-content:space-between;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:3px}
+.empty{padding:50px 20px;text-align:center;color:var(--mute);font-size:10px;letter-spacing:.1em;text-transform:uppercase;line-height:1.7}
+.empty em{color:var(--fg);font-style:normal}
+
+/* modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(10px);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.modal{background:var(--bg-2);border-top:1px solid var(--gold-border);border-radius:20px 20px 0 0;width:100%;max-width:840px;max-height:92svh;overflow-y:auto;padding:18px 20px;padding-bottom:calc(56px + env(safe-area-inset-bottom))}
+@media(min-width:720px){.modal-backdrop{align-items:center}.modal{border-radius:20px;border:1px solid var(--gold-border);max-height:85vh}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg-2);z-index:2}
+.modal-head h2{margin:0;font-family:var(--display);font-size:20px;font-weight:600;letter-spacing:-.01em}
+.modal-head .sub{font-size:9px;color:var(--gold);letter-spacing:.16em;margin-top:3px;text-transform:uppercase}
+.x{width:34px;height:34px;border:1px solid var(--line);border-radius:99px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--mute);cursor:pointer;font-family:var(--mono)}
+
+/* growth tab */
+.growth-section{margin-bottom:20px}
+.growth-section h3{font-family:var(--display);font-style:italic;font-weight:600;font-size:19px;color:var(--gold-soft);margin:0 0 10px;letter-spacing:-.01em}
+.platform-card{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--bg-2);margin-bottom:8px}
+.platform-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.platform-name{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:400}
+.platform-meta{font-size:9px;color:var(--mute);letter-spacing:.08em}
+.platform-pillars{display:flex;flex-direction:column;gap:5px}
+.pillar{padding:8px 11px;border:1px solid var(--line);border-radius:6px;font-size:11px;line-height:1.5;color:var(--fg)}
+.pillar-title{font-size:9px;color:var(--mute);letter-spacing:.12em;text-transform:uppercase;margin-bottom:2px}
+.sub-card{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:5px;font-size:12px;line-height:1.5;display:flex;justify-content:space-between;align-items:center}
+.sub-name{color:var(--gold)}
+.sub-size{font-size:9px;color:var(--mute);letter-spacing:.08em}
+.strategy-tip{border-left:2px solid var(--gold-border);padding:10px 13px;margin-bottom:8px;font-size:12px;line-height:1.6;color:var(--mute);font-style:italic}
+.strategy-tip strong{color:var(--fg);font-style:normal;font-weight:400}
+
+/* followups */
+.followup-label{font-size:9px;color:var(--warn);letter-spacing:.18em;text-transform:uppercase;margin-bottom:9px;font-weight:400}
+.followup-label.soon{color:var(--gold)}
+
+.foot{display:flex;justify-content:space-between;align-items:center;padding:8px 20px 16px;font-size:9px;color:var(--mute);letter-spacing:.1em;text-transform:uppercase;border-top:1px solid var(--line)}
+.link{color:var(--fg);text-decoration:underline;text-underline-offset:3px;background:none;border:0;font-size:9px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+.fab{position:fixed;bottom:calc(56px + env(safe-area-inset-bottom));right:20px;width:56px;height:56px;border-radius:99px;background:var(--gold);color:#1a1410;font-size:24px;font-weight:300;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -4px rgba(201,168,76,.4);z-index:30;font-family:var(--mono)}
+.data-actions{display:flex;flex-direction:column;gap:7px;margin-top:16px}
+.data-actions button{padding:13px;display:block;width:100%;border:1px solid var(--line);border-radius:10px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;background:none;color:var(--fg);cursor:pointer;text-align:center;transition:.15s}
+.data-actions button:hover{border-color:var(--gold-border);color:var(--gold)}
+.data-actions button.danger{color:var(--warn);border-color:var(--warn)}
+.hint{margin-top:16px;font-size:11px;color:var(--mute);line-height:1.65}
+.urgency{display:inline-block;font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:2px 5px;border-radius:3px;margin-left:5px}
+.urgency.soon{color:var(--gold);background:var(--gold-dim)}
+.urgency.overdue{color:var(--warn);background:rgba(201,116,74,.1)}
+.__pl-notch{
+  position:fixed;top:0;left:0;right:0;
+  height:env(safe-area-inset-top);
+  background:#0a0908;
+  border-bottom:1px solid rgba(201,168,76,.18);
+  z-index:99998;
+}
+.__pl-back{
+  position:fixed;bottom:0;left:0;right:0;z-index:99999;
+  height:calc(44px + env(safe-area-inset-bottom));
+  display:flex;align-items:flex-start;justify-content:center;
+  padding-top:10px;
+  background:rgba(10,9,8,.95);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(201,168,76,.18);
+  color:#f4ecd8;text-decoration:none;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-style:italic;font-size:14px;letter-spacing:.04em;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;
+  gap:8px;
+}
+.__pl-back:active{background:rgba(20,18,14,.98)}
+.__pl-back .__pl-arrow{font-family:system-ui;font-style:normal;color:#c9a84c;font-size:15px;line-height:1}
+.__pl-back .__pl-dot{width:5px;height:5px;border-radius:99px;background:#c9a84c;margin-left:1px;display:inline-block;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="__pl-notch"></div>
+<a href="./index.html" class="__pl-back" aria-label="Back to OS"><span class="__pl-arrow">←</span><span>Psyched</span><span class="__pl-dot"></span></a>
+<div id="app"></div>
+<script>
+// ═══════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════
+const CATEGORIES = [
+  {id:'artist',         name:'Artist / Music',         desc:'Musicians, producers, creative peers'},
+  {id:'press',          name:'Press / Editorial',      desc:'Blogs, magazines, podcasts'},
+  {id:'collab',         name:'Collaborator',           desc:'Brands, designers, creative partnerships'},
+  {id:'manifestation',  name:'Manifestation',          desc:'LOA, mindset, law of attraction community'},
+  {id:'spirituality',   name:'Spirituality',           desc:'Spiritual growth, consciousness, wellness'},
+  {id:'philosophy',     name:'Philosophy',             desc:'Public philosophy, intellectual accounts'},
+  {id:'micro_influencer',name:'Micro-Influencer',      desc:'10K-200K, high engagement, adjacent niche'},
+  {id:'collector',      name:'Art Collector',          desc:'Fine art collectors, gallery adjacent'},
+  {id:'reddit',         name:'Reddit Community',       desc:'Subreddits as outreach targets'},
+  {id:'customer',       name:'Customer / Lead',        desc:'Showed interest, potential buyer'},
+  {id:'witness',        name:'Witness',                desc:'Has worn or carried the work'},
+  {id:'reconnect',      name:'Warm Reconnect',         desc:'Dormant relationship to reopen'},
+  {id:'other',          name:'Other',                  desc:'Custom outreach'}
+];
+
+const PLATFORMS = ['Instagram','TikTok','Twitter/X','Email','Reddit','SMS','LinkedIn','Other'];
+
+const STATUSES = [
+  {id:'drafted',   name:'Drafted'},
+  {id:'sent',      name:'Sent'},
+  {id:'replied',   name:'Replied'},
+  {id:'converted', name:'Converted'},
+  {id:'ghosted',   name:'Ghosted'}
+];
+
+const CONTENT_TYPES = [
+  {id:'cold_dm',      name:'Cold DM',        desc:'Direct message, under 75 words'},
+  {id:'organic',      name:'Organic Post',   desc:'Caption/hook for feed or Reels'},
+  {id:'reddit_post',  name:'Reddit Post',    desc:'Community post, no brand name, no links'},
+  {id:'x_thread',     name:'X Thread',       desc:'3-5 tweet thread, philosophy-driven'}
+];
+
+const VOICE_MODES = [
+  {id:'founder', name:'As Founder', desc:'Maurrice speaking — personal, direct, lived-in'},
+  {id:'brand',   name:'As Brand',   desc:'@psychedluxuries — sovereign, institutional, timeless'}
+];
+
+// ═══════════════════════════════════════════════════
+// SEED CONTACTS (new audience segments from research)
+// ═══════════════════════════════════════════════════
+const SEED_CONTACTS = [
+  // REDDIT COMMUNITIES
+  {id:'seed_r01',name:'r/lawofattraction',handle:'r/lawofattraction',platform:'Reddit',category:'reddit',value:5,status:'drafted',context:'290K members. People actively practicing manifestation — many can\'t articulate what they\'re doing philosophically. PL\'s Three Laws (especially Law 3: "What persists in the mind becomes your reality") IS the law of attraction stated precisely. Post as Maurrice sharing practice, not brand. No links in body.',specifics:'No brand name. No links in body. Post as personal practice. The Curve is the hook — "I draw the same shape every day because..."',log:[]},
+  {id:'seed_r02',name:'r/Stoicism',handle:'r/Stoicism',platform:'Reddit',category:'reddit',value:5,status:'drafted',context:'600K members. Stoics already live by "your mind shapes your reality." Marcus Aurelius, Epictetus — the lineage PL draws from philosophically without naming. The Codex IS a philosophical journal. Post Codex excerpts as personal reflection, not brand content.',specifics:'Post as: "Been keeping a daily philosophical journal since 2019. Here\'s something I wrote..." No brand. No links. Account profile does the work.',log:[]},
+  {id:'seed_r03',name:'r/streetwear',handle:'r/streetwear',platform:'Reddit',category:'reddit',value:4,status:'drafted',context:'4.1M members. Visuals-driven. The Curve on a clean black tee will stop the scroll. Post as "Made this myself" or "Built my own brand" content. Community respects founders who show the work.',specifics:'Post product photos as personal work, not brand ad. "Started making clothes to match the visual language I\'d been developing for 7 years." Engagement before link.',log:[]},
+  {id:'seed_r04',name:'r/philosophy',handle:'r/philosophy',platform:'Reddit',category:'reddit',value:4,status:'drafted',context:'18M members. Highly moderated — no self-promotion. Post as genuine philosophical inquiry. The Three Laws as a philosophical framework for discussion. "Does behavior precede belief, or does belief precede behavior?" PL\'s answer is the discussion starter.',specifics:'Post pure philosophy. AMA buffer approach. The brand name never appears. The account profile is the discovery mechanism.',log:[]},
+  {id:'seed_r05',name:'r/art',handle:'r/art',platform:'Reddit',category:'reddit',value:4,status:'drafted',context:'22M members. Strict self-promotion rules — artists banned for mentioning commissions. Post process work, archive pieces, Seeds. "Here\'s something I made today" format. Seven years daily practice is the story. Community rewards consistency.',specifics:'Post archive pieces as "daily practice." No prices, no links in body. Title: medium, year. "Alcohol ink on watercolor, 2024."',log:[]},
+  {id:'seed_r06',name:'r/femalefashionadvice',handle:'r/femalefashionadvice',platform:'Reddit',category:'reddit',value:3,status:'drafted',context:'3.2M members. Philosophy-curious, quality-conscious. They reject fast fashion on principle. The PL story (7 years before a garment) is exactly what this community respects. Post as discussion: "I finally started selling my art as clothing. Here\'s why it took 7 years."',specifics:'Frame as personal journey, not promotion. The archive backstory IS the content.',log:[]},
+  {id:'seed_r07',name:'r/malefashionadvice',handle:'r/malefashionadvice',platform:'Reddit',category:'reddit',value:3,status:'drafted',context:'6.3M members. Outfit posts, community feedback. Independent brand clothing worn with intention photographs well here. Post fits featuring PL pieces as personal style, not brand advertising.',specifics:'Post outfit photo. The Glyphs tee as a statement piece in a curated fit. Quality photo matters here.',log:[]},
+  {id:'seed_r08',name:'r/ArtBusiness',handle:'r/ArtBusiness',platform:'Reddit',category:'reddit',value:4,status:'drafted',context:'Active community of artists monetizing their work. The PL story — 7 years of practice before selling — is instructional content here. Post as case study: "I spent 7 years building an archive before selling anything. Here\'s what I learned."',specifics:'AMA candidate. Full story format. Genuine business insight from building in public.',log:[]},
+  // MANIFESTATION / SPIRITUALITY
+  {id:'seed_m01',name:'Hay House',handle:'@hayhouse',platform:'Instagram',category:'manifestation',value:5,status:'drafted',context:'Largest spiritual publishing house globally. Founded by Louise Hay — affirmations, manifestation, self-help. Their audience is exactly PL\'s secondary ICP: people who already believe thoughts shape reality, who have the receipts (bought the books, done the work), and who want their wardrobe to carry the doctrine. Press angle: PL as wearable Hay House — philosophy you can wear.',specifics:'Phase Two. Not a cold DM — a press pitch. The angle: PL is what Hay House philosophy looks like as wearable art.',log:[]},
+  {id:'seed_m02',name:'Gabby Bernstein',handle:'@gabbybernstein',platform:'Instagram',category:'manifestation',value:4,status:'drafted',context:'7M+ followers. Spirit Junkie. NYT bestselling author — "The Universe Has Your Back," "Super Attractor." Her audience already lives by manifestation as doctrine. She crosses fashion and spirituality intentionally. PL\'s "You are in control of your reality" is her thesis stated differently.',specifics:'Cold DM as founder. Lead with Law 2 parallel to her "Universe Has Your Back" thesis. Don\'t pitch product — pitch the philosophical alignment.',log:[]},
+  {id:'seed_m03',name:'Jay Shetty',handle:'@jayshetty',platform:'Instagram',category:'philosophy',value:4,status:'drafted',context:'21M+ followers. On Purpose podcast. Former monk. Translates ancient philosophy (Vedic, Stoic, Buddhist) into modern practice. His audience is educated, self-aware, buy books and experiences. The PL archive-as-daily-practice is identical to his "design your day with intention" framework.',specifics:'Lead with the daily practice parallel — 7 years drawing every day as a philosophical practice. Not a brand pitch. A peer conversation about what sustained practice produces.',log:[]},
+  {id:'seed_m04',name:'Lewis Howes',handle:'@lewishowes',platform:'Instagram',category:'philosophy',value:3,status:'drafted',context:'School of Greatness podcast host. 4M+ followers. His audience is high-achieving, self-development oriented, 25-40. The "prepared for luxury" law resonates here — luxury earned through disciplined preparation. He actively covers independent builders and artists who have unusual stories.',specifics:'Podcast pitch angle — not a product pitch. The story: 7 years of daily practice, warehouse shifts, no outside investment, a philosophy first.',log:[]},
+  {id:'seed_m05',name:'Daily Stoic',handle:'@dailystoic',platform:'Instagram',category:'philosophy',value:5,status:'drafted',context:'Ryan Holiday. 2M+ followers across IG/X. Translates Stoic philosophy into daily practice — exactly what the Codex does. His audience buys philosophy books, philosophy merchandise (Daily Stoic sells journals, coins, medallions). They already pay for philosophy-as-object. PL is the next level: philosophy as wearable art with a documented author.',specifics:'Approach as peer. The Codex parallel to Stoic journaling tradition is the hook. Not asking for anything — acknowledging the shared lineage.',log:[]},
+  {id:'seed_m06',name:'School of Life',handle:'@theschooloflife',platform:'Instagram',category:'philosophy',value:4,status:'drafted',context:'Alain de Botton\'s institution. 2M+ followers. Philosophy made accessible, emotional intelligence, self-knowledge. Their audience buys books, courses, conversation cards. They are exactly the buyer who wants their wardrobe to argue something. Press pitch: PL as wearable philosophy for the School of Life audience.',specifics:'Press collaboration angle. Their audience and PL\'s ICP are identical. The Codex as curriculum parallel.',log:[]},
+  {id:'seed_m07',name:'Neville Goddard Community',handle:'r/NevilleGoddard',platform:'Reddit',category:'manifestation',value:5,status:'drafted',context:'Neville Goddard — the most philosophically rigorous manifestation teacher. "Imagination creates reality." His Law 3 ("Persist in the assumption") IS PL Law 3 stated in different language. This community is already philosophically sophisticated — they\'re not LOA beginners. Post Codex writing as practice documentation.',specifics:'Post as practitioner who found Neville\'s work reflected in their own practice independently. The parallel is genuine — don\'t fabricate it.',log:[]},
+  // MICRO INFLUENCERS
+  {id:'seed_i01',name:'Philosophy Accounts (IG, 50K-300K)',handle:'(research: @philosophybro, @philosophyterms, @philosophy_bites)',platform:'Instagram',category:'micro_influencer',value:4,status:'drafted',context:'Philosophy micro-influencers on Instagram. 50K-300K followers. They post quotes, frameworks, philosophical thought experiments. Their audience is exactly PL\'s ICP — philosophy-curious, educated 22-35, willing to pay for meaning. Cold DM: acknowledge their work, introduce PL as philosophy made wearable.',specifics:'Identify 10 accounts in 50K-300K range. DM template: lead with their specific post that resonates with a PL law. Make the connection precise.',log:[]},
+  {id:'seed_i02',name:'Independent Creative Builders (TikTok)',handle:'(research and find: building in public, indie brand, artist)',platform:'TikTok',category:'micro_influencer',value:4,status:'drafted',context:'TikTok creators in 10K-100K range documenting their independent brand/art journey. "Building in public" content. Their audience respects the founder story. PL\'s 7-year archive + warehouse shifts + no investors IS the content. Peer-to-peer DM: fellow builder to builder.',specifics:'Find 20 accounts. Look for: building a brand alone, creative daily practice, anti-corporate sentiment, manifestation-adjacent language in their content.',log:[]},
+  {id:'seed_i03',name:'Art Journal / Sketchbook Community',handle:'(research: @sketchbook, @artjournal)',platform:'Instagram',category:'micro_influencer',value:4,status:'drafted',context:'Daily art practice community. People who keep sketchbooks, art journals, bullet journals as philosophical practice. The Seeds (3x4" art cards) live exactly in their world. The Curve as daily practice resonates immediately. These are the people who understand what 7 years of daily work means — they\'re doing it themselves.',specifics:'Post Seeds and process work in this community before any outreach. Organic discovery first.',log:[]},
+  {id:'seed_i04',name:'Streetwear Resellers / Collectors',handle:'(Grailed, GOAT adjacent accounts)',platform:'Instagram',category:'collector',value:3,status:'drafted',context:'Streetwear archive collectors. They understand scarcity, provenance, documentation. The PL founding pricing model (kairos window) maps directly to limited-run streetwear logic they already operate in. The Archive Gallery (when live) will speak their language immediately.',specifics:'Phase Two — when archive gallery is live. The documented archive IS the proof of provenance they look for.',log:[]},
+  // PHILOSOPHY / INTELLECTUAL
+  {id:'seed_p01',name:'Existential Comics',handle:'@existentialcomics',platform:'Twitter/X',category:'philosophy',value:3,status:'drafted',context:'2M+ followers. Corey Mohler. Philosophy as illustrated comics — accessible, irreverent, serious underneath. His audience skews 22-35, educated, buys philosophy merch. The Three Laws as a philosophical system would interest him intellectually.',specifics:'Engage organically first — reply to tweets with genuine philosophical depth. Build recognition before DM.',log:[]},
+  {id:'seed_p02',name:'Academy of Ideas',handle:'@academyofideas',platform:'Instagram',category:'philosophy',value:4,status:'drafted',context:'Jungian philosophy, Nietzsche, power of the unconscious. Their thesis — ideas shape civilization — maps directly to PL Law 3. Their audience (500K+) is philosophically sophisticated and seeks objects that carry intellectual weight.',specifics:'The Curve as visual philosophy — a mark that precedes language — is their territory. Post as philosophical inquiry, not brand pitch.',log:[]},
+  // CONTENT / ORGANIC TARGETS
+  {id:'seed_c01',name:'TikTok: #manifestation (19.2B views)',handle:'#manifestation on TikTok',platform:'TikTok',category:'manifestation',value:5,status:'drafted',context:'19.2 billion views. The largest spiritual content category on TikTok. PL doesn\'t need to chase this — it needs to exist there authentically. Content strategy: "Why I draw the same shape every day" (Curve as daily practice). The Three Laws as short-form content. Seeds process videos. No mention of selling in first 10 posts.',specifics:'Content pillars: (1) Daily practice documentation, (2) The Three Laws explained one at a time, (3) Archive reveals — "7 years of work, one piece at a time", (4) Seeds making process. Hook formula: Challenge an assumption in first 3 seconds.',log:[]},
+  {id:'seed_c02',name:'X: Philosophy / Mindset Community',handle:'(build in public, philosophy Twitter)',platform:'Twitter/X',category:'philosophy',value:4,status:'drafted',context:'X philosophy community responds to aphoristic content — short, precise, devastating statements. The Three Laws as X posts. Codex fragments. "The garment is not the point." 3-5 tweet threads on practice, consistency, what seven years looks like. Communities feature: post to Philosophy, Art, Streetwear communities before main timeline. Under 3K followers: 100% community posts.',specifics:'Content: threads on (1) what 7 years of daily practice teaches, (2) manifestation as philosophy not magic, (3) the moat that time builds. No promotional content in first 30 posts.',log:[]},
+];
+
+// ═══════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════
+const SK  = 'pl-outreach-v3'; // unified key
+const SK1 = 'pl-outreach-v1'; // legacy: outreach.html
+const SK2 = 'pl-outreach-v2'; // legacy: pl-outreach-os.html
+function load() {
+  try { const raw = localStorage.getItem(SK); if (raw) return JSON.parse(raw); } catch(e){}
+  // Migration: pull contacts from both legacy keys
+  let leg1=[], leg2=[];
+  try { const r=localStorage.getItem(SK1); if(r){const d=JSON.parse(r);leg1=d.contacts||[];} } catch(e){}
+  try { const r=localStorage.getItem(SK2); if(r){const d=JSON.parse(r);leg2=d.contacts||[];} } catch(e){}
+  const seen=new Set(); const merged=[];
+  for (const c of [...SEED_CONTACTS,...leg1,...leg2]) { if(!seen.has(c.id)){seen.add(c.id);merged.push(c);} }
+  return {contacts:merged, seeded_v3:true};
+}
+function save(s) { try { localStorage.setItem(SK, JSON.stringify(s)); } catch(e) {} }
+function uid() { return 'c_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function today() { return new Date().toISOString().slice(0,10); }
+function daysSince(d) { if (!d) return null; return Math.floor((Date.now() - new Date(d)) / 86400000); }
+
+// ═══════════════════════════════════════════════════
+// VDOM
+// ═══════════════════════════════════════════════════
+function h(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(props||{})) {
+    if (k==='cls') e.className=v;
+    else if (k==='html') e.innerHTML=v;
+    else if (typeof v==='function') e.addEventListener(k,v);
+    else if (v===true) e.setAttribute(k,'');
+    else if (v!==false && v!=null) e.setAttribute(k,v);
+  }
+  for (const k of kids) {
+    if (k==null) continue;
+    e.append(typeof k==='string' ? document.createTextNode(k) : k);
+  }
+  return e;
+}
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let ST = load();
+let tab = 'contacts';
+let modal = null;
+let viewingId = null;
+let contactFilter = 'all';
+let searchQ = '';
+let editingContact = null;
+
+let composeForm = blankForm();
+let composeOutputs = null;
+let composeVariant = 0;
+let composeLoading = false;
+let composeVoice = 'founder'; // 'founder' | 'brand'
+let composeContentType = 'cold_dm';
+
+function blankForm() {
+  return {name:'',handle:'',platform:'Instagram',category:'artist',context:'',specifics:'',value:3,status:'drafted',sent_date:'',followup_date:'',log:[]};
+}
+function categoryById(id) { return CATEGORIES.find(c=>c.id===id)||CATEGORIES[0]; }
+function needsFollowup(c) { return c.status==='sent' && (daysSince(c.sent_date)||0)>=5; }
+function urgencyLevel(c) { const d=daysSince(c.sent_date); if(d==null)return null; return d>=14?'overdue':d>=5?'soon':null; }
+
+// ═══════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════
+function render() {
+  const root = document.getElementById('app');
+  root.innerHTML = '';
+  root.appendChild(mainView());
+  if (modal) root.appendChild(modalView());
+}
+
+function mainView() {
+  const wrap = h('div',{cls:'app'});
+  const followupCount = ST.contacts.filter(needsFollowup).length;
+
+  // Header
+  wrap.appendChild(h('div',{cls:'head'},
+    h('div',{cls:'brand'},
+      h('span',{cls:'mark'},'Psyched Luxuries'),
+      h('span',{cls:'count'},ST.contacts.length+' contacts')
+    ),
+    h('button',{cls:'menu-btn',click:()=>{modal='data';render();}},h('span'),h('span'),h('span'))
+  ));
+
+  // Tabs
+  const tabs = h('div',{cls:'tabs'});
+  [['contacts','Contacts'],['compose','Compose'],['growth','Growth'],['followups','Follow-ups']].forEach(([id,label])=>{
+    const t = h('button',{cls:'tab'+(id===tab?' active':''),click:()=>{tab=id;render();}},label);
+    if(id==='followups'&&followupCount>0) t.appendChild(h('span',{cls:'badge'},String(followupCount)));
+    tabs.appendChild(t);
+  });
+  wrap.appendChild(tabs);
+
+  // Pane
+  const pane = h('div',{cls:'pane'});
+  if(tab==='contacts') pane.appendChild(contactsView());
+  else if(tab==='compose') pane.appendChild(composeView());
+  else if(tab==='growth') pane.appendChild(growthView());
+  else pane.appendChild(followupsView());
+  wrap.appendChild(pane);
+
+  wrap.appendChild(h('div',{cls:'foot'},
+    h('span',{},'local · offline · yours'),
+    h('button',{cls:'link',click:()=>{modal='data';render();}},'library')
+  ));
+
+  if(tab!=='growth') {
+    wrap.appendChild(h('button',{cls:'fab',click:()=>{
+      composeForm=blankForm();composeOutputs=null;editingContact=null;
+      composeVoice='founder';composeContentType='cold_dm';
+      tab='compose';render();window.scrollTo({top:0,behavior:'smooth'});
+    }},'+'));
+  }
+
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════
+// CONTACTS VIEW
+// ═══════════════════════════════════════════════════
+function contactsView() {
+  const wrap = h('div');
+  wrap.appendChild(h('div',{cls:'pane-head'},
+    h('div',{cls:'pane-title'},'Contacts'),
+    h('div',{cls:'pane-sub'},'The network being built')
+  ));
+
+  // Search
+  const srch = h('input',{cls:'ipt',placeholder:'Search name, handle, category...',style:'margin-bottom:10px;font-size:12px;padding:9px 12px'});
+  srch.value = searchQ;
+  srch.addEventListener('input',e=>{searchQ=e.target.value;render();});
+  wrap.appendChild(srch);
+
+  // Filters
+  const filters = h('div',{cls:'filter-row'});
+  const filterOpts = ['all',...STATUSES.map(s=>s.id),...CATEGORIES.map(c=>c.id)];
+  filterOpts.forEach(f=>{
+    filters.appendChild(h('button',{cls:'filter-chip'+(contactFilter===f?' active':''),click:()=>{contactFilter=f;render();}},f));
+  });
+  wrap.appendChild(filters);
+
+  let list = [...ST.contacts];
+  if(contactFilter!=='all') list=list.filter(c=>c.status===contactFilter||c.category===contactFilter);
+  if(searchQ) {
+    const q=searchQ.toLowerCase();
+    list=list.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.handle||'').toLowerCase().includes(q)||(c.category||'').toLowerCase().includes(q)||(c.context||'').toLowerCase().includes(q));
+  }
+  list.sort((a,b)=>(b.updated||b.created||0)-(a.updated||a.created||0));
+
+  if(!list.length) {
+    const e=h('div',{cls:'empty'});
+    e.innerHTML='No contacts in this view.<br><em>Tap + to add one.</em>';
+    wrap.appendChild(e);
+    return wrap;
+  }
+
+  const cl=h('div',{cls:'contact-list'});
+  list.forEach(c=>cl.appendChild(contactRow(c)));
+  wrap.appendChild(cl);
+  return wrap;
+}
+
+function contactRow(c) {
+  const cat=categoryById(c.category);
+  const urgency=urgencyLevel(c);
+  const row=h('div',{cls:'contact-row'+(needsFollowup(c)?' warn-row':''),click:()=>{viewingId=c.id;modal='detail';render();}});
+  const headRow=h('div',{cls:'contact-row-head'});
+  const left=h('div',{style:'flex:1;min-width:0'});
+  left.appendChild(h('div',{cls:'contact-name'},c.name||(c.handle||'(unnamed)')));
+  if(c.handle) left.appendChild(h('div',{cls:'contact-handle'},c.handle+' · '+c.platform));
+  headRow.appendChild(left);
+  headRow.appendChild(h('div',{cls:'contact-status '+c.status},c.status));
+  row.appendChild(headRow);
+  const meta=h('div',{cls:'contact-meta'});
+  meta.appendChild(h('span',{cls:'cat-pill '+c.category},cat.name));
+  meta.appendChild(h('span',{cls:'value-stars'},'★'.repeat(c.value||3)+'☆'.repeat(5-(c.value||3))));
+  if(c.sent_date){
+    const days=daysSince(c.sent_date);
+    const sp=h('span',{},days===0?'sent today':days+'d ago');
+    if(urgency) sp.appendChild(h('span',{cls:'urgency '+urgency},urgency==='overdue'?'overdue':'follow up'));
+    meta.appendChild(sp);
+  }
+  row.appendChild(meta);
+  if(c.context) row.appendChild(h('div',{cls:'contact-context'},c.context.length>130?c.context.slice(0,130)+'…':c.context));
+  return row;
+}
+
+// ═══════════════════════════════════════════════════
+// COMPOSE VIEW
+// ═══════════════════════════════════════════════════
+function composeView() {
+  const wrap=h('div');
+  wrap.appendChild(h('div',{cls:'pane-head'},
+    h('div',{cls:'pane-title'},editingContact?'Edit Contact':'New Outreach'),
+    h('div',{cls:'pane-sub'},'AI-powered · voice-locked · three variants')
+  ));
+
+  const f=composeForm;
+
+  // Voice mode
+  wrap.appendChild(h('label',{cls:'lbl'},'Voice Mode'));
+  const vRow=h('div',{cls:'toggle-row'});
+  VOICE_MODES.forEach(vm=>{
+    vRow.appendChild(h('button',{cls:'toggle-btn'+(composeVoice===vm.id?' active':''),click:()=>{composeVoice=vm.id;render();}},vm.name));
+  });
+  wrap.appendChild(vRow);
+
+  // Content type
+  wrap.appendChild(h('label',{cls:'lbl'},'Content Type'));
+  const ctRow=h('div',{cls:'toggle-row',style:'flex-wrap:wrap'});
+  CONTENT_TYPES.forEach(ct=>{
+    ctRow.appendChild(h('button',{cls:'toggle-btn'+(composeContentType===ct.id?' active':''),style:'flex:0 0 calc(50% - 3px)',click:()=>{composeContentType=ct.id;render();}},ct.name));
+  });
+  wrap.appendChild(ctRow);
+
+  // Name
+  const nameIn=h('input',{cls:'ipt',placeholder:'Name / Community',value:f.name});
+  nameIn.addEventListener('input',e=>f.name=e.target.value);
+  wrap.append(h('label',{cls:'lbl'},'Name'),nameIn);
+
+  // Handle + Platform
+  wrap.appendChild(h('div',{cls:'row2'},
+    (()=>{const c=h('div');c.appendChild(h('label',{cls:'lbl'},'Handle / Email'));const ip=h('input',{cls:'ipt',placeholder:'@username or email',value:f.handle,style:'font-size:12px'});ip.addEventListener('input',e=>f.handle=e.target.value);c.appendChild(ip);return c;})(),
+    (()=>{const c=h('div');c.appendChild(h('label',{cls:'lbl'},'Platform'));const sel=h('select',{cls:'ipt',style:'font-size:12px'});PLATFORMS.forEach(p=>{const o=h('option',{value:p},p);if(p===f.platform)o.selected=true;sel.appendChild(o);});sel.addEventListener('change',e=>f.platform=e.target.value);c.appendChild(sel);return c;})()
+  ));
+
+  // Category + Value
+  wrap.appendChild(h('div',{cls:'row2'},
+    (()=>{const c=h('div');c.appendChild(h('label',{cls:'lbl'},'Category'));const sel=h('select',{cls:'ipt',style:'font-size:12px'});CATEGORIES.forEach(cat=>{const o=h('option',{value:cat.id},cat.name);if(cat.id===f.category)o.selected=true;sel.appendChild(o);});sel.addEventListener('change',e=>f.category=e.target.value);c.appendChild(sel);return c;})(),
+    (()=>{const c=h('div');c.appendChild(h('label',{cls:'lbl'},'Priority'));const sel=h('select',{cls:'ipt',style:'font-size:12px'});[1,2,3,4,5].forEach(v=>{const o=h('option',{value:v},'★'.repeat(v)+'☆'.repeat(5-v));if(v===f.value)o.selected=true;sel.appendChild(o);});sel.addEventListener('change',e=>f.value=parseInt(e.target.value));c.appendChild(sel);return c;})()
+  ));
+
+  const ctxIn=h('textarea',{cls:'ipt',rows:'3',placeholder:'Who they are. What you noticed. Why you\'re reaching out.'});
+  ctxIn.value=f.context;ctxIn.addEventListener('input',e=>f.context=e.target.value);
+  wrap.append(h('label',{cls:'lbl'},'Context'),ctxIn);
+
+  const specIn=h('input',{cls:'ipt',placeholder:'Specific hook — their track, their last post, their platform community',value:f.specifics,style:'font-size:13px'});
+  specIn.addEventListener('input',e=>f.specifics=e.target.value);
+  wrap.append(h('label',{cls:'lbl'},'Specific Hook (optional)'),specIn);
+
+  if(composeLoading) {
+    wrap.appendChild(h('div',{cls:'ai-loading'},
+      h('div',{cls:'ai-loading-text'},'Claude writing in PL voice...'),
+      h('div',{cls:'ai-loading-bar'},h('div',{cls:'ai-loading-fill'})),
+      h('div',{cls:'ai-loading-text',style:'font-size:9px;color:rgba(138,129,112,.5)'},'generating three variants')
+    ));
+  } else {
+    const genBtn=h('button',{cls:'primary',click:async()=>{
+      if(!f.name.trim()){alert('Add a name.');return;}
+      composeLoading=true;composeOutputs=null;render();
+      composeOutputs=await generateWithClaude(f);
+      composeVariant=0;composeLoading=false;render();
+    }},editingContact?'Regenerate with Claude':'Generate with Claude');
+    wrap.appendChild(genBtn);
+  }
+
+  if(composeOutputs) {
+    const out=h('div',{cls:'output-section'});
+    out.appendChild(h('div',{style:'font-size:9px;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;margin-bottom:12px'},'Three Variants'));
+    const block=h('div',{cls:'output-block'});
+    const vtabs=h('div',{cls:'variant-tabs'});
+    composeOutputs.forEach((v,i)=>{
+      vtabs.appendChild(h('button',{cls:'variant-tab'+(composeVariant===i?' active':''),click:()=>{composeVariant=i;render();}},v.tone));
+    });
+    block.appendChild(vtabs);
+    const head=h('div',{cls:'output-head'});
+    head.appendChild(h('span',{cls:'output-label'},composeOutputs[composeVariant].tone+' · '+CONTENT_TYPES.find(c=>c.id===composeContentType)?.name+' · '+(composeVoice==='founder'?'Founder':'Brand')));
+    const cb=h('button',{cls:'copy-btn'},'Copy');
+    cb.addEventListener('click',()=>{navigator.clipboard.writeText(composeOutputs[composeVariant].text).then(()=>{cb.textContent='Copied';cb.classList.add('copied');setTimeout(()=>{cb.textContent='Copy';cb.classList.remove('copied');},1500);});});
+    head.appendChild(cb);
+    block.appendChild(head);
+    block.appendChild(h('div',{cls:'output-body'},composeOutputs[composeVariant].text));
+    out.appendChild(block);
+    out.appendChild(h('div',{cls:'btn-row'},
+      h('button',{cls:'primary',click:()=>{
+        const now=Date.now();const msg=composeOutputs[composeVariant].text;
+        if(editingContact){
+          ST.contacts=ST.contacts.map(c=>c.id===editingContact.id?{...c,...f,last_message:msg,updated:now}:c);
+        } else {
+          ST.contacts.push({...f,id:uid(),last_message:msg,created:now,updated:now,log:[{date:today(),action:'Drafted',note:'Message generated.'}]});
+        }
+        save(ST);composeForm=blankForm();composeOutputs=null;editingContact=null;tab='contacts';render();
+      }},editingContact?'Save Changes':'Save as Draft'),
+      h('button',{cls:'primary secondary',click:()=>{
+        const now=Date.now();const msg=composeOutputs[composeVariant].text;
+        navigator.clipboard.writeText(msg);
+        if(editingContact){
+          ST.contacts=ST.contacts.map(c=>c.id===editingContact.id?{...c,...f,last_message:msg,status:'sent',sent_date:today(),updated:now,log:[...(c.log||[]),{date:today(),action:'Sent',note:'Copied & marked sent.'}]}:c);
+        } else {
+          ST.contacts.push({...f,id:uid(),last_message:msg,status:'sent',sent_date:today(),created:now,updated:now,log:[{date:today(),action:'Sent',note:'Copied & marked sent.'}]});
+        }
+        save(ST);composeForm=blankForm();composeOutputs=null;editingContact=null;tab='contacts';render();
+      }},'Copy & Mark Sent')
+    ));
+    wrap.appendChild(out);
+  }
+
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════
+// AI GENERATION
+// ═══════════════════════════════════════════════════
+async function generateWithClaude(f) {
+  const ct=CONTENT_TYPES.find(x=>x.id===composeContentType)||CONTENT_TYPES[0];
+  const vm=VOICE_MODES.find(x=>x.id===composeVoice)||VOICE_MODES[0];
+
+  const SYSTEM=`You are the voice architect for Psyched Luxuries — a philosophy-first wearable art brand.
+
+BRAND FACTS:
+- Founded: Maurrice (solo founder). Seven-year daily creative practice, archive origin April 2019, 2,000+ pieces.
+- Three Laws: (1) "Prepared for luxury." (2) "You are in control of your reality." (3) "What persists in the mind becomes your reality."
+- Closing declaration: "Watch this." (period — never exclamation)
+- Live storefront: psychedluxuries.com (launched April 7, 2026)
+- Products: Classic (logo wear), Glyphs (4-symbol line), Seeds (3x4" hand-drawn art cards, limited 2026-2029)
+- Three bodies of work: Commercial (Fourthwall), Fine Art (private archive), Interference Art (free distribution as institutional critique, never sold)
+- Visual language: The Curve — a looping ribbon-form, a living semiotic system developed across the full archive
+- Physical Codex: philosophical composition book. The Psyched Study: study.psychedluxuries.com — online philosophy curriculum
+- Operating model: Maurrice works ~60hrs/week warehouse + Digital Media Arts program. No investors. No PR firm. Built in the margins of a full life.
+- Pricing (non-negotiable): Tees $60, Croptops $55, Crews/Hoodies $90, Sweatpants $70, Tumbler $40
+- NO FREE MERCH. Never offered. Never implied.
+- Brand CSS: obsidian #0a0a0a, gold #c9a84c, purple #9b72cf
+- Creative lineage: Van Gogh (daily practice), Basquiat (raw symbol), Haring (public language), Russ (DIY ownership)
+
+TARGET AUDIENCE SEGMENTS:
+1. Primary ICP "The Documented Self" (24-34): Independent creatives who buy meaning not product. Have attempted daily practice. Respect receipts. Already follow Online Ceramics, Denim Tears, Brain Dead. Read The Creative Act, Camus, Russ's book. Watch A24 films. Buying trigger: the 7-year archive, not the garment.
+2. Secondary ICP "The Archive Buyer" (32-45): Fine art collectors, pay $200-800 per piece. Found through curators, not feeds.
+3. Tertiary ICP "The Initiate" (19-24): Glyphs as entry. Converts to membership. Ages into primary ICP.
+4. Manifestation Community: Already believe thoughts shape reality but lack philosophical precision. PL Law 3 IS the law of attraction stated correctly.
+5. Philosophy Audience: Stoics, Jungians, New Thought adjacent. The Codex as philosophical journal. The archive as documented practice.
+6. Spirituality Community: Consciousness, self-development, intentional living. PL's "You are in control of your reality" meets their worldview.
+
+COMPETITIVE POSITION:
+- Online Ceramics: borrowed philosophy (Grateful Dead). PL: authored philosophy.
+- Denim Tears: one motif (cotton wreath). PL: 2,000-piece living alphabet (The Curve).
+- CPFM: silence as strategy. PL: Codex as doctrine — silence is structural.
+- Brain Dead: collage curation. PL: archaeological excavation — one practice, one author.
+- Nude Project: "by artists" as slogan. PL: 7-year archive as proof.
+
+GROWTH STRATEGY CONTEXT:
+- Reddit: Anonymous account. Zero brand name in posts. Zero links in body. Profile is discovery mechanism. Community engagement (AMA, discussion) only. 60-day minimum between visits to same subreddit.
+- TikTok: Raw > polished. First 3 seconds = everything. Content pillars: (1) daily practice doc, (2) Three Laws explained, (3) archive reveals, (4) Seeds process. Hashtag: #manifestation (19.2B views), #wearableart, #philosophyofart
+- X/Twitter: Aphoristic. Philosophy threads. Communities before timeline (under 3K followers). Engage 20+ accounts daily in niche.
+- Instagram: Primary platform currently. Reels > posts for discovery. Carousel for depth. Story for behind-scenes. Grid as gallery.
+
+VOICE RULES — ABSOLUTE:
+- Sophisticated, not poetic. Earned certainty, not hype.
+- Never performs. States.
+- No exclamation marks. No question-based engagement bait.
+- Short punchy sentences. Direct opening. Active voice.
+- BANNED: delve, synergy, revolutionize, unlock, robust, comprehensive, elevate, navigate, utilize, beacon, excited, honored, blessed, "check out", explore, journey, game-changer, disruptive, curated, authentic (when used as adjective praise).
+- "Watch this." is the closing — use it when it fits. Sparingly.
+- No flattery. No pleasantries. No "I hope this finds you well."
+
+FOUNDER VOICE ("As Founder" — Maurrice speaking personally):
+- First person. Direct. Lived-in. Specific.
+- References personal experience: warehouse shifts, 7 years building, the practice itself.
+- Writes like one serious person to another. No corporate distance.
+- Example: "I've been drawing the same shape every day for seven years."
+
+BRAND VOICE ("As Brand" — @psychedluxuries speaking):
+- Institutional. Sovereign. Timeless.
+- Third-person-adjacent. Declarative.
+- Speaks from the position of documented authority, not personal appeal.
+- Example: "The archive precedes the garment. Always has."
+
+CONTENT TYPE RULES:
+- Cold DM: Under 75 words. Lead with THEIR world, not PL's. One specific observation. Soft CTA only.
+- Organic Post: Hook in first 2 lines (information gap or myth challenge). White space. 1-2-1 rhythm. Specific number or framework or repeatable step. End with polarizing question or statement — never a direct question asking "what do you think?"
+- Reddit Post: NO brand name. NO links in body. Write as personal experience or genuine philosophical discussion. Community-native tone. Authenticity > promotion. Under 400 words.
+- X Thread: 3-5 tweets. Tweet 1 = hook (challenge assumption or stark truth). Tweets 2-4 = development. Tweet 5 = landing (declarative, not question). Number each tweet [1/5] etc.
+
+GENERATE exactly THREE variants with tones: Direct, Warm, Short.
+Each must feel written for this specific contact, not templated.
+Return ONLY a JSON array (no markdown, no preamble):
+[{"tone":"Direct","text":"..."},{"tone":"Warm","text":"..."},{"tone":"Short","text":"..."}]`;
+
+  const USER=`Write ${ct.name} outreach for: ${f.name} (${f.handle}) on ${f.platform}.
+Voice: ${vm.name} — ${vm.desc}
+Category: ${categoryById(f.category).name}
+Context: ${f.context||'(none provided)'}
+Specific hook: ${f.specifics||'(none)'}
+${f.last_message?'Previous message (do NOT repeat — write fresh): '+f.last_message:''}
+
+Generate three variants (Direct, Warm, Short) in PL voice. Make them feel written specifically for this contact.`;
+
+  try {
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:SYSTEM,
+        messages:[{role:'user',content:USER}]
+      })
+    });
+    const data=await res.json();
+    const raw=data.content?.[0]?.text||'[]';
+    const clean=raw.replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(clean);
+    return Array.isArray(parsed)?parsed:[{tone:'Result',text:clean}];
+  } catch(err) {
+    // Fallback to template
+    return generateFallback(f);
+  }
+}
+
+function generateFallback(f) {
+  const first=(f.name||'').split(/\s+/)[0]||'—';
+  const spec=f.specifics||'';
+  const cat=f.category;
+  const base=`psychedluxuries.com`;
+  let d='',w='',s='';
+  if(cat==='reddit'||cat==='manifestation'){
+    d=`Been keeping a daily drawing practice since 2019 — same shape, every day. Not art school. Not brand building. Just a question I kept asking through marks.\n\nAfter 2,000+ pieces, I started noticing the shape was teaching me something. Posted some here. The philosophy that came out of it ended up being the foundation for something real.\n\nHappy to share more if useful.`;
+    w=`Seven years of daily practice. Same shape, every day. I didn't know what I was doing — I just knew stopping felt wrong.\n\nAfter a while the practice started answering its own questions. Three laws emerged. An archive of 2,000+ pieces. A visual language.\n\nNow it's a brand. Philosophy first. Still building. ${base}`;
+    s=`7 years. Same shape. Every day. Eventually it told me what it was. ${base}`;
+  } else if(cat==='philosophy'||cat==='spirituality'){
+    d=`${first} —\n\n${spec?spec+'. ':''}Building Psyched Luxuries — philosophy made wearable. Seven-year daily practice, three laws, 2,000-piece archive.\n\nLaw 3: "What persists in the mind becomes your reality." That's the thesis. The garments are evidence of it.\n\n${base}. Watch this.`;
+    w=`${first} —\n\n${spec?'Noticed '+spec+'. ':''}The work you're doing sits in the same territory as what I'm building.\n\nPsyched Luxuries is philosophy-first wearable art — seven years of daily practice distilled into three laws and a locked visual language. Not performance. Documentation.\n\n${base} if you want to see what the practice produces.`;
+    s=`${first} — Psyched Luxuries. Philosophy documented as wearable art. 7-year archive, three laws. ${base}. Watch this.`;
+  } else {
+    d=`${first} —\n\n${spec?spec+'. ':''}Psyched Luxuries. Wearable art, manifestation philosophy. Seven-year archive, locked visual lexicon.\n\nThink there's something here. ${base}.\n\nWatch this.`;
+    w=`${first} —\n\n${spec?'Noticed '+spec+'. Real work.':'Real work over there.'} Been watching.\n\nI run Psyched Luxuries. Wearable art, philosophy at the core, seven-year archive. Not a streetwear brand pretending to be art.\n\n${base} if you want to see it.`;
+    s=`${first} — Psyched Luxuries. ${spec?spec+'. ':''}Wearable art, manifestation philosophy. ${base}. Watch this.`;
+  }
+  return [{tone:'Direct',text:d},{tone:'Warm',text:w},{tone:'Short',text:s}];
+}
+
+// ═══════════════════════════════════════════════════
+// GROWTH VIEW
+// ═══════════════════════════════════════════════════
+function growthView() {
+  const wrap=h('div');
+  wrap.appendChild(h('div',{cls:'pane-head'},
+    h('div',{cls:'pane-title'},'Growth Playbook'),
+    h('div',{cls:'pane-sub'},'Platform strategy · audience map · community targets')
+  ));
+
+  // Platform strategies
+  const platforms=[
+    {
+      name:'Instagram',
+      meta:'Primary platform · 4 posts/week',
+      pillars:[
+        {title:'Archive Reveal',body:'One piece from the 2,000+ archive. Date, medium, what it taught. No product mention until post 10+.'},
+        {title:'Seeds Process',body:'Making a 3x4" original. Hands, materials, the mark itself. 15-30s Reel. #wearableart #dailyart'},
+        {title:'The Three Laws',body:'One law per post. No caption decoration — state the law, then show what it produced. Let the silence work.'},
+        {title:'Constraint as Story',body:'"Built this in a 15-minute lunch break." The warehouse, the pressure, the discipline. That IS the brand story.'},
+        {title:'Glyph Explanation',body:'Each Glyph described without the product. Love Yourself, What Goes Around, Glyph Guy, Money Glyph — as philosophy, not merch.'}
+      ],
+      tips:[
+        {text:'Hook in first <strong>3 seconds</strong> of Reels. Algorithm rewards watch time above all else.'},
+        {text:'Carousel posts save 3x more than single images. Use them for archive deep-dives.'},
+        {text:'Best hours: <strong>Tue-Fri, 9am-12pm</strong> and <strong>6-9pm</strong> in your audience\'s timezone.'},
+        {text:'Grid = gallery. Every 3 posts should create a visual row that makes sense together.'}
+      ]
+    },
+    {
+      name:'TikTok',
+      meta:'Growth platform · daily or 3x/week',
+      pillars:[
+        {title:'Daily Practice Doc',body:'"I\'ve drawn the same shape every day for seven years. Here\'s what I learned today." Raw footage. No editing theater.'},
+        {title:'Myth Challenging',body:'"Most manifestation content is wrong." Then explain Law 3 precisely. #manifestation (19.2B views).'},
+        {title:'Archive Time-lapse',body:'Seven years in 60 seconds. One piece per year, oldest to newest. Watch the Curve evolve.'},
+        {title:'Behind the Brand',body:'Warehouse → studio → Psyched Luxuries. The real life feeding the practice. No performance. The constraint IS the content.'},
+        {title:'Philosophy Bytes',body:'30-second explainer: one of the Three Laws. State it. Show one piece that proves it. End with "Watch this."'}
+      ],
+      tips:[
+        {text:'TikTok FYP is a level playing field — zero followers can reach millions if content resonates.'},
+        {text:'First <strong>3 seconds</strong> determine everything. Lead with the most arresting visual or the most challenging sentence.'},
+        {text:'#manifestation: 19.2B views. #wearableart, #philosophyofart, #artbrand, #independentartist as secondary.'},
+        {text:'Videos 5-15 minutes show <strong>highest completion rates</strong> (TikTok Long-Form Study 2026). Archive deep-dives qualify.'}
+      ]
+    },
+    {
+      name:'Reddit',
+      meta:'Anonymous · no brand name · no links in body',
+      pillars:[
+        {title:'AMA (r/ArtBusiness)',body:'"I spent 7 years building an archive before selling anything. AMA." Genuine business insight. Brand name never appears.'},
+        {title:'Philosophy Discussion',body:'"What persists in the mind becomes reality" — post this as genuine philosophical question in r/philosophy, r/Stoicism. Let the thread develop.'},
+        {title:'Practice Documentation',body:'"Been keeping a daily drawing practice since 2019. Here\'s what I\'ve learned about consistency." In r/art, r/femalefashionadvice.'},
+        {title:'Manifestation Reframe',body:'"The law of attraction is philosophically imprecise. Here\'s a cleaner framework." In r/lawofattraction. Engage the debate.'},
+        {title:'Streetwear Story',body:'"I built my own brand from an archive. Here\'s how." In r/streetwear. The founding story is the content.'}
+      ],
+      tips:[
+        {text:'<strong>Zero brand name in any post body.</strong> Zero links. Profile is the only discovery mechanism.'},
+        {text:'60-day minimum between repeat visits to same subreddit. Rotate the 8 targets in the contacts list.'},
+        {text:'Reddit is #1 cited domain across ChatGPT, Gemini, Perplexity. Your posts compound over time in AI answers.'},
+        {text:'Karma matters. Build it in non-brand subreddits (r/philosophy, r/art) before approaching commercial ones.'}
+      ]
+    },
+    {
+      name:'X / Twitter',
+      meta:'Aphoristic · threads · communities first',
+      pillars:[
+        {title:'The Three Laws as Aphorisms',body:'"What persists in the mind becomes your reality." One law per day, no context needed. Let them land.'},
+        {title:'Practice Threads',body:'"7 things I learned from drawing the same shape every day for 7 years." [Thread]. Number each tweet. Land on a declaration.'},
+        {title:'Philosophy Arguments',body:'"Most manifestation content confuses the mechanism. The real principle is—" Thread. Build the argument. Cite the archive as proof.'},
+        {title:'Build in Public',body:'"Day X of building Psyched Luxuries while working 60-hour warehouse weeks." No drama. Just receipts.'},
+        {title:'Archive Fragments',body:'Single pieces from the archive. Date. Medium. Nothing else. Let the work answer its own questions.'}
+      ],
+      tips:[
+        {text:'Under 3,000 followers: post <strong>100% to Communities</strong> (Philosophy, Art, Streetwear). Your posts still appear on timeline.'},
+        {text:'3-5 posts daily. Engage 20+ accounts in your niche daily. Consistency builds faster than virality.'},
+        {text:'Spaces are powerful for thought leadership — archive deep-dives, live Codex readings, philosophy discussions.'},
+        {text:'Engage 2-3 times on an account\'s posts <strong>before</strong> sending a cold DM. Signal-based outreach converts 3x better.'}
+      ]
+    }
+  ];
+
+  platforms.forEach(p=>{
+    const sec=h('div',{cls:'growth-section'});
+    sec.appendChild(h('h3',{},p.name));
+    const card=h('div',{cls:'platform-card'});
+    const head=h('div',{cls:'platform-card-head'});
+    head.appendChild(h('span',{cls:'platform-name'},p.name));
+    head.appendChild(h('span',{cls:'platform-meta'},p.meta));
+    card.appendChild(head);
+
+    card.appendChild(h('div',{style:'font-size:9px;color:var(--mute);letter-spacing:.14em;text-transform:uppercase;margin-bottom:7px'},'Content Pillars'));
+    const pillars=h('div',{cls:'platform-pillars'});
+    p.pillars.forEach(pl=>{
+      const pill=h('div',{cls:'pillar'});
+      pill.appendChild(h('div',{cls:'pillar-title'},pl.title));
+      pill.appendChild(h('div',{},pl.body));
+      pillars.appendChild(pill);
+    });
+    card.appendChild(pillars);
+
+    card.appendChild(h('div',{style:'font-size:9px;color:var(--mute);letter-spacing:.14em;text-transform:uppercase;margin:12px 0 7px'},'Key Tactics'));
+    p.tips.forEach(tip=>{
+      const t=h('div',{cls:'strategy-tip'});
+      t.innerHTML=tip.text;
+      card.appendChild(t);
+    });
+    sec.appendChild(card);
+    wrap.appendChild(sec);
+  });
+
+  // Reddit subreddits
+  const sub=h('div',{cls:'growth-section'});
+  sub.appendChild(h('h3',{},'Reddit Targets'));
+  const subs=[
+    {name:'r/lawofattraction',size:'290K',angle:'Law 3 precision — the philosophical reframe'},
+    {name:'r/Stoicism',size:'600K',angle:'Codex as philosophical journal practice'},
+    {name:'r/philosophy',size:'18M',angle:'Three Laws as discussable framework'},
+    {name:'r/art',size:'22M',angle:'Daily practice documentation'},
+    {name:'r/streetwear',size:'4.1M',angle:'Founder story — archive to garment'},
+    {name:'r/femalefashionadvice',size:'3.2M',angle:'7-year story before first garment'},
+    {name:'r/malefashionadvice',size:'6.3M',angle:'Fit photos — the work speaks'},
+    {name:'r/ArtBusiness',size:'Active',angle:'AMA — 7 years before first sale'},
+    {name:'r/NevilleGoddard',size:'Active',angle:'Law 3 as parallel practice'},
+  ];
+  subs.forEach(s=>{
+    const sc=h('div',{cls:'sub-card'});
+    sc.appendChild(h('div',{},h('div',{cls:'sub-name'},s.name),h('div',{style:'font-size:10px;color:var(--mute);margin-top:2px'},s.angle)));
+    sc.appendChild(h('div',{cls:'sub-size'},s.size));
+    sub.appendChild(sc);
+  });
+  wrap.appendChild(sub);
+
+  // ICP map
+  const icp=h('div',{cls:'growth-section'});
+  icp.appendChild(h('h3',{},'Audience Map'));
+  const icps=[
+    {name:'The Documented Self (Primary — 70%)',desc:'24-34. Creative-class earner $55K-120K. Has attempted daily practice. Follows Online Ceramics, Denim Tears, Brain Dead. Buying trigger: the 7-year receipt, not the product.'},
+    {name:'The Archive Buyer (Secondary — 20%)',desc:'32-45. $120K+ income. Fine art collector. Found through curators and word-of-mouth. Buys Seeds. Will pay $200-800 once trust is established.'},
+    {name:'The Initiate (Tertiary — 10%)',desc:'19-24. Budget buyer. Glyphs as entry. Ages into Primary ICP within 3-5 years. Converts to TRANSMISSIONS membership.'},
+    {name:'Manifestation Community (Crossover)',desc:'LOA practitioners who can\'t articulate the philosophy they live by. PL Law 3 is their belief stated precisely. Found on TikTok, r/lawofattraction, spirituality IG.'},
+    {name:'Philosophy Audience (Crossover)',desc:'Stoics, Jungians, public philosophy followers. Already pay for philosophy-as-object (Daily Stoic journals, coins). PL is next level: philosophy you wear.'},
+  ];
+  icps.forEach(i=>{
+    const ic=h('div',{cls:'platform-card',style:'margin-bottom:7px'});
+    ic.appendChild(h('div',{style:'font-size:10px;color:var(--gold);letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px'},i.name));
+    ic.appendChild(h('div',{style:'font-size:12px;line-height:1.55;color:var(--mute)'},i.desc));
+    icp.appendChild(ic);
+  });
+  wrap.appendChild(icp);
+
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════
+// FOLLOWUPS
+// ═══════════════════════════════════════════════════
+function followupsView() {
+  const wrap=h('div');
+  wrap.appendChild(h('div',{cls:'pane-head'},h('div',{cls:'pane-title'},'Follow-ups'),h('div',{cls:'pane-sub'},'Sent · awaiting reply · 5+ days')));
+  const needs=ST.contacts.filter(needsFollowup).sort((a,b)=>(daysSince(b.sent_date)||0)-(daysSince(a.sent_date)||0));
+  if(!needs.length){const e=h('div',{cls:'empty'});e.innerHTML='No follow-ups needed.<br><em>Everything is current.</em>';wrap.appendChild(e);return wrap;}
+  const overdue=needs.filter(c=>urgencyLevel(c)==='overdue');
+  const soon=needs.filter(c=>urgencyLevel(c)==='soon');
+  if(overdue.length){wrap.appendChild(h('div',{cls:'followup-label'},'Overdue (14+ days)'));const l=h('div',{cls:'contact-list',style:'margin-bottom:20px'});overdue.forEach(c=>l.appendChild(contactRow(c)));wrap.appendChild(l);}
+  if(soon.length){wrap.appendChild(h('div',{cls:'followup-label soon'},'Due Soon (5-13 days)'));const l=h('div',{cls:'contact-list'});soon.forEach(c=>l.appendChild(contactRow(c)));wrap.appendChild(l);}
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════
+function modalView() {
+  if(modal==='detail') return detailModal();
+  if(modal==='logEntry') return logEntryModal();
+  if(modal==='data') return dataModal();
+}
+
+function modalShell(title,sub) {
+  const backdrop=h('div',{cls:'modal-backdrop'});
+  backdrop.addEventListener('click',e=>{if(e.target===backdrop){modal=null;viewingId=null;render();}});
+  const m=h('div',{cls:'modal'});
+  m.appendChild(h('div',{cls:'modal-head'},
+    h('div',{},h('h2',{},title),sub?h('div',{cls:'sub'},sub):null),
+    h('button',{cls:'x',click:()=>{modal=null;viewingId=null;render();}},'✕')
+  ));
+  backdrop.appendChild(m);
+  return {backdrop,m};
+}
+
+function detailModal() {
+  const c=ST.contacts.find(x=>x.id===viewingId);
+  if(!c){modal=null;return h('div');}
+  const cat=categoryById(c.category);
+  const {backdrop,m}=modalShell(c.name||(c.handle||'(unnamed)'),cat.name+' · '+c.status.toUpperCase());
+  const meta=h('div',{cls:'detail-meta'});
+  if(c.handle) meta.appendChild(h('div',{},h('span',{},'Handle'),h('strong',{},c.handle)));
+  meta.appendChild(h('div',{},h('span',{},'Platform'),h('strong',{},c.platform)));
+  meta.appendChild(h('div',{},h('span',{},'Priority'),h('strong',{style:'color:var(--gold)'},'★'.repeat(c.value||3))));
+  meta.appendChild(h('div',{},h('span',{},c.sent_date?'Sent':'Created'),h('strong',{},c.sent_date||(c.created?new Date(c.created).toISOString().slice(0,10):'—'))));
+  m.appendChild(meta);
+  if(c.context){const sec=h('div',{cls:'detail-section'});sec.appendChild(h('h3',{},'Context'));sec.appendChild(h('p',{},c.context));m.appendChild(sec);}
+  if(c.specifics){const sec=h('div',{cls:'detail-section'});sec.appendChild(h('h3',{},'Strategy Note'));const sp=h('div',{style:'border-left:2px solid var(--gold-border);padding:9px 13px;font-size:12px;line-height:1.6;color:var(--mute);font-style:italic'});sp.textContent=c.specifics;sec.appendChild(sp);m.appendChild(sec);}
+  if(c.last_message){const sec=h('div',{cls:'detail-section'});sec.appendChild(h('h3',{},'Last Message'));const blk=h('div',{style:'padding:13px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-size:12px;line-height:1.65;white-space:pre-wrap;word-break:break-word'},c.last_message);sec.appendChild(blk);const cp=h('button',{cls:'copy-btn',style:'margin-top:7px'},'Copy message');cp.addEventListener('click',()=>{navigator.clipboard.writeText(c.last_message).then(()=>{cp.textContent='Copied';cp.classList.add('copied');setTimeout(()=>{cp.textContent='Copy message';cp.classList.remove('copied');},1500);});});sec.appendChild(cp);m.appendChild(sec);}
+  if(c.log&&c.log.length){const sec=h('div',{cls:'detail-section'});sec.appendChild(h('h3',{},'Activity'));[...c.log].reverse().forEach(entry=>{const e=h('div',{cls:'log-entry'});e.appendChild(h('div',{cls:'log-entry-head'},h('span',{},entry.action),h('span',{},entry.date)));if(entry.note)e.appendChild(h('div',{style:'color:var(--mute)'},entry.note));sec.appendChild(e);});m.appendChild(sec);}
+  const sa=h('div',{cls:'action-row'});
+  STATUSES.forEach(s=>{if(s.id===c.status)return;sa.appendChild(h('button',{cls:'primary secondary',click:()=>{const u={status:s.id,updated:Date.now()};if(s.id==='sent'&&!c.sent_date)u.sent_date=today();ST.contacts=ST.contacts.map(x=>x.id===c.id?{...x,...u,log:[...(x.log||[]),{date:today(),action:'Marked '+s.name,note:''}]}:x);save(ST);render();}},s.name));});
+  m.appendChild(sa);
+  const actions=h('div',{cls:'action-row'});
+  actions.appendChild(h('button',{cls:'primary',click:()=>{modal='logEntry';render();}},'Add Log'));
+  actions.appendChild(h('button',{cls:'primary secondary',click:()=>{composeForm={...blankForm(),...c};editingContact=c;composeOutputs=null;tab='compose';modal=null;viewingId=null;render();}},'Edit / Regen'));
+  actions.appendChild(h('button',{cls:'primary danger',click:()=>{if(!confirm('Delete "'+c.name+'"?'))return;ST.contacts=ST.contacts.filter(x=>x.id!==c.id);save(ST);modal=null;viewingId=null;render();}},'Delete'));
+  m.appendChild(actions);
+  return backdrop;
+}
+
+function logEntryModal() {
+  const c=ST.contacts.find(x=>x.id===viewingId);
+  if(!c){modal=null;return h('div');}
+  const {backdrop,m}=modalShell('Add Log Entry',c.name);
+  const aIn=h('input',{cls:'ipt',placeholder:'e.g. Replied, Followed up, DM ignored'});
+  const nIn=h('textarea',{cls:'ipt',rows:'3',placeholder:'What happened.'});
+  m.append(h('label',{cls:'lbl'},'Action'),aIn,h('label',{cls:'lbl'},'Note'),nIn);
+  m.appendChild(h('button',{cls:'primary',click:()=>{const a=aIn.value.trim();if(!a){alert('Add an action.');return;}ST.contacts=ST.contacts.map(x=>x.id===c.id?{...x,updated:Date.now(),log:[...(x.log||[]),{date:today(),action:a,note:nIn.value.trim()}]}:x);save(ST);modal='detail';render();}},'Save Entry'));
+  return backdrop;
+}
+
+function dataModal() {
+  const {backdrop,m}=modalShell('Library','OUTREACH · LOCAL');
+  const total=ST.contacts.length;
+  const sent=ST.contacts.filter(c=>['sent','replied','converted'].includes(c.status)).length;
+  const replied=ST.contacts.filter(c=>['replied','converted'].includes(c.status)).length;
+  const converted=ST.contacts.filter(c=>c.status==='converted').length;
+  const rr=sent?Math.round((replied/sent)*100):0;
+  const cr=sent?Math.round((converted/sent)*100):0;
+  const stats=h('div',{style:'display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px'});
+  [['Contacts',total],['Sent',sent],['Reply Rate',rr+'%'],['Converted',converted]].forEach(([l,v])=>{stats.appendChild(h('div',{style:'padding:12px;border:1px solid var(--line);border-radius:8px'},h('div',{style:'font-size:9px;color:var(--mute);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px'},l),h('div',{style:'font-weight:300;font-size:22px;color:var(--gold)'},String(v))));});
+  m.appendChild(stats);
+  const byCat=h('div',{cls:'detail-section'});byCat.appendChild(h('h3',{},'By Category'));
+  CATEGORIES.forEach(cat=>{const n=ST.contacts.filter(c=>c.category===cat.id).length;if(!n)return;byCat.appendChild(h('div',{style:'display:flex;justify-content:space-between;padding:7px 10px;border:1px solid var(--line);border-radius:6px;margin-bottom:4px;font-size:11px'},h('span',{},cat.name),h('strong',{style:'color:var(--gold)'},String(n))));});
+  m.appendChild(byCat);
+  const fi=h('input',{type:'file',accept:'.json,application/json',style:'display:none'});
+  fi.addEventListener('change',()=>{const f=fi.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.contacts||!Array.isArray(d.contacts))throw 0;if(!confirm('Merge or replace? OK=Replace, Cancel to abort.'))return;ST={...d,contacts:[...SEED_CONTACTS.filter(s=>!d.contacts.find(x=>x.id===s.id)),...d.contacts]};save(ST);modal=null;render();alert('Imported '+d.contacts.length+' contacts + '+SEED_CONTACTS.length+' pre-seeded contacts.');}catch(e){alert('Could not read file.');}};r.readAsText(f);});
+  const da=h('div',{cls:'data-actions'});
+  da.appendChild(h('button',{click:()=>{const blob=new Blob([JSON.stringify(ST,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='pl-outreach-'+today()+'.json';a.click();URL.revokeObjectURL(url);}},'↓ Export JSON'));
+  da.appendChild(h('button',{click:()=>{let csv='Name,Handle,Platform,Category,Status,Sent,Priority,Context\n';ST.contacts.forEach(c=>{csv+='"'+(c.name||'').replace(/"/g,'""')+'","'+(c.handle||'')+'",'+(c.platform||'')+','+categoryById(c.category).name+','+c.status+','+(c.sent_date||'')+','+(c.value||3)+',"'+(c.context||'').replace(/"/g,'""').replace(/\n/g,' ')+'"\n';});const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='pl-outreach-'+today()+'.csv';a.click();URL.revokeObjectURL(url);}},'↓ Export CSV'));
+  da.appendChild(h('button',{click:()=>fi.click()},'↑ Import JSON (merge)'));
+  da.appendChild(fi);
+  da.appendChild(h('button',{cls:'danger',click:()=>{if(!confirm('Reset all contacts?'))return;if(!confirm('This removes everything including seed contacts. Sure?'))return;localStorage.removeItem(SK);ST=load();modal=null;render();}},'Reset All Data'));
+  m.appendChild(da);
+  m.appendChild(h('p',{cls:'hint'},'Outreach is the work behind the work. The brand grows by who carries it. Every contact is a door. Track every conversation. Honor every witness.'));
+  return backdrop;
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+// Merge new seed contacts into existing data without duplicating
+if(ST.contacts && !ST.seeded_v3) {
+  const existing_ids=new Set(ST.contacts.map(c=>c.id));
+  const newSeeds=SEED_CONTACTS.filter(s=>!existing_ids.has(s.id));
+  if(newSeeds.length) { ST.contacts=[...newSeeds,...ST.contacts]; }
+  ST.seeded_v3=true;
+  save(ST);
+}
+
+render();
+</script>
+</body>
+</html>

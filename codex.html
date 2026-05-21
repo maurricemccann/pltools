@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0d0c0a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Codex"/>
+<link rel="manifest" href="manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png"/>
+<link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152.png"/>
+<link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"/>
+
+<title>Psyched Luxuries · Master Codex</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700;9..144,800&family=Inter:wght@400;500;600&display=swap');
+:root{--bg:#0a0908;--bg-2:#13110d;--bg-3:#1c1814;--line:#2d2820;--fg:#f4ecd8;--mute:#8a8170;--accent:#d4b87a;--accent-soft:#e8d5a3;--display:'Fraunces',Georgia,serif;--mono:'Inter',system-ui,sans-serif;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--display);overscroll-behavior:none}
+body{min-height:100svh}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+input,select,textarea{font:inherit;color:inherit;background:none}
+.app{display:flex;flex-direction:column;min-height:100svh;padding-top:env(safe-area-inset-top);padding-bottom:calc(56px + env(safe-area-inset-bottom));max-width:820px;margin:0 auto}
+.head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 8px}
+.brand{display:flex;align-items:baseline;gap:10px}
+.mark{font-size:20px;color:var(--accent)}
+.title{font-weight:500;letter-spacing:.08em;font-size:24px;font-style:italic}
+.count{font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.1em;padding:4px 8px;border:1px solid var(--line);border-radius:99px}
+.menu-btn{width:40px;height:40px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px}
+.menu-btn span{width:18px;height:2px;background:var(--fg);display:block}
+.menu-btn span:nth-child(2){width:12px}
+.search-wrap{padding:8px 22px 12px}
+.search{width:100%;background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;color:var(--fg);font-family:var(--mono);font-size:13px;letter-spacing:.04em;outline:none}
+.search:focus{border-color:var(--fg)}
+.chamber-rail{display:flex;gap:6px;padding:0 18px 14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.chamber-rail::-webkit-scrollbar{display:none}
+.chamber-chip{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;color:var(--mute);scroll-snap-align:start;transition:.18s ease;min-width:160px;text-align:left}
+.chamber-chip.active{color:var(--fg);background:var(--bg-2);border-color:var(--fg)}
+.chamber-chip .num{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--accent)}
+.chamber-chip .nm{font-weight:500;font-size:15px;letter-spacing:-.005em}
+.chamber-chip .ct{font-family:var(--mono);font-size:9px;color:var(--mute);letter-spacing:.08em}
+.chamber-head{padding:6px 22px 8px;display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
+.chamber-meta{min-width:0}
+.chamber-num{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.16em;margin-bottom:4px}
+.chamber-name{font-weight:500;font-size:32px;line-height:1.05;letter-spacing:-.015em;margin-bottom:6px}
+.chamber-desc{font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.06em;line-height:1.4}
+.new-btn{flex:0 0 auto;background:var(--accent);color:#1a1410;border-radius:12px;padding:12px 16px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;white-space:nowrap}
+.new-btn:active{transform:translateY(1px)}
+.entries{flex:1;padding:14px 22px 22px;display:flex;flex-direction:column;gap:10px}
+.entry{border:1px solid var(--line);border-radius:16px;background:var(--bg-2);padding:18px 20px;cursor:pointer;transition:.15s ease;position:relative}
+.entry:hover{border-color:#3a352e}
+.entry-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
+.entry-title{font-weight:500;font-size:19px;line-height:1.3;letter-spacing:-.01em;flex:1;min-width:0}
+.entry-date{font-family:var(--mono);font-size:9px;color:var(--mute);letter-spacing:.1em;flex:0 0 auto;padding-top:4px}
+.entry-body{color:var(--mute);font-size:14px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+.entry.collapsed .entry-body{max-height:5em;overflow:hidden;mask:linear-gradient(180deg,#000 60%,transparent 100%);-webkit-mask:linear-gradient(180deg,#000 60%,transparent 100%)}
+.entry-tags{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-soft);border:1px solid var(--line);padding:3px 8px;border-radius:99px}
+.empty{padding:60px 20px;text-align:center;color:var(--mute);font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.empty em{color:var(--fg);font-style:normal}
+.foot{display:flex;justify-content:space-between;align-items:center;padding:10px 22px 18px;font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.1em;text-transform:uppercase}
+.link{color:var(--fg);text-decoration:underline;text-underline-offset:3px;background:none;border:0;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.modal{background:var(--bg-2);border-top:1px solid var(--line);border-radius:24px 24px 0 0;width:100%;max-width:820px;max-height:92svh;overflow-y:auto;padding:18px 22px;padding-bottom:calc(56px + env(safe-area-inset-bottom))}
+@media(min-width:720px){.modal-backdrop{align-items:center}.modal{border-radius:24px;border:1px solid var(--line);max-height:85vh}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg-2);z-index:2}
+.modal-head h2{margin:0;font-size:20px;font-weight:800;letter-spacing:-.01em}
+.modal-head .sub{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.12em;margin-top:2px}
+.x{width:36px;height:36px;border:1px solid var(--line);border-radius:99px;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--mute);cursor:pointer}
+.lbl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin:16px 0 6px}
+.lbl:first-child{margin-top:0}
+.ipt{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;color:var(--fg);font-size:16px;line-height:1.4;outline:none;transition:.15s;font-family:var(--display)}
+.ipt:focus{border-color:var(--fg)}
+.ipt.mono-ipt{font-family:var(--mono);font-size:13px}
+.ipt.title-ipt{font-size:20px;font-weight:700;letter-spacing:-.01em}
+textarea.ipt{resize:vertical;min-height:240px;line-height:1.55}
+.primary{margin-top:18px;width:100%;background:var(--fg);color:#1a1410;border-radius:14px;padding:18px;font-weight:700;font-size:16px;border:0;cursor:pointer;font-family:var(--display);letter-spacing:.01em}
+.row{display:flex;gap:10px;margin-top:14px}
+.row .ghost{flex:1}
+.ghost{border:1px solid var(--line);border-radius:14px;padding:14px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg);cursor:pointer;background:none;text-align:center}
+.ghost.danger{color:var(--accent);border-color:var(--accent)}
+.data-actions{display:flex;flex-direction:column;gap:8px;margin-top:18px}
+.data-actions .ghost{padding:14px;display:block;width:100%}
+.hint{margin-top:18px;font-size:11px;color:var(--mute);line-height:1.6;font-family:var(--mono)}
+.chamber-edit-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.chamber-edit-list li{display:flex;gap:8px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:12px}
+.chamber-edit-list .nm{flex:1;font-weight:700}
+.chamber-edit-list .ct{font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.08em}
+.fab{position:fixed;bottom:calc(56px + env(safe-area-inset-bottom));right:22px;width:60px;height:60px;border-radius:99px;background:var(--accent);color:#1a1410;font-size:28px;font-weight:300;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -4px rgba(212,184,122,.35);z-index:30}
+.fab:active{transform:translateY(2px)}
+@media(min-width:720px){.fab{display:none}}
+.__pl-notch{
+  position:fixed;top:0;left:0;right:0;
+  height:env(safe-area-inset-top);
+  background:#0a0908;
+  border-bottom:1px solid rgba(201,168,76,.18);
+  z-index:99998;
+}
+.__pl-back{
+  position:fixed;bottom:0;left:0;right:0;z-index:99999;
+  height:calc(44px + env(safe-area-inset-bottom));
+  display:flex;align-items:flex-start;justify-content:center;
+  padding-top:10px;
+  background:rgba(10,9,8,.95);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(201,168,76,.18);
+  color:#f4ecd8;text-decoration:none;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-style:italic;font-size:14px;letter-spacing:.04em;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;
+  gap:8px;
+}
+.__pl-back:active{background:rgba(20,18,14,.98)}
+.__pl-back .__pl-arrow{font-family:system-ui;font-style:normal;color:#c9a84c;font-size:15px;line-height:1}
+.__pl-back .__pl-dot{width:5px;height:5px;border-radius:99px;background:#c9a84c;margin-left:1px;display:inline-block;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="__pl-notch"></div>
+<style>
+
+</style>
+<a href="./index.html" class="__pl-back" aria-label="Back to Psyched Luxuries">
+  <span class="__pl-arrow">←</span><span>Psyched</span><span class="__pl-dot"></span>
+</a>
+
+<div id="app"></div>
+<script>
+
+// ─── DEFAULT CHAMBERS (Master Codex Architecture) ───
+const DEFAULT_CHAMBERS = [
+  {id:'page-zero',     num:'0',   name:'The Dissolution',          desc:'The event that earned the right to declare. The root beneath the canopy.'},
+  {id:'chronology',    num:'CHR', name:'Master Chronology',        desc:'2010–2026. Phases I–IV. Preparation, Crucible, Reconstruction, Reignition.'},
+  {id:'declaration',   num:'I',   name:'The Declaration',          desc:'March 30, 2026. The three laws. The grammar of the name.'},
+  {id:'philosophy',    num:'II',  name:'The Philosophy',           desc:'Applied psychology. Identity precedes evidence.'},
+  {id:'origin',        num:'III', name:'The Origin Story',         desc:'Pattern. Pivot. Mental break. Villain era. Stillness.'},
+  {id:'lineage',       num:'IV',  name:'The Lineage',              desc:'Van Gogh. Basquiat. Haring. Russ.'},
+  {id:'visual-language',num:'V',  name:'Visual Language & Glyphs', desc:'Chaos Forms. The 8 glyphs. The locked lexicon.'},
+  {id:'three-bodies',  num:'VI',  name:'Three Bodies of Work',     desc:'Commercial. Fine Art. Interference.'},
+  {id:'archive',       num:'VII', name:'The Archive',              desc:'25 Master Ledger Records. ART · PHILOSOPHY · PROCESS · PROOF.'},
+  {id:'russ-model',    num:'VIII',name:'The Russ Model Applied',   desc:'Consistency. Volume. Ownership. The 52-week structure.'},
+  {id:'business',      num:'IX',  name:'Business Architecture',    desc:'Protection before deployment. The non-negotiables.'},
+  {id:'delegation',    num:'X',   name:'Delegation Structure',     desc:'Two roles for the human. The tool stack does the rest.'},
+  {id:'founding',      num:'XI',  name:'The Founding Story',       desc:'Aaron. The first witness. Watch this.'},
+  {id:'long-game',     num:'XII', name:'The Long Game',            desc:'Proof → Scale → Institution → Legacy.'},
+  {id:'proof-of-reach',num:'XIII',name:'Proof of Reach',           desc:'P-FILTHY. Will Haynes. Bugus. Aaron. Receipts.'}
+];
+
+// ─── PRE-LOADED ENTRIES FROM MASTER CODEX PDF ───
+const SEEDED_ENTRIES = {
+  'page-zero': [
+    {title:'The Instrument Before the Event', body:`Most historical origin stories begin with an external event. This one begins with a physical body. I was born with my eyes built unevenly—one eye focused further than the other, one tilted toward the far horizon, one focused on the near immediate space. The clinical terminology for this asymmetry is small, reductive, and wrong: they called it a lazy eye. Nothing about what that physiological asymmetry built was lazy.
+
+A brain handed two cameras that fundamentally refuse to agree on a single stereo image must make a profound cognitive decision early in development. My brain chose not to spend my life forcing a standard stereo projection out of a mismatched optical signal. Instead, it constructed an entirely alternative method of perceiving depth: navigating out of motion, out of dense texture, and out of the felt flow of energetic systems moving past each other.
+
+The structural consequence: I do not move through space the way most people do. I do not navigate by a fixed, confident, two-dimensional prediction of what sits directly in front of me. I navigate entirely by feel—a continuous, 360-degree spatial awareness of the energy of a room.
+
+This physical preparation was essential before the dissolution occurred. The ground was already prepared. The soul was already, in the most literal and mechanical sense, psyched—built and structurally oriented before it had any conscious idea of what it was built to receive.`, tags:['origin','biology','perception']},
+    {title:'The White Light Dissolution', body:`In casual language, it is often termed a "bad trip." That phrase is fundamentally incorrect. Not because the experience was comfortable—it was absolute psychic terror long before it surrendered to absolute peace—but because the word bad implies a functional failure, a mechanical error, a systemic glitch that should have been avoided.
+
+Nothing malfunctioned. The compound did exactly what it instructs the human biological machine to do: it took the structural self apart. A profound psychedelic experience completely dismantled the ego architecture I had spent my entire life mistaking for my identity. It did not loosen it; it did not gently soften the edges; it entirely dismantled it.
+
+The narrative voice that runs continuously behind the eyes—the linguistic engine that states "this is happening to me, I am the singular entity it is happening to"—simply ceased to function. And when that voice stopped, the specific "me" it had been narrating dissolved instantly with it.
+
+What remained when the localized self was completely gone was light. Absolute white light. Source. It was not an external light that shone upon an object; it was the light out of which objects themselves are rendered.
+
+This is the event. Everything within this brand, this line, and this Codex is downstream from this exact unmaking.`, tags:['dissolution','ego-death','source']}
+  ],
+  'chronology': [
+    {title:'Phase I — The Preparation (2010–2018)', body:`Before Everything — The Biological Alignment: Born with mismatched optical focus, building a localized, 360-degree spatial depth perception based entirely on motion and energy.
+
+2010 — The Laboratory Opens: Encountering the core thesis of manifestation via The Secret. It is not consumed as casual novelty but immediately adopted as a strict, daily experimental practice.
+
+2018 — The Arrival of the Word: Russ uses the word "luxuries" in an acoustic track. Your mind isolates and claims it. It is perceived as a structural law of abundance. The social handle shifts from @psychedleo to Psyched Luxuries.`, tags:['phase-i','preparation']},
+    {title:'Phase II — The Crucible (2019–2022)', body:`April 2019 — The Archive Ledger Commences: Formal record-keeping of your visual output begins. The hand had been moving in notebooks for a decade, but this marks the opening of the physical tracking ledger.
+
+Circa 2020 — The Dissolution & First Run: Under global isolation, a profound psychedelic ego death takes place. Identity dissolves into an undivided field of absolute white light. Later in 2020, an LLC is registered, a Shopify storefront is built, and the brand enters the physical market.
+
+2021 — The 41 Roles & Receipts: Trapped inside an exhausting paradox, managing all 41 distinct corporate roles alone. Visual Art Credits are secured on Apple Music for P-FILTHY. The Will Haynes relationship ignites.
+
+Mid-2022 — The Mechanical Rupture: An intense physical altercation with a girlfriend. The intense pressure is transmuted into mark-making. You draw a highly private, dark visual vocabulary placed immediately into a locked physical safe.`, tags:['phase-ii','crucible']},
+    {title:'Phase III — The Silent Reconstruction (2023–2025)', body:`2023 — The Tactical Dismantling: The initial external infrastructure—the Shopify store and outward marketing—is completely taken down. To an outside observer, this looks like failure. In reality, it is a deliberate, highly tactical retreat.
+
+2024 — The Generation of Density: Freed from the pressure of satisfying a commercial algorithm, your hand moves with pure biological speed in absolute isolation. The Chaos Forms fully mature.
+
+2025 — The Crystallization: The visual language solidifies into an absolute, locked structural lexicon. The Master Ledger is engineered as a proof-to-self. The Brain-Heart-Hands Logo is drawn, and the core operational glyphs are permanently locked.`, tags:['phase-iii','reconstruction']},
+    {title:'Phase IV — The Reignition (2026)', body:`Early 2026 — The First Witness: A genuine friend named Aaron looks at an unmarketed raw seed of art and states: "I want that on a shirt." Aaron pays a premium founder's price. Your response to him sets the modern era in motion: Bet. Watch this.
+
+March 30, 2026 — The Codex: The formal establishment of The Codex: Volume One. The three immutable laws are set in concrete. The reignition begins.`, tags:['phase-iv','reignition']}
+  ],
+  'declaration': [
+    {title:'The Three Laws', body:`The three laws of Psyched Luxuries are not vague suggestions. They are not motivational statements for social media. They are the immutable operational principles of a complete worldview. Every design decision. Every drop. Every piece of copy must trace back to these laws:
+
+1. Prepared for luxury.
+2. You are in control of your reality.
+3. So get what you want. Like I'm doing.
+
+This Codex is written in the same hand that makes the physical work. The font on the garments is this hand digitized. The hand is the author. The Codex is the author's law. Watch this.`, tags:['law','axiom','foundation']},
+    {title:'The Deconstruction of the Grammar', body:`PSYCHED: Prepared for. Not excited for. Not hoping for. Not dreaming of. Prepared. The psyche—the soul, the mind, the entire interior world oriented toward what is inevitably coming. Already built for the arrival. Already constituted as the exact kind of person to whom the arrival makes sense.
+
+LUXURIES: Plural. Abundant. Not one isolated, elevated thing but a continuous, unstoppable flow of elevated objects and realities. The grammar of the brand name is the very first argument the brand makes. Luxury is scarce. Luxuries are infinite. The plural is the philosophy before the philosophy is even explained.
+
+Psyched Luxuries: The soul prepared for infinite abundance. That is not a corporate brand name. That is a position on reality.`, tags:['grammar','name','etymology']},
+    {title:'The Opening Statement', body:`Date of Origin: March 30, 2026
+
+This is the Codex of Psyched Luxuries. Not a standard corporate business plan. Not a mood board for creative direction. Not a vision statement written for investors, social media algorithms, or societal approval.
+
+This is law.
+
+It is written in the exact hand that made the work. Documented by the person who lived the philosophy before it possessed an external name. Recorded at the precise moment preparation met its first external public proof of concept.
+
+Everything within these pages is true. None of it is aspirational in the conventional, diluted sense of the word. Aspiration implies a distance between where you currently stand and where you are going. These pages collapse that distance entirely. What is written here is already real; it is simply being pulled from the internal world into the external, physical domain. That is what manifestation actually means. Not wishing. Not hoping. Not waiting for permission from systems. Pulling.
+
+I am Maurrice. I am Psyched Luxuries.`, tags:['declaration','identity']}
+  ],
+  'philosophy': [
+    {title:'The Origin of the Belief', body:`In 2010, a book titled The Secret introduced a conceptual framework that most of the population either immediately dismissed or consumed as a passing novelty. I neither dismissed it nor consumed it as novelty. I practiced it. The central argument—that consciousness participates actively in the construction of reality, that belief possesses structural consequence in the physical world—was not something I evaluated purely intellectually. It was something I began testing immediately against the brutal conditions of my actual life.
+
+That practice has been running continuously since 2010. By the time Psyched Luxuries exists as a documented brand with a foundational Codex, the philosophy has fifteen years of lived data behind it. Not theory. Not borrowed ideology. Fifteen years of intense personal laboratory work.`, tags:['origin','the-secret','practice']},
+    {title:'The Mechanism — How It Actually Works', body:`Manifestation is not mysticism; it is applied psychology operating through four specific, cold mechanisms:
+
+1. Identity Construction: You decide who you are before the evidence supports it. Not who you hope to eventually become. Who you already are. The prepared person. Identity precedes evidence. Evidence follows identity.
+
+2. Selective Perception: Once identity is firmly constructed, the mind begins actively perceiving opportunities, connections, and resources consistent with that identity that were previously invisible.
+
+3. Behavioral Alignment: Identity shapes behavior. The person who genuinely believes they are prepared for luxuries makes radically different decisions than the person who believes abundance is a luxury for other people.
+
+4. Declaration as Commitment Device: Writing the philosophy down, building the brand around it, and wearing it publicly on heavy garments are cognitive commitment devices that make returning to the old, small identity psychologically costly.`, tags:['mechanism','psychology','identity']},
+    {title:'The Brand as Living Proof', body:`Most brands sell a physical product. Some brands sell an aspirational lifestyle. Rare brands sell a belief system.
+
+Psyched Luxuries does something a fourth and almost unprecedented thing: it is simultaneously the argument and the evidence for its own argument.
+
+The brand's success is not the financial reward at the end of the philosophical journey; the brand's success is the philosophy proving itself in real time in public. The customers are not just buyers; they are witnesses to a proof of concept. And if they apply the same principles to their own lives and experience results, they become participants in the experiment. That is not a customer base; that is a congregation with receipts.`, tags:['proof','congregation','meta']}
+  ],
+  'origin': [
+    {title:'The Beginning — Pattern Without Message', body:`It started as pattern. Not philosophy. Not a message. Not a deliberate attempt to make meaningful art. Pattern. Visual instinct leading. The hand moving because it needed to move.
+
+The earliest documented work in the archive—Cityscape, Alien Abduction, Chalk on Wall—these are the raw works of a person discovering what their hand does when left entirely to its own devices. The archive begins April 2019, but the practice began long before the documentation did.`, tags:['beginning','pattern']},
+    {title:'The Pivot — Pattern Became Language', body:`The pivot did not come from academic study or calm intention. It came from a fight. An intense physical altercation with a girlfriend. A moment of violence that could have collapsed inward into a wound and silence.
+
+Instead, the psyche did what the greatest artists' psyches do under immense pressure: it transmuted the rupture into mark-making.
+
+I walked away and drew. The drawings that came from that specific session went directly into a physical safe with a key that nobody else holds. Dark work. Private work. Work in the profound tradition of Dr. Seuss's private drawings. Those drawings have never been seen. They matter because they cracked open a channel in the psyche that had been partially sealed.`, tags:['pivot','rupture','safe']},
+    {title:'The Mental Break — The Channel Deepens', body:`The fight was the first rupture; the mental break was the second. Anxiety. Depression. A relationship deteriorating completely. A brand being built entirely alone without financial return. Forty-one roles occupied simultaneously by one single person.
+
+Most people in those exact conditions stop. I made more work. The mental break did not interrupt the creative practice; it deepened it. The intense psychological pressure became the physical material. The clown faces with dollar-sign teeth. The maze with the Fool's Hotel. The HA HA HA covering entire notebook surfaces in deep red ink. The figure with the door in their chest. These pieces are not about the mental break; they are the mental break made visible.`, tags:['mental-break','channel']},
+    {title:'The Villain Era — The Decision', body:`After the break came a decision. Not a plan. Not a strategy. A fundamental, permanent identity decision. Villain era. Selfish era. Which in psychological terms means: I am going to stop making myself smaller for systems, relationships, and expectations that require my diminishment as the explicit price of their comfort.
+
+This decision is permanent. It lives directly on the body. The tattoo on the hand that makes the work—the Cheshire cat's smile with the Joker's lips, outlined in red—is the declaration made physical flesh.
+
+The name Maurrice, derived directly from The Joker by the Steve Miller Band—the song my father chose before I existed—means the smile was always there. The villain era didn't create the smile; it gave it permission to be visible.`, tags:['villain-era','decision','tattoo']},
+    {title:'The Crucible Years & The Stillness', body:`During those five years (2020-2025), there was almost zero immediate external or financial return. I was forced to maintain forty-one separate roles within the company completely alone while navigating a full-time job outside it. The external infrastructure was eventually dismantled completely because it was structurally unsustainable. I defined it as a necessary clearing. In those hidden years, the brand survived completely inside my private notebooks.
+
+After the dismantling came stillness. And in that stillness, the deeper, true version of the brand surfaced. The definitive brain-heart-hands logo arrived in minutes during that stillness. The first run's infrastructure had to collapse for the real architecture to be seen.`, tags:['crucible','stillness','logo']}
+  ],
+  'lineage': [
+    {title:'1. Vincent Van Gogh — Psychological Necessity', body:`The lineage of psychological necessity. Van Gogh did not paint fields because he found nature pretty; he painted fields because the sky behind his eyes was burning. His work proves that psychological pressure can be forced through a brush to create a high-value physical reality.`, tags:['lineage','van-gogh','pressure']},
+    {title:'2. Jean-Michel Basquiat — The Visual Language', body:`The lineage of the visual language. Basquiat did not compose paintings; he left receipts. His use of anatomy, crowns, and crossed-out words was a direct transcription of a mind dealing with the friction of a world it was built too sensitive for. He proved that a visual mark could bypass traditional artistic gatekeepers through raw intensity.`, tags:['lineage','basquiat','receipts']},
+    {title:'3. Keith Haring — Distribution', body:`The lineage of distribution. Haring understood that a symbol must carry biological speed. His lines don't stop because the message couldn't wait. More importantly, his creation of the Pop Shop proved that high art belongs on a t-shirt or a public wall just as much as it does inside a gallery. The distribution method is the art.`, tags:['lineage','haring','distribution']},
+    {title:'4. Russ — The Operational Lineage', body:`The operational lineage. The DIY totality. The volume as strategy. The ownership philosophy. The manifestation practice demonstrated through an entire independent career.
+
+His book It's All In Your Head is the founding text of Psyched Luxuries because it confirmed in language what the brand had already been practicing in action.`, tags:['lineage','russ','ownership']}
+  ],
+  'visual-language': [
+    {title:'The Chaos Forms — The Core Law', body:`The core visual component of the brand consists of the Chaos Forms. These are continuous, undulating curves painted on masks, canvas, denim, and digital screens.
+
+The defining law of these curves is absolute: The curves never intersect; they negotiate.
+
+Each line moves with independent awareness of the lines surrounding it, creating a dense, organic pattern that mirrors the golden spiral found in nature. It is the visual rendering of chaos being organized into harmony without losing its electric energy.`, tags:['chaos-forms','law','curve']},
+    {title:'Glyph 01 — Money Grin', body:`Image: Grin with red lips and dollar signs covering mouth.
+Meaning: "The way they shut you up."
+
+It represents the systematic buying out of internal truth by external structures, and the defiant choice to weaponize that exact financial energy back against them.`, tags:['glyph','money-grin']},
+    {title:'Glyph 02 — Money Goes Up', body:`Image: Dollar sign integrated into an upwards pointing arrow.
+Meaning: "Money always goes up."
+
+This is a cold geometric position on economics—removing the cognitive concept of inflation, recession, or lack from the observer's reality.`, tags:['glyph','money-goes-up']},
+    {title:'Glyph 03 — Karmic Cycle', body:`Image: Smiley face completely encircled by a self-correcting circular arrow.
+Meaning: "What goes around comes around."
+
+The karmic engineering metric. Every unit of intent emitted from the creator returns with absolute mathematical precision.`, tags:['glyph','karmic-cycle']},
+    {title:'Glyph 04 — Money Glyphguy', body:`Image: Structural stick-figure built completely out of the word M-O-N-E-Y.
+Meaning: "Money manifestation."
+
+It visualizes the total identity shift where the human asset becomes completely synonymous with economic value and creative abundance.`, tags:['glyph','money-glyphguy']},
+    {title:'Glyph 05 — Glyphguy at Work', body:`Image: Dynamic glyph stick figure operating a manual pallet jack.
+Meaning: "Working through it."
+
+The documentation of grueling manual friction. It honors the physical labor executed in the lower worlds while the mind remains crowned in the higher asset spaces.`, tags:['glyph','glyphguy-work']},
+    {title:'Glyph 06 — Glyphs with Box', body:`Image: Glyph figure depicted carrying heavy, structured shipping boxes.
+Meaning: "A gift."
+
+This recontextualizes standard corporate retail fulfillment into a sacred transit of energy—delivering an artifact of survival directly into the hands of the witness.`, tags:['glyph','glyphs-with-box']},
+    {title:'Glyph 07 — Love Yourself', body:`Image: Anatomical heart made from a central dot and a self-pointing arrow.
+Meaning: "Love yourself."
+
+Absolute psychological insulation. The refusal to seek validation from external mirrors. The power generated strictly from the internal core.`, tags:['glyph','love-yourself']},
+    {title:'Glyph 08 — Fucked Cycle', body:`Image: The word FUCKED locked inside a heavy circle violently cracking apart.
+Meaning: "Break the fucked cycle."
+
+The total interruption of inherited behavioral trauma, poverty loops, and systemic dead ends. Wearable proof that the loop is not the law.`, tags:['glyph','fucked-cycle']}
+  ],
+  'three-bodies': [
+    {title:'Body One — Commercial', body:`Purpose: Revenue. Reach. The public declaration of the philosophy.
+Audience: Everyone.
+Register: Accessible depth. Surface clarity with layers available on demand.
+
+The garment as a philosophical object is a legitimate and serious tradition. Vivienne Westwood put political arguments on bodies. Haring's merchandise reached people who would never enter a gallery. The price tag is not the corruption of the idea. It is the mechanism through which the idea finds the bodies it needs to inhabit.`, tags:['commercial','garment']},
+    {title:'Body Two — Fine Art', body:`Purpose: Truth. Record. The gravitational foundation of everything else.
+Audience: Currently private. Future gallery territory.
+Register: Maximum psychological weight.
+
+The fine art body begins in the safe. The drawings made after the fight—the founding dark archive. Nobody has seen them. They exist as the original crack in the surface that opened the channel everything else has flowed through since. The safe is not a storage unit. It is a sacred archive.`, tags:['fine-art','safe','gravity']},
+    {title:'Body Three — Interference', body:`Purpose: Distribution of truth. Institutional critique from inside the institution.
+Audience: Specific. Personal.
+Register: Raw. Urgent. Site-specific. Autobiographical.
+
+The philosophical foundation—nobody owns your experience of their system. Amazon owns the building. Amazon owns the machines. Amazon does not own what it feels like to be a human being inside that system. Art made from that experience is protected expression.`, tags:['interference','institutional']}
+  ],
+  'archive': [
+    {title:'Archive — The Four Pillars', body:`Psyched Luxuries launches with an archive. That distinction is structural. It means the brand enters the public space not as something beginning, but as something revealing itself. The work already exists.
+
+The visual, digital, and physical archive operates systematically across four fundamental content pillars:
+
+• ART (Raw Lineages)
+• PHILOSOPHY (Applied Law)
+• PROCESS (Physical Execution)
+• PROOF (Absolute Receipts)`, tags:['pillars','structure']},
+    {title:'Artifact 001 — The Mask', body:`Pillar: ART
+File: IMG_3539.jpeg
+
+Original chaos forms painted meticulously by hand over a wearable mask. Shot in raw daylight.
+
+"The language had to go somewhere. Before the garments. Before the storefront."
+
+ALT: The chaos forms don't stop at the edge of the canvas. Never did.`, tags:['artifact','art','mask']},
+    {title:'Artifact 002 — Crown Your Mind', body:`Pillar: PHILOSOPHY
+File: 20250822_231743936_iOS.png
+
+Intense orange and red figure holding a crown hovering above the mind, featuring a heart exposed on the chest cavity.
+
+"The crown goes on the mind first. Not the head. The mind. Everything else follows."
+
+ALT: Crown your mind. Everything else follows.`, tags:['artifact','philosophy','crown']},
+    {title:'Artifact 003 — The First Denim', body:`Pillar: PROCESS
+File: 20250615_013035070_iOS.png
+
+Painted black jeans covered in yellow-gold and olive chaos forms. Executed during the earliest phase.
+
+"Before Printful. Before the storefront. Before the corporate infrastructure existed."
+
+ALT: The first run of the visual language on fabric. Made by hand. No systems.`, tags:['artifact','process','denim']},
+    {title:'Artifact 004 — Psyched Leo Mushroom', body:`Pillar: PROOF
+File: 20250615_015815448_iOS.png
+
+A pristine gold mushroom accented with white chaos forms, carrying the original signature P-LEO.
+
+"Signed Psychedleo. That's what it was called before it had its full name. The practice before the platform."
+
+ALT: Psychedleo. The name before the name. The practice before the platform.`, tags:['artifact','proof','psychedleo']},
+    {title:'Artifact 005 — Chaos in Gold on Black', body:`Pillar: ART
+File: Digital.pdf Page 23
+
+Deep gold and wood-grain chaos forms laid down on a pure black background canvas.
+
+"Gold on black. The curves don't intersect; they negotiate. Each one claims its absolute right to space."
+
+ALT: Chaos in Gold. The spiral doesn't lie. Everything growing follows this.`, tags:['artifact','art','gold-on-black']},
+    {title:'Artifact 006 — What Goes Out Must Come In', body:`Pillar: PHILOSOPHY
+File: IMG_5765.jpeg
+
+A gold dollar-sign arrow rising sharply on a gold ground. Infinite economic marker.
+
+"The dollar arrow goes straight up. No ceiling drawn. No final destination marked."
+
+ALT: What goes out must come in. The arrow doesn't have a ceiling because abundance has no boundary.`, tags:['artifact','philosophy','dollar-arrow']},
+    {title:'Artifact 007 — The Framed Canvas', body:`Pillar: PROCESS
+File: IMG_4825.jpeg
+
+Original gold brain-heart-hands logo applied to a solid black ground with a red script signature accent.
+
+"This is the first time the brain-heart-hands logo existed as a physical instantiation."
+
+ALT: The original. Hand-painted. Gold on black. Locked in a frame before it had a public platform.`, tags:['artifact','process','brain-heart-hands']},
+    {title:'Artifact 008 — Mask Under Ultra-Violet', body:`Pillar: PROOF
+File: IMG_4826.jpeg
+
+The identical mask from Item 001 captured under heavy blacklight, glowing intensely in deep teal/green.
+
+"Same mask. Lights completely out. The visual language glows intensely in the dark."
+
+ALT: Lights out. Still there. Still glowing. The language doesn't require external illumination to exist.`, tags:['artifact','proof','uv']},
+    {title:'Artifact 009 — White on Black Canvas', body:`Pillar: ART
+File: 20250615_015356565_iOS.png
+
+Abstract, geometric figure and building form rendered in sharp white on a black field.
+
+"White on black. The form is simultaneously a figure, a building, or a raw signal."
+
+ALT: The form resolves differently every single time a witness looks. That's not ambiguity; that's life.`, tags:['artifact','art']},
+    {title:'Artifact 010 — Free…? Yourself', body:`Pillar: PHILOSOPHY
+File: IMG_5759.jpeg
+
+A smiling stick figure radiating vibrant white lines on a rich red ground.
+
+"The question mark is doing real architectural work. Free yourself, but the question marks ask if you are truly ready."
+
+ALT: The question mark belongs there. Freedom is a deliberate internal decision before it is an external condition.`, tags:['artifact','philosophy','freedom']},
+    {title:'Artifact 011 — Chaos in Teal/Gold Geological', body:`Pillar: PROCESS
+File: Digital.pdf Page 14
+
+High-altitude, aerial-view chaos forms mapping a teal river running through gold terrain.
+
+"The chaos forms mapped completely from altitude like natural terrain, like high-fidelity topography."
+
+ALT: Aerial view of the exact same grammar. The curves read as massive rivers from up here.`, tags:['artifact','process','teal-gold']},
+    {title:'Artifact 012 — The Abstract Eye Form', body:`Pillar: PROOF
+File: 20250930_051651586_ios.png
+
+A deep olive and blue eye form placed over a pure black ground with red chaos patterns rising behind it.
+
+"The eye positioned within the chaos. It was always there—the definitive mark that looks straight back."
+
+ALT: It watches back. That is the exact moment you recognize that the language is entirely alive.`, tags:['artifact','proof','eye']},
+    {title:'Artifact 013 — Gold on Navy Density', body:`Pillar: ART
+File: 20250615_015803588_iOS.png
+
+Extremely dense, compact chaos forms executed in shimmering gold and amber ink on a deep navy field.
+
+"Gold on navy. The chaos forms are condensed tighter in the center, breathing outward."
+
+ALT: Chaos in Gold and Navy. The density is the target. The form explicitly earns its right to space.`, tags:['artifact','art','navy']},
+    {title:'Artifact 014 — The Original Napkin Drawing', body:`Pillar: PHILOSOPHY
+File: IMG_5649.jpeg
+
+The original napkin drawing executed in sharp orange and blue ink. Marked clearly with 'Manifest: Watch This'.
+
+"This is the physical piece that initiated the entire current chapter. Not a pristine digital file."
+
+ALT: The napkin. The raw seed. The absolute start of this chapter. Watch this.`, tags:['artifact','philosophy','napkin','seed']},
+    {title:'Artifact 015 — Gold on Silver-Gray Wood Texture', body:`Pillar: PROCESS
+File: 20250615_015746075_iOS.png
+
+Chaos forms painted in pure gold across a silver-gray wood-grain canvas texture.
+
+"The chaos forms executing over a wood ground. The silver-gray texture of the grain works for us."
+
+ALT: Gold on silver. The natural wood grain functions as an additional, unforced layer of pattern beneath the hand.`, tags:['artifact','process','wood']},
+    {title:'Artifact 016 — Chaos in Urgent Red on Black', body:`Pillar: PROOF
+File: Digital.pdf Page 31
+
+Red chaos forms cutting across a pure black ground, documenting the language at its most dire and direct.
+
+"Red on black. The color of absolute physiological urgency. The chaos forms at their most dire."
+
+ALT: Red on black. The language and archive at their most direct and uncompromising register.`, tags:['artifact','proof','urgent-red']},
+    {title:'Artifact 017 — Electric Blue/Gold Luxury Palette', body:`Pillar: ART
+File: Digital.pdf Page 22
+
+Shimmering electric blue chaos forms with delicate gold accents.
+
+"Blue and gold. Not chosen to match external seasonal trends. Chosen because the artwork demanded its own luxury register."
+
+ALT: The chaos forms in their native luxury register. Blue and gold because that is what the voice dictated.`, tags:['artifact','art','blue-gold']},
+    {title:'Artifact 018 — Digitized Brand Wordmark', body:`Pillar: PROOF
+File: Digital.pdf Page 27
+
+The official Psyched Luxuries brand wordmark lettered entirely by hand in white ink on a solid black field.
+
+"The branding font deployed on the heavy garments is this exact hand digitized."
+
+ALT: The name. The hand. The identical physical source. Not a machine layout.`, tags:['artifact','proof','wordmark']},
+    {title:'Artifact 019 — Love Yourself Within Chaos', body:`Pillar: PHILOSOPHY
+File: IMG_5763.jpeg
+
+A rich, crimson heart painted completely inside the chaos forms, rather than sitting above or outside them.
+
+"The heart exists securely inside the chaos. Not safely above it. Not after it finally resolves."
+
+ALT: Love yourself. Directly within the chaos. Never postpone the alignment until after the storm.`, tags:['artifact','philosophy','heart-chaos']},
+    {title:'Artifact 020 — Chalk on Public Concrete', body:`Pillar: PROCESS
+File: IMG_3656.jpeg
+
+Temporary visual language distributed freely onto a public sidewalk using vibrant blue and white chalk.
+
+"Chalk on concrete. The visual grammar distributed completely free in the open public environment."
+
+ALT: The language on the ground. Temporary, completely non-transactional, and real.`, tags:['artifact','process','chalk']},
+    {title:'Artifact 021 — Yellow Heart with Red Encasement', body:`Pillar: ART
+File: Digital.pdf Page 26
+
+A vivid yellow heart form held safely at the center of an intense, fiery red and orange chaos storm.
+
+"Yellow heart. Red chaos completely surrounding it. The raw emotion held securely at the center."
+
+ALT: The heart in the eye of the storm. Safely held, never consumed by the surrounding friction.`, tags:['artifact','art','yellow-heart']},
+    {title:'Artifact 022 — Manifest Money Thought Cloud', body:`Pillar: PHILOSOPHY
+File: 20250826_064151366_iOS.jpeg
+
+A central figure standing with a dollar thought-cloud rising above its mind, with typography 'Manifest Money'.
+
+"Currency is an explicit, structured thought long before it ever registers as a material number."
+
+ALT: The internal thought is the absolute first step. The arrow possesses no ceiling because abundance is infinite.`, tags:['artifact','philosophy','manifest-money']},
+    {title:'Artifact 023 — Clean Crowned Figure Digital', body:`Pillar: ART
+File: Digital.pdf Page 21
+
+A clean, high-contrast minimalist stick figure with a crown and arms raised high in victory.
+
+"The crown. The raised arms. The figure that decided exactly who it was long before external evidence arrived."
+
+ALT: The crowned figure. Every individual medium carries the exact same fundamental declaration.`, tags:['artifact','art','crowned']},
+    {title:'Artifact 024 — Ghost Logo on White Grounds', body:`Pillar: PROCESS
+File: Digital.pdf Page 4
+
+The master brain-heart-hands logo executed at its absolute maximum restraint—barely visible on white space.
+
+"The logo functioning at its most restrained, operating almost as a faint whisper on white background."
+
+ALT: The logo at an absolute whisper. Still fully present. Still carrying the complete structural gravity of the architecture.`, tags:['artifact','process','ghost-logo']},
+    {title:'Artifact 025 — Purple/Plum Chaos on White', body:`Pillar: ART
+File: Digital.pdf Page 32
+
+Flowing chaos forms in a rich purple-to-plum color palette executed across a clean white ground.
+
+"Purple into plum. The exact same visual grammar that the archive has been running continuously since day one."
+
+ALT: Chaos in Purple. The grammar remains permanent and uncompromised; the palette simply answers to the immediate moment.`, tags:['artifact','art','purple']}
+  ],
+  'russ-model': [
+    {title:'The Three Components', body:`Between 2011 and 2016, Russ released over 80 songs across eleven albums independently, without label infrastructure, industry validation, or significant early audience response.
+
+The model had three components working simultaneously: Consistency, Volume, and Ownership.
+
+The archive already contains multiples of 52 deployable pieces. The volume constraint that Russ faced does not exist for Psyched Luxuries in the same way. The production has already happened. The constraint is curation and deployment, not creation.
+
+The solution is front-loading labor so execution during heavy work periods requires almost nothing. Batch creation absorbs production work into concentrated sessions. Scheduling automation removes daily decision-making.`, tags:['russ','consistency','volume','ownership']},
+    {title:'The 52-Week Structure', body:`Four quarters of thirteen weeks each. Each quarter with loose thematic coherence drawn from the archive's natural groupings.
+
+• Quarter One (Foundation): Core visual language introduced. The chaos forms. The golden curve work. The dollar arrow. The audience's first extended exposure to the vocabulary.
+
+• Quarter Two (Philosophy Made Visible): Drops carrying the philosophical content most explicitly. The audience begins understanding what the visual language is arguing.
+
+• Quarter Three (The Shadow): Selected pieces from the darker register. The clown series. The maze work. The depth beneath the surface made partially visible.
+
+• Quarter Four (The Proof): Product-forward. The pieces that generated the strongest organic signal across the first three quarters get their full product treatment.`, tags:['52-week','quarters','calendar']}
+  ],
+  'business': [
+    {title:'Phase One — Protection Before Deployment', body:`Before anything goes public.
+
+Copyright Registration—everything starts here. The complete archive registered as a collection of unpublished works through copyright.gov. This purchases federal documentation of ownership with a specific date.`, tags:['protection','copyright']},
+    {title:'Phase Two — Revenue Before Infrastructure', body:`Fourthwall—Zero monthly cost. Transaction percentage model. The platform only earns when the brand earns.
+
+Printful—Connected directly to Fourthwall. One hour of configuration. After that every order placed automatically triggers production and fulfillment.`, tags:['fourthwall','printful','revenue']},
+    {title:'Phase Three — Legal Structure', body:`California LLC filed when the storefront demonstrates revenue generation. Separates personal assets from business assets, opens a business bank account, and creates a licensable entity.`, tags:['llc','legal']},
+    {title:'Phase Four — Intellectual Property Protection', body:`Trademark filings for the name "Psyched Luxuries" and the brain-heart-hands logo. Filed under the LLC with the USPTO.`, tags:['trademark','ip']},
+    {title:'The Non-Negotiables', body:`Never spend on ads before organic content is generating consistent engagement.
+Never expand infrastructure before revenue justifies the expansion.
+Never price from apology.
+Never surrender ownership of any intellectual property.
+
+The philosophy produces the work. The work generates the revenue. The revenue funds the protection. The protection secures the empire.`, tags:['non-negotiable','rules']}
+  ],
+  'delegation': [
+    {title:'The Two Roles That Belong to the Human', body:`Role One: Creator. Every mark made. Every symbol developed. Every seed planted. Every design decision. Every piece of copy in the brand's voice. This role cannot be delegated, automated, or approximated. It requires the specific nervous system and psychological history of the founder.
+
+Role Two: CEO. The strategic decisions. Which direction the brand moves. Which collaborations get pursued. Which opportunities align with the philosophy and which compromise it. This role also cannot be delegated.`, tags:['creator','ceo','irreducible']},
+    {title:'The Tool Stack', body:`• Fourthwall: Commercial storefront. E-Commerce, Merchandising, Retail Operations, Inventory.
+• Printful: Production and fulfillment. Product Development, Logistics, Supply Chain, Fulfillment.
+• Instagram Native Scheduler: Content deployment. Social Media Manager.
+• Manus: Intelligence and research layer. Competitive landscape analysis, pricing research, hashtag architecture.
+• Claude: Strategic thinking partner. Chief Strategy Officer, creative direction pressure-testing, Codex development.
+• Google Drive: Archive and production pipeline tracking every piece through the system.
+
+The creator creates. The system operates. The tools analyze. The infrastructure protects. The human decides. Nothing more is required of the one person at the center.`, tags:['stack','tools']}
+  ],
+  'founding': [
+    {title:'The Conditions Before the Ignition', body:`Two to three years of solo operation. The first run. Everything built by one person occupying 41 roles simultaneously. The infrastructure was dismantled. What did not get dismantled—the notebook, the ledger, the safe, the archive, the philosophy. The brand survived its own collapse because the person carrying it never fully set it down.`, tags:['conditions','solo']},
+    {title:'Aaron — The First Witness', body:`Aaron is a friend. A genuine one. He saw the seed. Not a finished product. Not a mockup on a garment. The raw work. And he said—I want that on a shirt.
+
+Those four words demonstrated that the work could move a genuine human being to want to carry it on their body without any commercial apparatus surrounding it.`, tags:['aaron','witness']},
+    {title:'The Order & Exchange', body:`The shirt and the sweatshirt were made. Aaron was given a founder's price. A specific price that reflected the cost of making the piece and nothing more. Because Aaron wasn't being treated as a customer. He was being treated as the ignition point deserves to be treated.
+
+Aaron's response was immediate and genuine: I can't wait to rock this. He stated all his clothes might just be made by Psyched Luxuries. The response to that was not marketing copy. It was the most natural and true thing available: Bet. Watch this.
+
+Aaron is the first witness. His name is permanent in this record.`, tags:['aaron','founders-price','watch-this']}
+  ],
+  'long-game': [
+    {title:'Phase One — Proof', body:`Current phase. Duration—six to twelve months. Primary objective—demonstrate that the brand can generate consistent revenue from strangers. Aaron proved the work moves people who know the creator. Phase One proves it moves people who don't. Everything in the current Codex is Phase One infrastructure.`, tags:['phase-one','proof']},
+    {title:'Phase Two — Scale', body:`Duration—twelve to twenty-four months. Primary objective—expand reach through strategic amplification. Content with strongest organic signal gets boosted through paid advertising using Manus intelligence. The Bugus conversation gets reopened from a position of demonstrated momentum. Fine art body introduced to limited public contexts.`, tags:['phase-two','scale']},
+    {title:'Phase Three — Institution', body:`Activation condition—consistent five-figure monthly revenue. Duration—twenty-four to sixty months. Primary objective—establish Psyched Luxuries as a recognized institution in both streetwear and fine art ecosystems simultaneously. The Meta Quest VR world becomes publicly accessible—customers enter the world the visual language came from.`, tags:['phase-three','institution','vr']},
+    {title:'Phase Four — Legacy', body:`Activation condition—the brand operates as a self-sustaining institution independent of its founder's daily involvement. Primary objective—ensure the empire outlasts the builder. The visual language is documented in this Codex with sufficient precision that future creative directors can make decisions genuinely consistent with the brand's architecture. The fine art body is formally documented as an estate asset.`, tags:['phase-four','legacy','estate']}
+  ],
+  'proof-of-reach': [
+    {title:'The Complete Proof of Reach Timeline', body:`• 2019 — Archive begins. Seven years of continuous documented output commences.
+
+• 2021 — Visual art credits on Apple Music for P-FILTHY under FILTHY RECORDS. The visual language has already been evaluated by another creative practitioner.
+
+• 2021 onward — Will Haynes relationship. Active Instagram connection. Merch exchanged. Beats produced specifically for the brand.
+
+• 2022 — Direct exchange with Bugus, DIEMON co-founder. The exchange began unconventionally and resulted in an open door: "love it bro. If I use it I'll hit you up first."
+
+• 2026 — Aaron. First purchase of this chapter. Founder's price. Watch this spoken and meant.
+
+• 2026 — The Codex. The complete architectural documentation of everything built, proven, and being built toward.`, tags:['timeline','receipts']},
+    {title:'The Strategic Implications', body:`First—the brand does not launch as an unknown. It launches with documented music industry credits, established creative relationships, and years of work that has already produced genuine human response.
+
+Second—the existing relationships are assets requiring maintenance not acquisition. The moment a relationship becomes a tool it stops being a relationship.
+
+Third—the music ecosystem connection is the most underexploited strategic asset the brand currently holds. Phase Two's activation of the collaboration infrastructure should prioritize this ecosystem above all other external reach strategies.`, tags:['strategy','implications','music']},
+    {title:'The Closing Statement', body:`The reach is real. The receipts exist. The relationships are genuine. The archive is documented. The proof of concept is Aaron. Nobody owns your experience of their system. The curve is the law. The hand is the author. The archive is the evidence. The empire is already real.
+
+WATCH THIS.`, tags:['closing','law','watch-this']}
+  ]
+};
+
+// ─── STORAGE ───
+const SK = 'codex-master-v1';
+
+function buildDefaultState() {
+  const now = Date.now();
+  return {
+    chambers: DEFAULT_CHAMBERS.map(c => ({
+      ...c,
+      entries: (SEEDED_ENTRIES[c.id] || []).map((e, i) => ({
+        id: 'seed_' + c.id + '_' + i,
+        title: e.title,
+        body: e.body,
+        tags: e.tags || [],
+        created: now - (1000 * i),
+        updated: now - (1000 * i)
+      }))
+    })),
+    activeId: 'page-zero'
+  };
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(SK);
+    if (raw) {
+      const s = JSON.parse(raw);
+      const have = new Set(s.chambers.map(c => c.id));
+      const additions = DEFAULT_CHAMBERS.filter(c => !have.has(c.id)).map(c => ({
+        ...c,
+        entries: (SEEDED_ENTRIES[c.id] || []).map((e, i) => ({
+          id: 'seed_' + c.id + '_' + i,
+          title: e.title, body: e.body, tags: e.tags || [],
+          created: Date.now() - (1000 * i), updated: Date.now() - (1000 * i)
+        }))
+      }));
+      if (additions.length) s.chambers = [...s.chambers, ...additions];
+      return s;
+    }
+  } catch(e) {}
+  return buildDefaultState();
+}
+function save(s) { try { localStorage.setItem(SK, JSON.stringify(s)); } catch(e) {} }
+function uid() { return 'e_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function today() { return new Date().toISOString().slice(0,10); }
+function slugify(s) { return s.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'c-'+Date.now(); }
+
+// ─── DOM HELPERS ───
+function h(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(props||{})) {
+    if (k === 'cls') e.className = v;
+    else if (k === 'html') e.innerHTML = v;
+    else if (typeof v === 'function') e.addEventListener(k, v);
+    else if (v === true) e.setAttribute(k, '');
+    else if (v !== false && v != null) e.setAttribute(k, v);
+  }
+  for (const k of kids) {
+    if (k == null) continue;
+    e.append(typeof k === 'string' ? document.createTextNode(k) : k);
+  }
+  return e;
+}
+
+// ─── STATE ───
+let ST = load();
+let modal = null;
+let editingEntry = null;
+let searchQuery = '';
+let expandedEntry = null;
+
+function activeChamber() { return ST.chambers.find(c => c.id === ST.activeId) || ST.chambers[0]; }
+function totalEntries() { return ST.chambers.reduce((a,c) => a + (c.entries?.length||0), 0); }
+function setActive(id) { ST.activeId = id; expandedEntry = null; save(ST); render(); }
+
+function render() {
+  const root = document.getElementById('app');
+  root.innerHTML = '';
+  root.appendChild(mainView());
+  if (modal) root.appendChild(modalView());
+}
+
+function mainView() {
+  const wrap = h('div', {cls:'app'});
+  const c = activeChamber();
+  wrap.appendChild(h('div', {cls:'head'},
+    h('div', {cls:'brand'},
+      h('span', {cls:'mark'}, '✶'),
+      h('span', {cls:'title'}, 'CODEX'),
+      h('span', {cls:'count'}, String(totalEntries()))
+    ),
+    h('button', {cls:'menu-btn', 'aria-label':'Menu', click:()=>{modal='data';render();}},
+      h('span'), h('span'), h('span')
+    )
+  ));
+  const search = h('input', {cls:'search', type:'search', placeholder:'Search the Codex...', value:searchQuery});
+  search.addEventListener('input', e => { searchQuery = e.target.value; renderEntriesOnly(); });
+  wrap.appendChild(h('div', {cls:'search-wrap'}, search));
+  const rail = h('div', {cls:'chamber-rail'});
+  ST.chambers.forEach(ch => {
+    const chip = h('button', {cls:'chamber-chip' + (ch.id === ST.activeId ? ' active' : ''), click:()=>setActive(ch.id)},
+      h('span', {cls:'num'}, 'CH ' + (ch.num||'')),
+      h('span', {cls:'nm'}, ch.name),
+      h('span', {cls:'ct'}, (ch.entries?.length||0) + ' entries')
+    );
+    rail.appendChild(chip);
+  });
+  wrap.appendChild(rail);
+  wrap.appendChild(h('div', {cls:'chamber-head'},
+    h('div', {cls:'chamber-meta'},
+      h('div', {cls:'chamber-num'}, 'CHAMBER ' + (c.num || '')),
+      h('div', {cls:'chamber-name'}, c.name),
+      h('div', {cls:'chamber-desc'}, c.desc || '')
+    ),
+    h('button', {cls:'new-btn', click:()=>{editingEntry=null;modal='newEntry';render();}}, '+ New')
+  ));
+  const entriesEl = h('div', {cls:'entries', id:'entries-container'});
+  renderEntriesInto(entriesEl);
+  wrap.appendChild(entriesEl);
+  wrap.appendChild(h('div', {cls:'foot'},
+    h('span', {cls:'mono'}, 'local · offline · yours'),
+    h('button', {cls:'link', click:()=>{modal='data';render();}}, 'library')
+  ));
+  wrap.appendChild(h('button', {cls:'fab', 'aria-label':'New entry', click:()=>{editingEntry=null;modal='newEntry';render();}}, '+'));
+  return wrap;
+}
+
+function renderEntriesOnly() {
+  const el = document.getElementById('entries-container');
+  if (!el) return;
+  el.innerHTML = '';
+  renderEntriesInto(el);
+}
+
+function renderEntriesInto(container) {
+  const c = activeChamber();
+  let entries = c.entries || [];
+  if (searchQuery.trim()) {
+    const q = searchQuery.toLowerCase();
+    entries = [];
+    ST.chambers.forEach(ch => {
+      (ch.entries||[]).forEach(e => {
+        if ((e.title||'').toLowerCase().includes(q) ||
+            (e.body||'').toLowerCase().includes(q) ||
+            (e.tags||[]).some(t => t.toLowerCase().includes(q))) {
+          entries.push({...e, _chamber: ch.name, _chamberId: ch.id});
+        }
+      });
+    });
+  }
+  entries = [...entries].sort((a,b) => (b.updated||b.created||0) - (a.updated||a.created||0));
+  if (!entries.length) {
+    const e = h('div', {cls:'empty'});
+    if (searchQuery.trim()) e.innerHTML = 'No matches for <em>' + escapeHtml(searchQuery) + '</em>';
+    else e.innerHTML = 'Empty chamber. Tap <em>+ New</em> to write the first entry.';
+    container.appendChild(e);
+    return;
+  }
+  entries.forEach(entry => {
+    const isExpanded = expandedEntry === entry.id;
+    const card = h('div', {cls: 'entry' + (isExpanded ? '' : ' collapsed'), click: () => {
+      expandedEntry = isExpanded ? null : entry.id;
+      renderEntriesOnly();
+    }});
+    card.appendChild(h('div', {cls:'entry-head'},
+      h('div', {cls:'entry-title'}, entry.title || '(untitled)'),
+      h('div', {cls:'entry-date'}, entry.updated ? new Date(entry.updated).toISOString().slice(0,10) : '')
+    ));
+    if (entry._chamber && searchQuery.trim()) {
+      card.appendChild(h('div', {cls:'entry-date', style:'margin-bottom:8px;color:var(--accent-soft)'}, '▸ ' + entry._chamber));
+    }
+    card.appendChild(h('div', {cls:'entry-body'}, entry.body || ''));
+    if (entry.tags && entry.tags.length) {
+      const tags = h('div', {cls:'entry-tags'});
+      entry.tags.forEach(t => tags.appendChild(h('span', {cls:'tag'}, t)));
+      card.appendChild(tags);
+    }
+    if (isExpanded) {
+      const actions = h('div', {cls:'row', style:'margin-top:14px'},
+        h('button', {cls:'ghost', click:(ev)=>{
+          ev.stopPropagation();
+          if (entry._chamberId) ST.activeId = entry._chamberId;
+          editingEntry = entry; modal = 'editEntry'; render();
+        }}, 'Edit'),
+        h('button', {cls:'ghost danger', click:(ev)=>{
+          ev.stopPropagation();
+          if (!confirm('Delete this entry?')) return;
+          const chId = entry._chamberId || ST.activeId;
+          ST.chambers = ST.chambers.map(ch => ch.id===chId ? {...ch, entries: ch.entries.filter(x=>x.id!==entry.id)} : ch);
+          save(ST); expandedEntry = null; render();
+        }}, 'Delete')
+      );
+      card.appendChild(actions);
+    }
+    container.appendChild(card);
+  });
+}
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]); }
+
+function modalView() {
+  if (modal === 'newEntry' || modal === 'editEntry') return entryModal();
+  if (modal === 'data') return dataModal();
+  if (modal === 'newChamber') return newChamberModal();
+}
+function modalShell(title, sub) {
+  const backdrop = h('div', {cls:'modal-backdrop'});
+  backdrop.addEventListener('click', e => {if(e.target===backdrop){modal=null;editingEntry=null;render();}});
+  const m = h('div', {cls:'modal'});
+  m.appendChild(h('div', {cls:'modal-head'},
+    h('div', {},
+      h('h2', {}, title),
+      sub ? h('div', {cls:'sub'}, sub) : null
+    ),
+    h('button', {cls:'x', click:()=>{modal=null;editingEntry=null;render();}}, '✕')
+  ));
+  backdrop.appendChild(m);
+  return {backdrop, m};
+}
+function entryModal() {
+  const isEdit = modal === 'editEntry';
+  const c = activeChamber();
+  const e = isEdit ? editingEntry : null;
+  const {backdrop, m} = modalShell(isEdit ? 'Edit entry' : 'New entry', 'CHAMBER · ' + c.name.toUpperCase());
+  const chSel = h('select', {cls:'ipt mono-ipt'});
+  ST.chambers.forEach(ch => {
+    const o = h('option', {value:ch.id}, ch.num + ' · ' + ch.name);
+    if (ch.id === c.id) o.selected = true;
+    chSel.appendChild(o);
+  });
+  const titleIn = h('input', {cls:'ipt title-ipt', placeholder:'Title', value: e?.title || ''});
+  const bodyIn = h('textarea', {cls:'ipt', rows:'14', placeholder:'Write the entry.'});
+  bodyIn.value = e?.body || '';
+  const tagsIn = h('input', {cls:'ipt mono-ipt', placeholder:'tags, comma-separated', value: (e?.tags||[]).join(', ')});
+  const submitBtn = h('button', {cls:'primary', click:()=>{
+    const title = titleIn.value.trim();
+    const body = bodyIn.value.trim();
+    if (!title && !body) { alert('Add a title or body.'); return; }
+    const targetChId = chSel.value;
+    const tags = tagsIn.value.split(',').map(t=>t.trim()).filter(Boolean);
+    const now = Date.now();
+    if (isEdit) {
+      const currentChId = ST.chambers.find(ch => (ch.entries||[]).some(x => x.id === e.id))?.id;
+      ST.chambers = ST.chambers.map(ch => {
+        if (ch.id === currentChId) return {...ch, entries: ch.entries.filter(x => x.id !== e.id)};
+        return ch;
+      });
+      const updated = {...e, title, body, tags, updated: now};
+      ST.chambers = ST.chambers.map(ch => ch.id===targetChId ? {...ch, entries:[updated, ...(ch.entries||[])]} : ch);
+      ST.activeId = targetChId;
+    } else {
+      const newEntry = {id: uid(), title, body, tags, created: now, updated: now};
+      ST.chambers = ST.chambers.map(ch => ch.id===targetChId ? {...ch, entries:[newEntry, ...(ch.entries||[])]} : ch);
+      ST.activeId = targetChId;
+    }
+    save(ST); modal = null; editingEntry = null; render();
+  }}, isEdit ? 'Save changes' : 'Create entry');
+  m.append(
+    h('label', {cls:'lbl'}, 'Chamber'), chSel,
+    h('label', {cls:'lbl'}, 'Title'), titleIn,
+    h('label', {cls:'lbl'}, 'Body'), bodyIn,
+    h('label', {cls:'lbl'}, 'Tags'), tagsIn,
+    submitBtn
+  );
+  return backdrop;
+}
+function dataModal() {
+  const {backdrop, m} = modalShell('Library', 'CODEX · LOCAL');
+  const stats = h('div', {style:'display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px'});
+  stats.appendChild(h('div', {style:'padding:14px;border:1px solid var(--line);border-radius:12px'},
+    h('div', {style:'font-family:var(--mono);font-size:9px;color:var(--mute);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px'}, 'Chambers'),
+    h('div', {style:'font-weight:800;font-size:24px'}, String(ST.chambers.length))
+  ));
+  stats.appendChild(h('div', {style:'padding:14px;border:1px solid var(--line);border-radius:12px'},
+    h('div', {style:'font-family:var(--mono);font-size:9px;color:var(--mute);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px'}, 'Entries'),
+    h('div', {style:'font-weight:800;font-size:24px'}, String(totalEntries()))
+  ));
+  m.appendChild(stats);
+  const list = h('ul', {cls:'chamber-edit-list'});
+  ST.chambers.forEach(ch => {
+    const li = h('li');
+    li.appendChild(h('span', {style:'font-family:var(--mono);color:var(--accent);font-size:10px;letter-spacing:.1em;width:36px'}, ch.num || ''));
+    li.appendChild(h('span', {cls:'nm'}, ch.name));
+    li.appendChild(h('span', {cls:'ct'}, (ch.entries?.length||0) + ' entries'));
+    const del = h('button', {cls:'x', style:'width:28px;height:28px;font-size:11px', click:()=>{
+      if (ST.chambers.length <= 1) { alert('Keep at least one chamber.'); return; }
+      if (!confirm('Delete chamber "' + ch.name + '" and all its entries?')) return;
+      ST.chambers = ST.chambers.filter(x => x.id !== ch.id);
+      if (ST.activeId === ch.id) ST.activeId = ST.chambers[0].id;
+      save(ST); render();
+    }}, '🗑');
+    li.appendChild(del);
+    list.appendChild(li);
+  });
+  m.appendChild(list);
+  m.appendChild(h('button', {cls:'ghost', style:'display:block;width:100%;margin-top:10px;padding:14px', click:()=>{modal='newChamber';render();}}, '+ Add chamber'));
+  const fi = h('input', {type:'file', accept:'.json,application/json', style:'display:none'});
+  fi.addEventListener('change', () => {
+    const f = fi.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const d = JSON.parse(r.result);
+        if (!d.chambers || !Array.isArray(d.chambers)) throw 0;
+        if (!confirm('Replace current Codex with imported file? This cannot be undone.')) return;
+        ST = {chambers: d.chambers, activeId: d.activeId || d.chambers[0].id};
+        save(ST); modal=null; render();
+        alert('Imported ' + d.chambers.length + ' chambers.');
+      } catch(e) { alert('Could not read file.'); }
+    };
+    r.readAsText(f);
+  });
+  const da = h('div', {cls:'data-actions'});
+  da.appendChild(h('button', {cls:'ghost', click:()=>{
+    const blob = new Blob([JSON.stringify(ST,null,2)],{type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'codex-' + today() + '.json'; a.click();
+    URL.revokeObjectURL(url);
+  }}, '↓ Export JSON'));
+  da.appendChild(h('button', {cls:'ghost', click:()=>{
+    let md = '# Psyched Luxuries — Master Codex\n\nExported ' + today() + '\n\n';
+    ST.chambers.forEach(ch => {
+      md += '\n---\n\n## ' + (ch.num ? ch.num + ' · ' : '') + ch.name + '\n\n';
+      if (ch.desc) md += '_' + ch.desc + '_\n\n';
+      (ch.entries||[]).forEach(e => {
+        md += '### ' + (e.title || '(untitled)') + '\n\n';
+        if (e.body) md += e.body + '\n\n';
+        if (e.tags && e.tags.length) md += '*Tags: ' + e.tags.join(', ') + '*\n\n';
+      });
+    });
+    const blob = new Blob([md],{type:'text/markdown'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'codex-' + today() + '.md'; a.click();
+    URL.revokeObjectURL(url);
+  }}, '↓ Export Markdown'));
+  da.appendChild(h('button', {cls:'ghost', click:()=>fi.click()}, '↑ Import JSON'));
+  da.appendChild(fi);
+  da.appendChild(h('button', {cls:'ghost danger', click:()=>{
+    if (!confirm('Reset Codex to the seeded Master Codex? ALL custom edits will be erased.')) return;
+    if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
+    localStorage.removeItem(SK);
+    ST = load(); modal=null; render();
+  }}, 'Reset to Master Codex'));
+  m.appendChild(da);
+  m.appendChild(h('p', {cls:'hint'}, 'The Codex lives on this device only. Export regularly to back up. Drop the JSON on a new device and Import to restore.'));
+  return backdrop;
+}
+function newChamberModal() {
+  const {backdrop, m} = modalShell('New chamber', 'CODEX · STRUCTURE');
+  const numIn = h('input', {cls:'ipt mono-ipt', placeholder:'XIV'});
+  const nameIn = h('input', {cls:'ipt title-ipt', placeholder:'Chamber name'});
+  const descIn = h('input', {cls:'ipt', placeholder:'What lives here?'});
+  m.append(
+    h('label', {cls:'lbl'}, 'Number / sigil'), numIn,
+    h('label', {cls:'lbl'}, 'Name'), nameIn,
+    h('label', {cls:'lbl'}, 'Description'), descIn,
+    h('button', {cls:'primary', click:()=>{
+      const name = nameIn.value.trim();
+      if (!name) { alert('Name the chamber.'); return; }
+      const base = slugify(name); let id = base, n = 1;
+      while (ST.chambers.find(c => c.id === id)) id = base + '-' + (++n);
+      ST.chambers = [...ST.chambers, {id, num: numIn.value.trim(), name, desc: descIn.value.trim(), entries:[]}];
+      ST.activeId = id;
+      save(ST); modal='data'; render();
+    }}, 'Create chamber')
+  );
+  return backdrop;
+}
+
+render();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>

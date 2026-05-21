@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0d0c0a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Ledger"/>
+<title>Seeds · Ledger</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --bg:#0d0c0a;--bg-2:#15130f;--bg-3:#1c1a16;--line:#2a2722;
+  --fg:#f3eee2;--mute:#8a8378;--accent:#e23b3b;--accent-dim:#7a1f1f;
+  --gold:#c9a84c;
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--display);overscroll-behavior:none}
+body{min-height:100svh}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+input,select,textarea{font:inherit;color:inherit;background:none;border:none;outline:none;width:100%}
+textarea{resize:none}
+.app{display:flex;flex-direction:column;min-height:100svh;padding-top:env(safe-area-inset-top);padding-bottom:calc(56px + env(safe-area-inset-bottom));max-width:720px;margin:0 auto}
+
+/* ── HEAD ── */
+.head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 10px}
+.brand{display:flex;align-items:baseline;gap:8px}
+.mark{font-size:18px;color:var(--accent)}
+.title{font-weight:800;letter-spacing:.04em;font-size:22px}
+.sub{font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.16em;text-transform:uppercase;margin-left:4px}
+.count-pill{font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.1em;padding:4px 9px;border:1px solid var(--line);border-radius:99px}
+.add-btn{width:36px;height:36px;background:var(--accent);border-radius:99px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:300;line-height:1;box-shadow:0 4px 0 var(--accent-dim);transition:transform .08s,box-shadow .08s}
+.add-btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--accent-dim)}
+
+/* ── FILTER RAIL ── */
+.filter-rail{display:flex;gap:7px;padding:6px 22px 14px;overflow-x:auto;scrollbar-width:none}
+.filter-rail::-webkit-scrollbar{display:none}
+.fchip{flex:0 0 auto;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:7px 14px;border:1px solid var(--line);border-radius:99px;color:var(--mute);transition:.14s;white-space:nowrap}
+.fchip.active{color:var(--fg);border-color:var(--fg);background:var(--bg-2)}
+.fchip.batch.active{color:var(--gold);border-color:var(--gold)}
+.fchip.work.active{color:#7ab8d4;border-color:#7ab8d4}
+.fchip.misc.active{color:#9b72cf;border-color:#9b72cf}
+
+/* ── SEARCH ── */
+.search-wrap{padding:0 22px 12px}
+.search-inner{display:flex;align-items:center;gap:10px;background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+.search-inner input{font-family:var(--mono);font-size:12px;letter-spacing:.04em}
+.search-inner input::placeholder{color:var(--mute)}
+.search-ico{color:var(--mute);font-size:14px;flex-shrink:0}
+
+/* ── LIST ── */
+.list{flex:1;padding:0 22px 32px;display:flex;flex-direction:column;gap:10px}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:14px;padding:60px 22px;text-align:center}
+.empty-mark{font-size:48px;opacity:.18}
+.empty-txt{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);line-height:1.7}
+
+/* ── SEED CARD ── */
+.seed-card{background:var(--bg-2);border:1px solid var(--line);border-radius:18px;padding:18px 18px 14px;display:flex;flex-direction:column;gap:10px;transition:.14s;cursor:pointer;position:relative;overflow:hidden}
+.seed-card:active{background:var(--bg-3)}
+.seed-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.seed-num{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--mute);flex-shrink:0;padding-top:2px}
+.seed-title{font-weight:800;font-size:18px;letter-spacing:-.01em;line-height:1.1;flex:1}
+.cat-dot{width:8px;height:8px;border-radius:99px;flex-shrink:0;margin-top:6px}
+.cat-dot.batch{background:var(--gold)}
+.cat-dot.work{background:#7ab8d4}
+.cat-dot.misc{background:#9b72cf}
+.seed-thought{font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.02em;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.seed-footer{display:flex;align-items:center;justify-content:space-between}
+.seed-meta{font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.08em}
+.cat-label{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:99px;border:1px solid}
+.cat-label.batch{color:var(--gold);border-color:var(--gold)}
+.cat-label.work{color:#7ab8d4;border-color:#7ab8d4}
+.cat-label.misc{color:#9b72cf;border-color:#9b72cf}
+
+/* ── DETAIL VIEW ── */
+.detail{position:fixed;inset:0;background:var(--bg);z-index:30;overflow-y:auto;display:flex;flex-direction:column}
+.detail-head{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 14px) 22px 12px;position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);z-index:2}
+.back-btn{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);padding:6px 0}
+.back-arrow{font-size:18px;color:var(--accent)}
+.detail-actions{display:flex;gap:10px}
+.icon-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:99px;font-size:15px;color:var(--mute);transition:.12s}
+.icon-btn:active{background:var(--bg-2)}
+.icon-btn.danger:active{border-color:var(--accent);color:var(--accent)}
+.detail-body{padding:24px 22px 60px;display:flex;flex-direction:column;gap:28px;max-width:720px;margin:0 auto;width:100%}
+.detail-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.detail-num{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--mute);padding-top:4px}
+.detail-title{font-weight:800;font-size:clamp(26px,7vw,38px);letter-spacing:-.02em;line-height:1.05;flex:1}
+.detail-meta-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.detail-meta-chip{font-family:var(--mono);font-size:10px;letter-spacing:.1em;padding:5px 12px;border:1px solid var(--line);border-radius:99px;color:var(--mute)}
+.detail-section{display:flex;flex-direction:column;gap:8px}
+.detail-label{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.detail-text{font-size:15px;line-height:1.65;color:var(--fg)}
+.detail-divider{height:1px;background:var(--line)}
+
+/* ── FORM ── */
+.form-screen{position:fixed;inset:0;background:var(--bg);z-index:40;overflow-y:auto;display:flex;flex-direction:column}
+.form-head{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 14px) 22px 12px;position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);z-index:2}
+.form-head-title{font-weight:800;font-size:16px;letter-spacing:.01em}
+.form-body{padding:24px 22px 80px;display:flex;flex-direction:column;gap:22px;max-width:720px;margin:0 auto;width:100%}
+.field{display:flex;flex-direction:column;gap:6px}
+.field-label{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.field-input{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:14px;transition:.14s}
+.field-input:focus{border-color:var(--mute)}
+.field-input.ta{min-height:96px;line-height:1.55}
+.field-input.sm{min-height:0}
+.row-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cat-select{appearance:none;-webkit-appearance:none;background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.cat-select option{background:var(--bg-2)}
+.save-btn{background:var(--accent);color:#fff;border-radius:16px;padding:20px;font-weight:800;font-size:16px;letter-spacing:.04em;text-align:center;box-shadow:0 6px 0 var(--accent-dim);transition:transform .08s,box-shadow .08s;margin-top:4px}
+.save-btn:active{transform:translateY(3px);box-shadow:0 3px 0 var(--accent-dim)}
+.cancel-btn{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);text-align:center;padding:14px}
+
+/* ── STATS BAR ── */
+.stats-bar{display:flex;gap:0;padding:2px 22px 16px;overflow-x:auto;scrollbar-width:none}
+.stats-bar::-webkit-scrollbar{display:none}
+.stat-item{display:flex;flex-direction:column;gap:3px;padding:10px 16px;border:1px solid var(--line);flex:1;min-width:80px}
+.stat-item:first-child{border-radius:12px 0 0 12px}
+.stat-item:last-child{border-radius:0 12px 12px 0}
+.stat-item:not(:first-child){border-left:none}
+.stat-num{font-weight:800;font-size:20px;line-height:1}
+.stat-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.stat-num.batch{color:var(--gold)}
+.stat-num.work{color:#7ab8d4}
+.stat-num.misc{color:#9b72cf}
+.__pl-notch{
+  position:fixed;top:0;left:0;right:0;
+  height:env(safe-area-inset-top);
+  background:#0a0908;
+  border-bottom:1px solid rgba(201,168,76,.18);
+  z-index:99998;
+}
+.__pl-back{
+  position:fixed;bottom:0;left:0;right:0;z-index:99999;
+  height:calc(44px + env(safe-area-inset-bottom));
+  display:flex;align-items:flex-start;justify-content:center;
+  padding-top:10px;
+  background:rgba(10,9,8,.95);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(201,168,76,.18);
+  color:#f4ecd8;text-decoration:none;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-style:italic;font-size:14px;letter-spacing:.04em;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;
+  gap:8px;
+}
+.__pl-back:active{background:rgba(20,18,14,.98)}
+.__pl-back .__pl-arrow{font-family:system-ui;font-style:normal;color:#c9a84c;font-size:15px;line-height:1}
+.__pl-back .__pl-dot{width:5px;height:5px;border-radius:99px;background:#c9a84c;margin-left:1px;display:inline-block;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="__pl-notch"></div>
+<style>
+
+</style>
+<a href="./index.html" class="__pl-back" aria-label="Back to Psyched Luxuries">
+  <span class="__pl-arrow">←</span><span>Psyched</span><span class="__pl-dot"></span>
+</a>
+<div class="app" id="app"></div>
+
+<script>
+const SK = 'seeds-ledger-v1';
+
+function load(){
+  try { const r = localStorage.getItem(SK); return r ? JSON.parse(r) : []; } catch(e){ return []; }
+}
+function save(entries){ try { localStorage.setItem(SK, JSON.stringify(entries)); } catch(e){} }
+
+let entries = load();
+let filter = 'all';
+let search = '';
+let view = 'list'; // list | detail | form
+let activeId = null;
+let editId = null;
+
+const CAT_COLORS = { batch:'var(--gold)', work:'#7ab8d4', misc:'#9b72cf' };
+
+function uid(){ return 'sl_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+
+function seedNum(id){
+  const sorted = [...entries].sort((a,b)=>a.created-b.created);
+  const i = sorted.findIndex(e=>e.id===id);
+  return i >= 0 ? 'S-' + String(i+1).padStart(3,'0') : 'S-???';
+}
+
+function fmtDate(iso){
+  if(!iso) return '';
+  const d = new Date(iso + (iso.includes('T') ? '' : 'T12:00:00'));
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+function fmtTime(t){ if(!t) return ''; const [h,m] = t.split(':'); const hr=+h; return (hr%12||12)+':'+m+(hr<12?'am':'pm'); }
+
+function filtered(){
+  let list = [...entries].sort((a,b)=>b.created-a.created);
+  if(filter !== 'all') list = list.filter(e=>e.category===filter);
+  if(search.trim()){
+    const q = search.toLowerCase();
+    list = list.filter(e =>
+      (e.title||'').toLowerCase().includes(q) ||
+      (e.thought||'').toLowerCase().includes(q) ||
+      (e.process||'').toLowerCase().includes(q) ||
+      (e.feeling||'').toLowerCase().includes(q)
+    );
+  }
+  return list;
+}
+
+function stats(){
+  const all = entries.length;
+  const batch = entries.filter(e=>e.category==='batch').length;
+  const work = entries.filter(e=>e.category==='work').length;
+  const misc = entries.filter(e=>e.category==='misc').length;
+  return {all,batch,work,misc};
+}
+
+// ── RENDER ──
+function render(){
+  const app = document.getElementById('app');
+  if(view==='detail' && activeId){
+    app.innerHTML = renderDetail(entries.find(e=>e.id===activeId));
+  } else if(view==='form'){
+    app.innerHTML = renderForm(editId ? entries.find(e=>e.id===editId) : null);
+    setupForm();
+  } else {
+    app.innerHTML = renderList();
+    setupList();
+  }
+}
+
+function renderList(){
+  const s = stats();
+  const list = filtered();
+  return `
+  <header class="head">
+    <div class="brand">
+      <span class="mark">◆</span>
+      <span class="title">Seeds</span>
+      <span class="sub">Ledger</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="count-pill">${entries.length}</span>
+      <button class="add-btn" onclick="openForm(null)">+</button>
+    </div>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-num">${s.all}</span>
+      <span class="stat-lbl">Total</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num batch">${s.batch}</span>
+      <span class="stat-lbl">Batch</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num work">${s.work}</span>
+      <span class="stat-lbl">Work</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num misc">${s.misc}</span>
+      <span class="stat-lbl">Misc</span>
+    </div>
+  </div>
+
+  <div class="filter-rail">
+    ${['all','batch','work','misc'].map(c=>`
+      <button class="fchip ${c} ${filter===c?'active':''}" onclick="setFilter('${c}')">
+        ${c==='all'?'All':c.charAt(0).toUpperCase()+c.slice(1)}
+      </button>
+    `).join('')}
+  </div>
+
+  <div class="search-wrap">
+    <div class="search-inner">
+      <span class="search-ico">⌕</span>
+      <input id="search-input" type="search" placeholder="Search seeds..." value="${search}" oninput="setSearch(this.value)" autocomplete="off" autocorrect="off" spellcheck="false"/>
+    </div>
+  </div>
+
+  <main class="list">
+    ${list.length === 0 ? `
+      <div class="empty">
+        <div class="empty-mark">◆</div>
+        <div class="empty-txt">${entries.length===0?'No seeds logged yet.<br>Tap + to record the first.':'Nothing matches.'}
+        </div>
+      </div>
+    ` : list.map(e => renderCard(e)).join('')}
+  </main>
+  `;
+}
+
+function renderCard(e){
+  return `
+  <div class="seed-card" onclick="openDetail('${e.id}')">
+    <div class="seed-card-top">
+      <span class="seed-num">${seedNum(e.id)}</span>
+      <span class="seed-title">${esc(e.title||'Untitled')}</span>
+      <span class="cat-dot ${e.category||'misc'}"></span>
+    </div>
+    ${e.thought ? `<div class="seed-thought">${esc(e.thought)}</div>` : ''}
+    <div class="seed-footer">
+      <span class="seed-meta">${fmtDate(e.date)}${e.time?' · '+fmtTime(e.time):''}</span>
+      <span class="cat-label ${e.category||'misc'}">${e.category||'misc'}</span>
+    </div>
+  </div>
+  `;
+}
+
+function renderDetail(e){
+  if(!e) return '';
+  const num = seedNum(e.id);
+  return `
+  <div class="detail">
+    <div class="detail-head">
+      <button class="back-btn" onclick="goList()">
+        <span class="back-arrow">←</span>
+        <span>Ledger</span>
+      </button>
+      <div class="detail-actions">
+        <button class="icon-btn" onclick="openForm('${e.id}')" title="Edit">✎</button>
+        <button class="icon-btn danger" onclick="confirmDelete('${e.id}')" title="Delete">⌫</button>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div>
+        <div class="detail-title-row">
+          <span class="detail-num">${num}</span>
+          <h1 class="detail-title">${esc(e.title||'Untitled')}</h1>
+        </div>
+        <div class="detail-meta-row" style="margin-top:12px">
+          ${e.date?`<span class="detail-meta-chip">${fmtDate(e.date)}</span>`:''}
+          ${e.time?`<span class="detail-meta-chip">${fmtTime(e.time)}</span>`:''}
+          <span class="cat-label ${e.category||'misc'}" style="font-size:10px">${e.category||'misc'}</span>
+        </div>
+      </div>
+
+      ${e.thought?`
+      <div class="detail-section">
+        <div class="detail-label">Momentary Thought</div>
+        <div class="detail-text">${esc(e.thought)}</div>
+      </div>
+      <div class="detail-divider"></div>`:''}
+
+      ${e.feeling?`
+      <div class="detail-section">
+        <div class="detail-label">Feeling</div>
+        <div class="detail-text">${esc(e.feeling)}</div>
+      </div>
+      <div class="detail-divider"></div>`:''}
+
+      ${e.process?`
+      <div class="detail-section">
+        <div class="detail-label">Process</div>
+        <div class="detail-text">${esc(e.process)}</div>
+      </div>
+      <div class="detail-divider"></div>`:''}
+
+      ${e.notes?`
+      <div class="detail-section">
+        <div class="detail-label">Notes</div>
+        <div class="detail-text">${esc(e.notes)}</div>
+      </div>`:''}
+
+      <div style="padding-top:8px">
+        <div class="detail-label">Logged</div>
+        <div class="detail-text" style="font-family:var(--mono);font-size:12px;color:var(--mute);margin-top:4px">${new Date(e.created).toLocaleString()}</div>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function renderForm(e){
+  const isEdit = !!e;
+  const today = new Date().toISOString().slice(0,10);
+  const now = new Date().toTimeString().slice(0,5);
+  return `
+  <div class="form-screen">
+    <div class="form-head">
+      <button class="back-btn" onclick="cancelForm()">
+        <span class="back-arrow">←</span>
+        <span>${isEdit?'Detail':'Ledger'}</span>
+      </button>
+      <span class="form-head-title">${isEdit?'Edit Seed':'New Seed'}</span>
+      <div style="width:60px"></div>
+    </div>
+    <div class="form-body">
+
+      <div class="field">
+        <label class="field-label">Title</label>
+        <input id="f-title" class="field-input sm" type="text" placeholder="Name this seed" value="${esc(e?.title||'')}"/>
+      </div>
+
+      <div class="row-fields">
+        <div class="field">
+          <label class="field-label">Date</label>
+          <input id="f-date" class="field-input sm" type="date" value="${e?.date||today}"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Time</label>
+          <input id="f-time" class="field-input sm" type="time" value="${e?.time||now}"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Category</label>
+        <select id="f-cat" class="cat-select field-input sm">
+          <option value="batch" ${(e?.category||'batch')==='batch'?'selected':''}>Batch</option>
+          <option value="work" ${e?.category==='work'?'selected':''}>Work</option>
+          <option value="misc" ${e?.category==='misc'?'selected':''}>Misc</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Momentary Thought</label>
+        <textarea id="f-thought" class="field-input ta" placeholder="What was in your mind at the moment of completion...">${esc(e?.thought||'')}</textarea>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Feeling</label>
+        <textarea id="f-feeling" class="field-input ta" placeholder="What were you feeling when this seed was made...">${esc(e?.feeling||'')}</textarea>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Process</label>
+        <textarea id="f-process" class="field-input ta" placeholder="Medium, technique, how it was made...">${esc(e?.process||'')}</textarea>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Notes</label>
+        <textarea id="f-notes" class="field-input ta" placeholder="Anything else worth documenting...">${esc(e?.notes||'')}</textarea>
+      </div>
+
+      <button class="save-btn" onclick="saveEntry()">
+        ${isEdit?'Save Changes':'Record Seed'}
+      </button>
+      <button class="cancel-btn" onclick="cancelForm()">Cancel</button>
+    </div>
+  </div>
+  `;
+}
+
+// ── ACTIONS ──
+function setFilter(f){ filter=f; render(); }
+function setSearch(v){ search=v; render(); setTimeout(()=>{ const el=document.getElementById('search-input'); if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length);} },0); }
+function openDetail(id){ activeId=id; view='detail'; render(); window.scrollTo(0,0); }
+function goList(){ view='list'; render(); }
+function openForm(id){ editId=id; view='form'; render(); window.scrollTo(0,0); }
+function cancelForm(){ if(editId){ activeId=editId; view='detail'; } else { view='list'; } editId=null; render(); }
+
+function saveEntry(){
+  const title = document.getElementById('f-title').value.trim();
+  if(!title){ alert('Title is required.'); return; }
+  const entry = {
+    id: editId || uid(),
+    title,
+    date: document.getElementById('f-date').value,
+    time: document.getElementById('f-time').value,
+    category: document.getElementById('f-cat').value,
+    thought: document.getElementById('f-thought').value.trim(),
+    feeling: document.getElementById('f-feeling').value.trim(),
+    process: document.getElementById('f-process').value.trim(),
+    notes: document.getElementById('f-notes').value.trim(),
+    created: editId ? (entries.find(e=>e.id===editId)?.created||Date.now()) : Date.now(),
+    updated: Date.now(),
+  };
+  if(editId){
+    entries = entries.map(e=>e.id===editId?entry:e);
+    activeId = editId;
+    view = 'detail';
+  } else {
+    entries = [entry, ...entries];
+    activeId = entry.id;
+    view = 'detail';
+  }
+  editId = null;
+  save(entries);
+  render();
+}
+
+function confirmDelete(id){
+  const e = entries.find(e=>e.id===id);
+  if(!e) return;
+  if(confirm(`Delete "${e.title}"? This cannot be undone.`)){
+    entries = entries.filter(e=>e.id!==id);
+    save(entries);
+    view='list'; activeId=null; render();
+  }
+}
+
+// ── AUTO-GROW TEXTAREAS ──
+function setupForm(){
+  document.querySelectorAll('textarea').forEach(ta=>{
+    ta.style.height='auto';
+    ta.style.height=ta.scrollHeight+'px';
+    ta.addEventListener('input',()=>{
+      ta.style.height='auto';
+      ta.style.height=ta.scrollHeight+'px';
+    });
+  });
+}
+function setupList(){ /* nothing needed */ }
+
+// ── ESCAPE ──
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>'); }
+
+render();
+</script>
+</body>
+</html>
